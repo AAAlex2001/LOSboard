@@ -3,6 +3,9 @@
 import { FormEvent, useState } from "react";
 import styles from "./page.module.scss";
 
+import { Button } from "@/src/shared/ui/Button";
+import { Input } from "@/src/shared/ui/Input";
+
 type LoginForm = {
   email: string;
   password: string;
@@ -50,7 +53,10 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setMessage(data.detail || "Ошибка входа");
+        const detail = Array.isArray(data.detail)
+          ? data.detail.map((d: { msg: string }) => d.msg).join("; ")
+          : data.detail;
+        setMessage(detail || "Ошибка входа");
         return;
       }
 
@@ -72,27 +78,26 @@ export default function LoginPage() {
         <h1 className={styles.title}>Вход</h1>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <input
-            className={styles.input}
-            name="email"
+          <Input
             type="email"
             placeholder="Email"
             value={form.email}
+            name="email"
             onChange={handleChange}
+            required
           />
 
-          <input
-            className={styles.input}
-            name="password"
+          <Input
             type="password"
             placeholder="Пароль"
             value={form.password}
+            name="password"
             onChange={handleChange}
+            required
+            minLength={6}
           />
 
-          <button className={styles.button} type="submit">
-            Войти
-          </button>
+          <Button text="Войти" type="submit" />
         </form>
 
         {message && <p className={styles.message}>{message}</p>}
