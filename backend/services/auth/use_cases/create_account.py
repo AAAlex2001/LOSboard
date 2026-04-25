@@ -15,28 +15,35 @@ password_context = CryptContext(
 )
 
 
-async def create_account(
-    request: CreateAccountRequest,
-    db: AsyncSession,
-) -> CreateAccountResponse:
-    result = await db.execute(
-        select(User).where(User.email == request.email)
-    )
-    existing_user = result.scalar_one_or_none()
+class CreateAccountUseCase:
+    def __init__(self):
+        self.password_context = password_context
 
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+    async def create_account(
+        self,
+        request: CreateAccountRequest,
+        db: AsyncSession,
+    ) -> CreateAccountResponse:
+        result = await db.execute(
+            select(User).where(User.email == request.email)
+        )
+        existing_user = result.scalar_one_or_none()
 
-    new_user = User(
-        name=request.name,
-        email=request.email,
-        password=password_context.hash(request.password),
-    )
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
 
-    db.add(new_user)
-    await db.flush()
+        new_user = User(
+            name=request.name,
+            email=request.email,
+            password=self.password_context.hash(request.password),
+        )
 
-    return CreateAccountResponse(
-        message="Account created successfully",
-        email=new_user.email,
-    )
+        db.add(new_user)
+        await db.flush()
+
+        return CreateAccountResponse(
+            message="Account created successfully",
+            email=new_user.email,
+            id=new_user.id,
+        )
+     
