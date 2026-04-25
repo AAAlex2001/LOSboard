@@ -41,6 +41,14 @@ class UpdateAccountUseCase:
                 raise HTTPException(status_code=400, detail="Invalid phone number format")
             existing_user.phone_number = request.phone_number
 
+        if request.email is not None:
+            email_check = await db.execute(
+                select(User).where(User.email == request.email, User.id != request.id)
+            )
+            if email_check.scalar_one_or_none():
+                raise HTTPException(status_code=400, detail="Email already in use")
+            existing_user.email = request.email        
+
         await db.flush()
         return UpdateAccountResponse(
             message="Account updated successfully",

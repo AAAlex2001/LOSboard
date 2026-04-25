@@ -11,6 +11,7 @@ class CreateAccountRequest(BaseModel):
 class CreateAccountResponse(BaseModel):
     message: str
     email: EmailStr
+    id: int
 
 
 class UpdateAccountRequest(BaseModel):
@@ -26,3 +27,16 @@ class UpdateAccountResponse(BaseModel):
     phone_number: Optional[str] = None
     name: str
     id: int
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+
+class LoginResponse(BaseModel):
+    message: str
+    email: EmailStr
+    name: str
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    id: int   
