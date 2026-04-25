@@ -15,11 +15,20 @@ class CreateAccountResponse(BaseModel):
 
 
 class UpdateAccountRequest(BaseModel):
-    id: int
     email: Optional[EmailStr] = None
     password: Optional[str] = Field(None, min_length=8, max_length=128)
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     phone_number: Optional[str] = Field(None, min_length=11, max_length=11)
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+class RefreshTokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
 
 class UpdateAccountResponse(BaseModel):
     message: str

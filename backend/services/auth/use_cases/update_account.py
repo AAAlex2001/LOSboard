@@ -22,16 +22,17 @@ class UpdateAccountUseCase:
     async def update_account(
         self,
         request: UpdateAccountRequest,
+        user_id: int,
         db: AsyncSession,
     ) -> UpdateAccountResponse:
         result = await db.execute(
-            select(User).where(User.id == request.id)
+            select(User).where(User.id == user_id)
         )
         existing_user = result.scalar_one_or_none()
 
         if not existing_user:
             raise HTTPException(status_code=404, detail="User not found")
-        
+
         if request.name is not None:
             existing_user.name = request.name
         if request.password is not None:
@@ -43,11 +44,11 @@ class UpdateAccountUseCase:
 
         if request.email is not None:
             email_check = await db.execute(
-                select(User).where(User.email == request.email, User.id != request.id)
+                select(User).where(User.email == request.email, User.id != user_id)
             )
             if email_check.scalar_one_or_none():
                 raise HTTPException(status_code=400, detail="Email already in use")
-            existing_user.email = request.email        
+            existing_user.email = request.email
 
         await db.flush()
         return UpdateAccountResponse(

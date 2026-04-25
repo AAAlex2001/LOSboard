@@ -15,6 +15,7 @@ password_context = CryptContext(
     argon2__parallelism=1,
 )
 
+
 class LoginAccountUseCase:
     def __init__(self):
         self.password_context = password_context
@@ -30,11 +31,8 @@ class LoginAccountUseCase:
         )
         user = result.scalar_one_or_none()
 
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        if not self.password_context.verify(request.password, user.password):
-            raise HTTPException(status_code=401, detail="Incorrect password")
+        if not user or not self.password_context.verify(request.password, user.password):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
         
         access_token = self.jwt_service.create_access_token(user.id, user.email)
         refresh_token = self.jwt_service.create_refresh_token(user.id, user.email)
