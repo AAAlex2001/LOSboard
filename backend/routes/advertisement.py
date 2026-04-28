@@ -11,7 +11,7 @@ from schemas.advertisement import AdvertisementCreate, AdvertisementResponse
 router = APIRouter(prefix="/advertisements", tags=["advertisements"])
 
 
-router.post("/create-advertisement", response_model=AdvertisementResponse)
+@router.post("/create-advertisement", response_model=AdvertisementResponse)
 async def create_advertisement(
     request: AdvertisementCreate,
     db: AsyncSession = Depends(get_db),

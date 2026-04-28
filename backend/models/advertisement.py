@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 
 from models.base import Base
 
@@ -17,3 +18,5 @@ class Advertisement(Base):
     photo_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    owner = relationship("User", back_populates="advertisements")
