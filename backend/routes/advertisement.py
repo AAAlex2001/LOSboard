@@ -10,7 +10,6 @@ from services.advertisement.use_cases.get_list_advertisements import GetListAdve
 from services.advertisement.use_cases.update_advertisement import UpdateAdvertisementUseCase
 from services.advertisement.use_cases.delete_advertisement import DeleteAdvertisementUseCase
 from services.advertisement.use_cases.find_advertisements_by_text import FindAdvertisementsByTextUseCase
-from services.advertisement.use_cases.find_advertisements_by_text_and_category import FindAdvertisementsByTextAndCategoryUseCase
 
 from models.user import User
 from schemas.advertisement import AdvertisementCreate, AdvertisementResponse, AdvertisementUpdate
@@ -96,7 +95,7 @@ async def search_advertisements_by_text_and_category(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    use_case = FindAdvertisementsByTextAndCategoryUseCase()
+    use_case = FindAdvertisementsByTextUseCase()
 
     advertisements = await use_case.find_advertisements_by_text_and_category(
         search_text=search_text,
