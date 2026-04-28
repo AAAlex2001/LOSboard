@@ -11,7 +11,7 @@ from services.advertisement.use_cases.update_advertisement import UpdateAdvertis
 from services.advertisement.use_cases.delete_advertisement import DeleteAdvertisementUseCase
 
 from models.user import User
-from schemas.advertisement import AdvertisementCreate, AdvertisementResponse
+from schemas.advertisement import AdvertisementCreate, AdvertisementResponse, AdvertisementUpdate
 
 
 router = APIRouter(prefix="/advertisements", tags=["advertisements"])
@@ -73,7 +73,7 @@ async def get_advertisement(
 @router.patch("/{advertisement_id}", response_model=AdvertisementResponse)
 async def update_advertisement(
     advertisement_id: int,
-    request: AdvertisementCreate,
+    request: AdvertisementUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

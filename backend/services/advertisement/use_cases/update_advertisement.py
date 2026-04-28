@@ -3,6 +3,7 @@ from sqlalchemy import select
 from models.advertisement import Advertisement
 from models.user import User
 from fastapi import HTTPException
+from schemas.advertisement import AdvertisementUpdate
 
 
 class UpdateAdvertisementUseCase:
@@ -10,7 +11,7 @@ class UpdateAdvertisementUseCase:
     async def update_advertisement(
         self,
         advertisement_id: int,
-        request: Advertisement,
+        request: AdvertisementUpdate,
         db: AsyncSession,
         current_user: User,
     ) -> Advertisement:
@@ -30,14 +31,10 @@ class UpdateAdvertisementUseCase:
         if advertisement.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Forbidden: You do not have permission to update this advertisement")
 
-        advertisement.title = request.title
-        advertisement.description = request.description
-        advertisement.price = request.price
-        advertisement.category = request.category
-        advertisement.subcategory = request.subcategory
-        advertisement.location = request.location
-        advertisement.photo_url = request.photo_url
-        advertisement.is_active = request.is_active
+        update_data = request.model_dump(exclude_unset=True)
+
+        for field, value in update_data.items():
+            setattr(advertisement, field, value)
 
         await db.flush()
         await db.refresh(advertisement)
