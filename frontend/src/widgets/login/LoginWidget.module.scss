@@ -3,11 +3,11 @@
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-  margin: 0 auto;
   padding: 24px;
   background: #FFFFFF;
   border-radius: 20px;
   width: 340px;
+  box-sizing: border-box;
 
   form {
     display: flex;
