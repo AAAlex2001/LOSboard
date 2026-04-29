@@ -75,6 +75,24 @@ async def get_my_advertisements(
 
     return advertisements
 
+@router.get("/my-liked", response_model=list[AdvertisementResponse])
+async def get_my_liked_advertisements(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    use_case = GetListAdvertisementsUseCase()
+
+    advertisements = await use_case.get_my_liked_advertisements(
+        skip=skip,
+        limit=limit,
+        db=db,
+        current_user=current_user,
+    )
+
+    return advertisements
+
 
 @router.get("/{advertisement_id}", response_model=AdvertisementResponse)
 async def get_advertisement(

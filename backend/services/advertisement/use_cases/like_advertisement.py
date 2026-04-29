@@ -1,9 +1,7 @@
 from fastapi import HTTPException
 from models.advertisement import Advertisement
 from models.user import User
-from schemas.advertisement import AdvertisementCreate
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.category import Category, Subcategory
 from sqlalchemy import select
 
 
