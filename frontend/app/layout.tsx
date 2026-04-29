@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/src/shared/auth/auth-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,9 +21,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} h-full antialiased`}
+      className={inter.variable}
+      style={{ height: "100%" }}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

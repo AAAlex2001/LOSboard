@@ -2,7 +2,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
   border-radius: 10px;
   color: #B8BBC2;
   font-size: 12px;
@@ -12,4 +11,15 @@
   font-weight: 400;
   padding: 10px;
   border: 1px solid #E7EAF8;
+  height: 35px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1129BD;
+}
+
+.input:hover {
+  border-color: #1129BD;
 }

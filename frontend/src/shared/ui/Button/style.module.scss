@@ -12,4 +12,18 @@
   font-family: var(--font-inter);
   font-weight: 500;
   padding: 10px;
+  min-height: 39px;
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.button:disabled:hover {
+  background-color: #cccccc;
+}
+
+.button:hover {
+  background-color: #0d1f8b;
 }
