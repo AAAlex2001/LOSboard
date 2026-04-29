@@ -3,6 +3,7 @@ from sqlalchemy import select
 from models.advertisement import Advertisement
 from models.user import User
 from fastapi import HTTPException
+from .like_advertisement import LikeAdvertisementUseCase
 
 
 class GetListAdvertisementsUseCase:
@@ -40,5 +41,14 @@ class GetListAdvertisementsUseCase:
             select(Advertisement).where(Advertisement.owner_id == current_user.id).offset(skip).limit(limit)
         )
         advertisements = result.scalars().all()
+
+        like_use_case = LikeAdvertisementUseCase()
+        for advertisement in advertisements:
+            if advertisement.is_liked:
+                await like_use_case.like_advertisement(
+                    advertisement_id=advertisement.id,
+                    db=db,
+                    current_user=current_user,
+                )
 
         return advertisements

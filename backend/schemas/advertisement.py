@@ -23,6 +23,7 @@ class AdvertisementResponse(BaseModel):
     location: str
     photo_url: Optional[str]
     is_active: bool
+    is_liked: bool
     owner_id: int
 
     model_config = ConfigDict(from_attributes=True)

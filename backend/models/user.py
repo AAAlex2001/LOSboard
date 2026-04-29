@@ -13,3 +13,4 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     advertisements = relationship("Advertisement", back_populates="owner")
+    liked_advertisements = relationship("LikedAdvertisement", back_populates="user", cascade="all, delete-orphan")
