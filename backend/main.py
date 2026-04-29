@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.auth import router as auth_router
 from routes.advertisement import router as advertisement_router
+from routes.category import router as category_router
 import uvicorn
 
 
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(advertisement_router)
+app.include_router(category_router)
 
 
 @app.get("/")
