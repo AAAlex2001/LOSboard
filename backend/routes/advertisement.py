@@ -11,7 +11,11 @@ from services.advertisement.use_cases.update_advertisement import UpdateAdvertis
 from services.advertisement.use_cases.delete_advertisement import DeleteAdvertisementUseCase
 
 from models.user import User
-from schemas.advertisement import AdvertisementCreate, AdvertisementResponse, AdvertisementUpdate
+from schemas.advertisement import (
+    AdvertisementCreate,
+    AdvertisementResponse,
+    AdvertisementUpdate,
+)
 
 
 router = APIRouter(prefix="/advertisements", tags=["advertisements"])
@@ -44,6 +48,25 @@ async def get_list_advertisements(
     use_case = GetListAdvertisementsUseCase()
 
     advertisements = await use_case.get_list_advertisements(
+        skip=skip,
+        limit=limit,
+        db=db,
+        current_user=current_user,
+    )
+
+    return advertisements
+
+
+@router.get("/my", response_model=list[AdvertisementResponse])
+async def get_my_advertisements(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    use_case = GetListAdvertisementsUseCase()
+
+    advertisements = await use_case.get_my_advertisements(
         skip=skip,
         limit=limit,
         db=db,

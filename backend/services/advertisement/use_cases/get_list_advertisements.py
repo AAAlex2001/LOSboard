@@ -23,3 +23,22 @@ class GetListAdvertisementsUseCase:
         advertisements = result.scalars().all()
 
         return advertisements
+    
+
+    async def get_my_advertisements(
+        self,
+        skip: int,
+        limit: int,
+        db: AsyncSession,
+        current_user: User,
+    ) -> list[Advertisement]:
+
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        result = await db.execute(
+            select(Advertisement).where(Advertisement.owner_id == current_user.id).offset(skip).limit(limit)
+        )
+        advertisements = result.scalars().all()
+
+        return advertisements

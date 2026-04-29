@@ -3,6 +3,8 @@ from models.advertisement import Advertisement
 from models.user import User
 from schemas.advertisement import AdvertisementCreate
 from sqlalchemy.ext.asyncio import AsyncSession
+from models.category import Category, Subcategory
+from sqlalchemy import select
 
 
 class CreateAdvertisementUseCase:
@@ -16,6 +18,32 @@ class CreateAdvertisementUseCase:
 
         if not current_user:
             raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        category_result = await db.execute(
+            select(Category).where(Category.id == request.category_id),
+            Category.is_active == True
+        )
+
+        category = category_result.scalar_one_or_none()
+
+        if not category:
+            raise HTTPException(status_code=400, detail="Category not found or inactive")
+
+        subcategory_result = await db.execute(
+            select(Subcategory).where(
+                Subcategory.id == request.subcategory_id,
+                Subcategory.category_id == request.category_id,
+                Subcategory.is_active == True
+            )
+        )    
+
+        subcategory = subcategory_result.scalar_one_or_none()
+
+        if not subcategory:
+            raise HTTPException(status_code=400, detail="Subcategory not found or inactive")
+
+        if subcategory.category_id != category.id:
+            raise HTTPException(status_code=400, detail="Subcategory does not belong to the specified category")
 
         new_advertisement = Advertisement(
             title=request.title,
