@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/src/shared/auth/auth-provider";
+import { NotificationProvider } from "@/src/shared/ui/Notifications";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,7 +26,9 @@ export default function RootLayout({
       style={{ height: "100%" }}
     >
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <NotificationProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </NotificationProvider>
       </body>
     </html>
   );

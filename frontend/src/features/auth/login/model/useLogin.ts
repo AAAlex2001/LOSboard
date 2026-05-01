@@ -41,13 +41,15 @@ export function useLogin() {
     user: null,
   });
 
-  const performLogin = async (email: string, password: string) => {
+  const performLogin = async (email: string, password: string, onError?: (message: string) => void) => {
     dispatch({ type: "LOGIN_START" });
     try {
       const user = await login(email, password);
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
     } catch (error) {
-      dispatch({ type: "LOGIN_FAILURE", payload: error instanceof Error ? error.message : String(error) });
+      const message = error instanceof Error ? error.message : String(error);
+      dispatch({ type: "LOGIN_FAILURE", payload: message });
+      onError?.(message);
     }
   };
 

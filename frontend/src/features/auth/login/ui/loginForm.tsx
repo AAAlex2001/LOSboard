@@ -6,18 +6,20 @@ import { useLogin } from "../model/useLogin";
 import { useState } from "react";
 import { Loader } from "@/src/shared/ui/Loader";
 import Typography from "@/src/shared/ui/Typography";
+import { useNotifications } from "@/src/shared/ui/Notifications";
 import style from "./LoginForm.module.scss";
 
 
 export function LoginForm() {
-  const { loading, error, performLogin } = useLogin();
+  const { loading, performLogin } = useLogin();
+  const { showError } = useNotifications();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    performLogin(email, password);
+    performLogin(email, password, showError);
   };
 
   return (
@@ -55,7 +57,6 @@ export function LoginForm() {
           </div>
         </div>
       </div>
-      {error && <p>{error}</p>}
     </form>
   );
 }
