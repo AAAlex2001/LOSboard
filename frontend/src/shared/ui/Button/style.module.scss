@@ -4,7 +4,7 @@
   justify-content: center;
   border: none;
   border-radius: 10px;
-  background-color: #1129BD;
+  background-color: #1129bd;
   color: #fff;
   font-size: 16px;
   line-height: 100%;
@@ -13,6 +13,10 @@
   font-weight: 500;
   padding: 10px;
   min-height: 39px;
+}
+
+.button:hover {
+  background-color: #0d1f8b;
 }
 
 .button:disabled {
@@ -24,6 +28,21 @@
   background-color: #cccccc;
 }
 
-.button:hover {
-  background-color: #0d1f8b;
+.link {
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  min-height: auto;
+}
+
+.link:hover {
+  background-color: transparent;
+}
+
+.linkBlue {
+  color: #1129bd;
+}
+
+.linkGray {
+  color: #8a8a8a;
 }

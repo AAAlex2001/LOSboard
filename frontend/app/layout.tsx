@@ -24,7 +24,7 @@ export default function RootLayout({
       className={inter.variable}
       style={{ height: "100%" }}
     >
-      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <body>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

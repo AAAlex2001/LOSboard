@@ -5,8 +5,10 @@ import style from "./page.module.scss";
 export default function LoginPage() {
     return (
         <div className={style.container}>
-            <LoginInfo />
-            <LoginWidget />
+            <div className={style.content}>
+                <LoginInfo />
+                <LoginWidget />
+            </div>
         </div>
     );
 }

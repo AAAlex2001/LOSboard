@@ -5,6 +5,8 @@ import { Button } from "@/src/shared/ui/Button";
 import { useLogin } from "../model/useLogin";
 import { useState } from "react";
 import { Loader } from "@/src/shared/ui/Loader";
+import Typography from "@/src/shared/ui/Typography";
+import style from "./LoginForm.module.scss";
 
 
 export function LoginForm() {
@@ -18,24 +20,42 @@ export function LoginForm() {
     performLogin(email, password);
   };
 
-    return (
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-        />
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? <Loader /> : "Login"}
-        </Button>
-        {error && <p>{error}</p>}
-      </form>
-    );
+  return (
+    <form className={style.loginForm} onSubmit={handleSubmit}>
+      <div className={style.loginContent}>
+        <Typography variant="h1">Вход</Typography>
+        <div className={style.inputs}>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Электронная почта"
+          />
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Пароль"
+          />
+          <Button type="link" onClick={() => window.location.href = "/register"}>
+            Забыли пароль?
+          </Button>
+        </div>
+        <div className={style.bottom}>
+          <Button type="submit" disabled={loading}>
+            {loading ? <Loader /> : "Войти"}
+          </Button>
+          <div className={style.registerContainer}>
+            <span className={style.registerText}>
+              Нет аккаунта LOS?
+            </span>
+            <Button type="link" onClick={() => window.location.href = "/register"}>
+              Зарегистрироваться
+            </Button>
+          </div>
+        </div>
+      </div>
+      {error && <p>{error}</p>}
+    </form>
+  );
 }
