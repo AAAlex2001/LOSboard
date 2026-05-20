@@ -35,6 +35,14 @@
   width: 100%;
 }
 
+.formBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
 .feedHeading {
   display: flex;
   flex-direction: row;
@@ -78,20 +86,7 @@
   white-space: nowrap;
 }
 
-.layout {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  width: 100%;
-  min-width: 0;
-}
-
-.formCol {
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebarCol {
+.sidebarSlot {
   display: none;
 }
 
@@ -123,8 +118,29 @@
     padding: 60px 0;
   }
 
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    grid-template-areas:
+      "crumbs crumbs"
+      "form sidebar";
+    column-gap: 40px;
+    row-gap: 40px;
+  }
+
   .breadcrumbs {
     display: block;
+    grid-area: crumbs;
+  }
+
+  .formBlock {
+    grid-area: form;
+  }
+
+  .sidebarSlot {
+    grid-area: sidebar;
+    display: block;
+    flex-shrink: 0;
   }
 
   .backBtn {
@@ -133,15 +149,5 @@
 
   .title {
     text-align: left;
-  }
-
-  .layout {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-
-  .sidebarCol {
-    display: block;
-    flex-shrink: 0;
   }
 }

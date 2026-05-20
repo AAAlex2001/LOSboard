@@ -80,27 +80,25 @@ export default function EditAdPage() {
             />
           </div>
 
-          <div className={style.feedHeading}>
-            <button
-              type="button"
-              className={style.backBtn}
-              onClick={() => router.back()}
-              aria-label="Назад"
-            >
-              <ArrowLeftIcon />
-            </button>
-            <h1 className={style.title}>
-              {adTitle || "Редактирование объявления"}
-            </h1>
+          <div className={style.formBlock}>
+            <div className={style.feedHeading}>
+              <button
+                type="button"
+                className={style.backBtn}
+                onClick={() => router.back()}
+                aria-label="Назад"
+              >
+                <ArrowLeftIcon />
+              </button>
+              <h1 className={style.title}>
+                {adTitle || "Редактирование объявления"}
+              </h1>
+            </div>
+            <PlaceAdForm advertisementId={adId} />
           </div>
 
-          <div className={style.layout}>
-            <div className={style.formCol}>
-              <PlaceAdForm advertisementId={adId} />
-            </div>
-            <div className={style.sidebarCol}>
-              <PlaceAdSidebar />
-            </div>
+          <div className={style.sidebarSlot}>
+            <PlaceAdSidebar />
           </div>
         </div>
       </div>

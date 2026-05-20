@@ -182,6 +182,12 @@
   flex-shrink: 0;
 }
 
+@media (min-width: 768px) {
+  .navInner {
+    padding: 0 60px;
+  }
+}
+
 @media (min-width: 1440px) {
   .hero {
     display: block;
@@ -202,7 +208,6 @@
   .navInner {
     margin: 0 auto;
     gap: 20px;
-    padding: 0 60px;
   }
 
   .categoriesWrap {

@@ -53,11 +53,6 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    goToPreview();
-  };
-
   return (
     <>
       {state.step === 2 && (
@@ -72,7 +67,10 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
       )}
       <form
         className={`${style.form} ${state.step === 2 ? style.formHidden : ""}`}
-        onSubmit={handleFormSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+          goToPreview();
+        }}
         aria-hidden={state.step === 2}
       >
       <section className={style.category}>
@@ -232,7 +230,7 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
                 onClick={reset}
                 disabled={state.submitting}
               >
-                Отмена
+                Очистить
               </Button>
               <Button
                 type="submit"

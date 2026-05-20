@@ -43,25 +43,23 @@ export default function PlaceAdPage() {
               />
             </div>
 
-            <div className={style.feedHeading}>
-              <button
-                type="button"
-                className={style.backBtn}
-                onClick={() => router.back()}
-                aria-label="Назад"
-              >
-                <ArrowLeftIcon />
-              </button>
-              <h1 className={style.title}>Размещение объявления</h1>
+            <div className={style.formBlock}>
+              <div className={style.feedHeading}>
+                <button
+                  type="button"
+                  className={style.backBtn}
+                  onClick={() => router.back()}
+                  aria-label="Назад"
+                >
+                  <ArrowLeftIcon />
+                </button>
+                <h1 className={style.title}>Размещение объявления</h1>
+              </div>
+              <PlaceAdForm />
             </div>
 
-            <div className={style.layout}>
-              <div className={style.formCol}>
-                <PlaceAdForm />
-              </div>
-              <div className={style.sidebarCol}>
-                <PlaceAdSidebar />
-              </div>
+            <div className={style.sidebarSlot}>
+              <PlaceAdSidebar />
             </div>
           </div>
         )}
