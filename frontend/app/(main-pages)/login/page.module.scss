@@ -11,6 +11,12 @@
     padding: 20px;
 }
 
+@media (min-width: 768px) {
+    .container {
+        padding: 60px;
+    }
+}
+
 .content {
     display: flex;
     flex-direction: row;

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
@@ -9,6 +11,7 @@ from services.auth.jwt_service import JWTService, TokenPayloadDTO
 
 
 bearer_scheme = HTTPBearer()
+bearer_scheme_optional = HTTPBearer(auto_error=False)
 jwt_service = JWTService()
 
 
@@ -29,3 +32,17 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
 
     return user
+
+
+async def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme_optional),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[User]:
+    if not credentials:
+        return None
+    try:
+        payload = jwt_service.verify_access_token(credentials.credentials)
+    except HTTPException:
+        return None
+    result = await db.execute(select(User).where(User.id == payload.user_id))
+    return result.scalars().first()

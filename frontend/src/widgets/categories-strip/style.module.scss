@@ -1,0 +1,68 @@
+.strip {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 120px;
+}
+
+.stripLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollWrap {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  height: 120px;
+  width: max-content;
+}
+
+.navBtn {
+  position: absolute;
+  top: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(17, 41, 189, 0.1);
+  border-radius: 5px;
+  color: rgba(17, 41, 189, 0.5);
+  cursor: pointer;
+  z-index: 1;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    border-color: #1129BD;
+    color: #1129BD;
+  }
+}
+
+.navLeft {
+  left: 16px;
+  transform: scaleX(-1);
+}
+
+.navRight {
+  right: 16px;
+}

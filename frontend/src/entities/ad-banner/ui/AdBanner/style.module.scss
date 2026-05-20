@@ -3,13 +3,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 300px;
-  height: 250px;
   background: #C4C4C4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
+}
+
+.bannerRectangle {
+  width: 100%;
+  aspect-ratio: 300 / 250;
+}
+
+.bannerLeaderboard {
+  width: 100%;
+  max-width: 970px;
+  aspect-ratio: 970 / 90;
+}
+
+.bannerWide {
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 800 / 200;
+}
+
+.bannerPromo {
+  width: 100%;
+  aspect-ratio: 400 / 218;
 }
 
 .image {

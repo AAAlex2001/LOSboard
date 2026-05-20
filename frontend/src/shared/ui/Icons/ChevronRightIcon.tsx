@@ -13,7 +13,7 @@ const ChevronRightIcon = ({ className }: ChevronRightIconProps) => (
   >
     <path
       d="M5.5 3.5L9.5 7.5L5.5 11.5"
-      stroke="#B8BBC2"
+      stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

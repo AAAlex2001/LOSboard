@@ -1,2 +1,2 @@
 export type { AdBannerData } from "./model/types";
-export { AdBanner } from "./ui/AdBanner";
+export { AdBanner, type AdBannerVariant } from "./ui/AdBanner";

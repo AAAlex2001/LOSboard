@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from database import engine, Base, AsyncSessionLocal
 import models.user
 import models.advertisement
@@ -8,6 +11,7 @@ import models.category
 from routes.auth import router as auth_router
 from routes.advertisement import router as advertisement_router
 from routes.category import router as category_router
+from routes.upload import router as upload_router
 from seeds.categories_seed import seed_categories
 import uvicorn
 
@@ -39,6 +43,11 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(advertisement_router)
 app.include_router(category_router)
+app.include_router(upload_router)
+
+UPLOADS_DIR = Path(__file__).resolve().parent / "uploads"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/static/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/")

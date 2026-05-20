@@ -10,6 +10,12 @@
   box-sizing: border-box;
 }
 
+@media (min-width: 768px) {
+  .profile {
+    padding: 0 60px;
+  }
+}
+
 .breadcrumbs {
   display: none;
   width: 100%;

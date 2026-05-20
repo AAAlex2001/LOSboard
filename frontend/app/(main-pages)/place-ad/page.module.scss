@@ -11,8 +11,14 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 30px 0;
+  padding: 40px 0;
   width: 100%;
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 60px 0;
+  }
 }
 
 .container {
@@ -25,6 +31,12 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 60px;
+  }
 }
 
 .breadcrumbs {
@@ -64,10 +76,6 @@
 }
 
 @media (min-width: 1440px) {
-  .container {
-    padding: 0 60px;
-  }
-
   .layout {
     flex-direction: row;
     gap: 40px;

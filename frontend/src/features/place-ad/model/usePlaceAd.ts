@@ -3,7 +3,10 @@
 import { useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { useCategories } from "@/src/entities/category";
-import { createAdvertisement } from "@/src/entities/advertisement";
+import {
+  createAdvertisement,
+  uploadAdvertisementImage,
+} from "@/src/entities/advertisement";
 import { initialPlaceAdState, placeAdReducer } from "./placeAdReducer";
 
 export function usePlaceAd() {
@@ -50,6 +53,14 @@ export function usePlaceAd() {
     dispatch({ type: "SUBMIT_START" });
 
     try {
+      let photoUrl: string | undefined;
+      if (state.files.length > 0) {
+        const urls = await Promise.all(
+          state.files.map((file) => uploadAdvertisementImage(file))
+        );
+        photoUrl = urls[0];
+      }
+
       await createAdvertisement({
         title: state.title.trim(),
         description: state.description.trim() || undefined,
@@ -57,6 +68,7 @@ export function usePlaceAd() {
         category_id: selectedCategory.id,
         subcategory_id: selectedSubcategory.id,
         location: state.address.trim(),
+        photo_url: photoUrl,
         is_active: true,
       });
       dispatch({ type: "SUBMIT_SUCCESS" });

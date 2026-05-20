@@ -1,0 +1,90 @@
+.topbar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.heroHeading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #1E1E1E;
+}
+
+.resetBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #1129BD;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mobileBtn {
+  display: block;
+  width: 100%;
+}
+
+.strip,
+.promoTablet,
+.promoDesktop {
+  display: none;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    gap: 40px;
+  }
+
+  .heroHeading {
+    display: none;
+  }
+
+  .mobileBtn {
+    display: none;
+  }
+
+  .strip {
+    display: block;
+  }
+
+  .promoTablet {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1440px) {
+  .promoTablet {
+    display: none;
+  }
+
+  .promoDesktop {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+  }
+}
