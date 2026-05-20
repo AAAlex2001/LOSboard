@@ -89,3 +89,14 @@
   text-align: center;
   color: #B8BBC2;
 }
+
+.docsLink {
+  color: #1129BD;
+  text-decoration: none;
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    text-decoration: underline;
+    text-decoration-color: #1129BD;
+  }
+}

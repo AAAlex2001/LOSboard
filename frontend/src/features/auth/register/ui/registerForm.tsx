@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
@@ -74,7 +75,7 @@ export function RegisterForm() {
           />
         </div>
 
-        <Button type="submit" disabled={!isValid || loading}>
+        <Button type="submit" disabled={!isValid || loading} fullWidth>
           {loading ? <Loader /> : "Зарегистрироваться"}
         </Button>
       </div>
@@ -88,7 +89,14 @@ export function RegisterForm() {
         </div>
 
         <p className={style.docs}>
-          Регистрируясь, вы принимаете Пользовательское соглашение и Политику конфиденциальности
+          Регистрируясь, вы принимаете{" "}
+          <Link href="/terms" className={style.docsLink}>
+            Пользовательское соглашение
+          </Link>{" "}
+          и{" "}
+          <Link href="/privacy" className={style.docsLink}>
+            Политику конфиденциальности
+          </Link>
         </p>
       </div>
     </form>

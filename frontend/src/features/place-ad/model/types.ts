@@ -1,4 +1,7 @@
+export type PlaceAdStep = 1 | 2;
+
 export interface PlaceAdState {
+  step: PlaceAdStep;
   categoryId: number | null;
   subcategoryId: number | null;
   title: string;
@@ -21,6 +24,8 @@ export type PlaceAdAction =
   | { type: "SET_FILES"; payload: File[] }
   | { type: "SET_ADDRESS"; payload: string }
   | { type: "SET_LOCATION"; payload: { address: string; latitude: number; longitude: number } }
+  | { type: "GO_TO_PREVIEW" }
+  | { type: "GO_TO_EDIT" }
   | { type: "SUBMIT_START" }
   | { type: "SUBMIT_SUCCESS" }
   | { type: "SUBMIT_FAILURE"; payload: string }

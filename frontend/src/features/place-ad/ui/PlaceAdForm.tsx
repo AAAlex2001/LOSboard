@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader } from "@/src/shared/ui/Loader";
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { Dropdown } from "@/src/shared/ui/Dropdown";
@@ -9,6 +8,7 @@ import { AddressAutocomplete } from "@/src/shared/ui/AddressAutocomplete";
 import { Map } from "@/src/shared/ui/Map";
 import { usePlaceAd } from "../model/usePlaceAd";
 import { TITLE_MAX } from "../model/placeAdReducer";
+import { PlaceAdPreview } from "./PlaceAdPreview";
 import style from "./PlaceAdForm.module.scss";
 
 export const PlaceAdForm = () => {
@@ -16,17 +16,32 @@ export const PlaceAdForm = () => {
     state,
     dispatch,
     selectedCategory,
+    selectedSubcategory,
     isValid,
     categoryOptions,
     subcategoryOptions,
+    goToPreview,
+    goToEdit,
     submit,
     reset,
   } = usePlaceAd();
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    submit();
+    goToPreview();
   };
+
+  if (state.step === 2) {
+    return (
+      <PlaceAdPreview
+        state={state}
+        category={selectedCategory}
+        subcategory={selectedSubcategory}
+        onBack={goToEdit}
+        onSubmit={submit}
+      />
+    );
+  }
 
   return (
     <form className={style.form} onSubmit={handleFormSubmit}>
@@ -177,7 +192,7 @@ export const PlaceAdForm = () => {
               color="blue"
               disabled={!isValid || state.submitting}
             >
-              {state.submitting ? <Loader /> : "Подать"}
+              Далее
             </Button>
           </div>
         </div>

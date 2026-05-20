@@ -119,8 +119,18 @@
 
 .linkBlue {
   color: #1129BD;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+    text-decoration-color: #1129BD;
+  }
 }
 
 .linkGray {
   color: #8a8a8a;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+    text-decoration-color: #8a8a8a;
+  }
 }

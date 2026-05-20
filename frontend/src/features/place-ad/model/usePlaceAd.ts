@@ -36,6 +36,13 @@ export function usePlaceAd() {
       label: s.name,
     })) ?? [];
 
+  const goToPreview = () => {
+    if (!isValid) return;
+    dispatch({ type: "GO_TO_PREVIEW" });
+  };
+
+  const goToEdit = () => dispatch({ type: "GO_TO_EDIT" });
+
   const submit = async () => {
     if (!isValid || state.submitting) return;
     if (!selectedCategory || !selectedSubcategory) return;
@@ -72,6 +79,8 @@ export function usePlaceAd() {
     isValid,
     categoryOptions,
     subcategoryOptions,
+    goToPreview,
+    goToEdit,
     submit,
     reset,
   };

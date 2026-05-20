@@ -5,3 +5,5 @@ asyncpg
 python-dotenv
 passlib
 argon2-cffi
+pydantic[email]
+python-jose[cryptography]

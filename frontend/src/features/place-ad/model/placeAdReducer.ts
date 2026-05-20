@@ -4,6 +4,7 @@ export const TITLE_MAX = 50;
 export const DESCRIPTION_MAX = 1000;
 
 export const initialPlaceAdState: PlaceAdState = {
+  step: 1,
   categoryId: null,
   subcategoryId: null,
   title: "",
@@ -43,6 +44,10 @@ export function placeAdReducer(
         latitude: action.payload.latitude,
         longitude: action.payload.longitude,
       };
+    case "GO_TO_PREVIEW":
+      return { ...state, step: 2, error: null };
+    case "GO_TO_EDIT":
+      return { ...state, step: 1, error: null };
     case "SUBMIT_START":
       return { ...state, submitting: true, error: null };
     case "SUBMIT_SUCCESS":
