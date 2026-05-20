@@ -3,7 +3,8 @@
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { useLogin } from "../model/useLogin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader } from "@/src/shared/ui/Loader";
 import Typography from "@/src/shared/ui/Typography";
 import { useNotifications } from "@/src/shared/ui/Notifications";
@@ -11,11 +12,17 @@ import style from "./LoginForm.module.scss";
 
 
 export function LoginForm() {
-  const { loading, performLogin } = useLogin();
+  const router = useRouter();
+  const { loading, user, performLogin } = useLogin();
   const { showError } = useNotifications();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    if (user) {
+      router.push("/profile");
+    }
+  }, [user, router]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

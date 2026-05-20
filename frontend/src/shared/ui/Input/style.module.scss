@@ -3,23 +3,49 @@
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  color: #B8BBC2;
   font-size: 12px;
   line-height: 100%;
   cursor: text;
   font-family: Inter;
   font-weight: 400;
   padding: 10px;
-  border: 1px solid #E7EAF8;
   height: 35px;
   box-sizing: border-box;
-}
-
-.input:focus {
+  width: 100%;
   outline: none;
-  border-color: #1129BD;
+
+  &::placeholder {
+    color: #B8BBC2;
+  }
 }
 
-.input:hover {
-  border-color: #1129BD;
+/* ---------- variant: default (outlined) ---------- */
+.default {
+  background: #FFFFFF;
+  border: 1px solid #E7EAF8;
+  color: #B8BBC2;
+
+  &:focus {
+    outline: none;
+    border-color: #1129BD;
+    color: #1E1E1E;
+  }
+
+  &:hover {
+    border-color: #1129BD;
+  }
+}
+
+/* ---------- variant: filled (для модалок) ---------- */
+.filled {
+  background: #F9F9FB;
+  border: none;
+  height: 39px;
+  font-size: 16px;
+  line-height: 19px;
+  color: #1E1E1E;
+
+  &:focus {
+    background: #F0F2F8;
+  }
 }

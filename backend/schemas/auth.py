@@ -64,3 +64,10 @@ class LoginResponse(BaseModel):
     refresh_token: str
     token_type: str = "bearer"
     id: int
+
+
+class MeResponse(BaseModel):
+    id: int
+    email: EmailStr
+    name: str
+    phone_number: Optional[str] = None

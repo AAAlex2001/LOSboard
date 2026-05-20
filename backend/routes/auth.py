@@ -11,9 +11,10 @@ from schemas.auth import (
     LoginResponse,
     RefreshTokenRequest,
     RefreshTokenResponse,
+    MeResponse,
 )
+from models.user import User
 from services.auth.dependencies import get_current_user
-from services.auth.jwt_service import TokenPayloadDTO
 from services.auth.use_cases.login_account import LoginAccountUseCase
 from services.auth.use_cases.create_account import CreateAccountUseCase
 from services.auth.use_cases.update_account import UpdateAccountUseCase
@@ -35,10 +36,22 @@ async def create_account_endpoint(
 async def update_account_endpoint(
     request: UpdateAccountRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayloadDTO = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     use_case = UpdateAccountUseCase()
-    return await use_case.update_account(request, current_user.user_id, db)
+    return await use_case.update_account(request, current_user.id, db)
+
+
+@router.get("/me", response_model=MeResponse)
+async def me_endpoint(
+    current_user: User = Depends(get_current_user),
+):
+    return MeResponse(
+        id=current_user.id,
+        email=current_user.email,
+        name=current_user.name,
+        phone_number=current_user.phone_number,
+    )
 
 
 @router.post("/login", response_model=LoginResponse)

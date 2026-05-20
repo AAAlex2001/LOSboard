@@ -1,0 +1,228 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hero {
+  display: none;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 57px;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 20px;
+  background:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    url("/los.jpg");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0px 14px 24.2px rgba(0, 0, 0, 0.05);
+}
+
+.navInner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 1440px;
+}
+
+.categoriesWrap {
+  position: relative;
+  flex-shrink: 0;
+  display: none;
+}
+
+.categoriesBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 10px;
+  height: 39px;
+  background: #1129BD;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #0d1f8b;
+  }
+}
+
+.categoriesDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+}
+
+.categoriesText {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #FFFFFF;
+}
+
+.searchTab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchMobile {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchDesktop {
+  display: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.icons {
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(17, 41, 189, 0.08);
+  }
+}
+
+.actions {
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.placeAdBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 10px;
+  height: 39px;
+  background: #11BD33;
+  border: none;
+  border-radius: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #FFFFFF;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: #0fa12c;
+  }
+}
+
+.avatarBtn {
+  width: 39px;
+  height: 39px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.burger {
+  width: 37px;
+  height: 37px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1440px) {
+  .hero {
+    display: block;
+    width: 100%;
+    height: 330px;
+    background: url("/los.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .navbar {
+    height: 59px;
+    padding: 10px 60px;
+    background: #FFFFFF;
+    box-shadow: 0px 14px 24.2px rgba(0, 0, 0, 0.05);
+  }
+
+  .navInner {
+    margin: 0 auto;
+    gap: 20px;
+  }
+
+  .categoriesWrap {
+    display: block;
+  }
+
+  .icons {
+    display: flex;
+  }
+
+  .actions {
+    display: flex;
+  }
+
+  .burger {
+    display: none;
+  }
+
+  .searchTab {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .searchMobile {
+    display: none;
+  }
+
+  .searchDesktop {
+    display: block;
+  }
+}

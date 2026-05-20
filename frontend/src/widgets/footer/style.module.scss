@@ -1,0 +1,285 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 0 0;
+  gap: 50px;
+  width: 100%;
+  background: #1129BD;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 20px;
+  gap: 100px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.brandTitle {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: #FFFFFF;
+}
+
+.brandText {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+
+.aboutText {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #FFFFFF;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 36px;
+  width: 100%;
+  min-width: 0;
+}
+
+.linksGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.link {
+  padding: 8px 0;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.contacts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.linkBold {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+  color: #FFFFFF;
+  width: 100%;
+}
+
+.socials {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.legalWrapper {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+}
+
+.legal {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 20px;
+  gap: 10px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.legalLink {
+  display: block;
+  width: 100%;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.copyright {
+  margin: 10px 0 0;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (min-width: 768px) {
+  .container {
+    gap: 50px;
+  }
+
+  .links {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 36px;
+  }
+
+  .linksGroup {
+    flex: 1 1 0;
+  }
+
+  .contacts {
+    flex: 1 1 0;
+  }
+
+  .legal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 10px;
+  }
+
+  .legalLink {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  .copyright {
+    margin: 0;
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 100px;
+    padding: 0 60px;
+  }
+
+  .main {
+    flex: 0 1 426px;
+    gap: 20px;
+    width: auto;
+  }
+
+  .links {
+    flex: 1 1 auto;
+    justify-content: space-between;
+    gap: 36px;
+  }
+
+  .linksGroup {
+    flex: 0 1 auto;
+    width: auto;
+  }
+
+  .link {
+    text-align: left;
+    padding: 8px 0;
+  }
+
+  .contacts {
+    flex: 0 1 auto;
+    width: auto;
+    align-items: flex-start;
+  }
+
+  .linkBold {
+    text-align: left;
+    width: auto;
+  }
+
+  .legal {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 60px;
+    gap: 20px;
+  }
+
+  .legalLink {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .copyright {
+    flex: 1 1 auto;
+    text-align: center;
+    margin: 0;
+  }
+}

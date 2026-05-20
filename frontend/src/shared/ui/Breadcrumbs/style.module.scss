@@ -1,0 +1,40 @@
+.breadcrumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.item {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  text-decoration: none;
+}
+
+.text {
+  color: #B8BBC2;
+}
+
+.link {
+  color: #B8BBC2;
+  cursor: pointer;
+
+  &:hover {
+    color: #1129BD;
+  }
+}
+
+.active {
+  color: #1129BD;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
