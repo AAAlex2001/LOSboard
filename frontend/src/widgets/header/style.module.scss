@@ -151,6 +151,12 @@
   }
 }
 
+.avatarWrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
 .avatarBtn {
   width: 39px;
   height: 39px;

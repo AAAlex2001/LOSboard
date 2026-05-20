@@ -7,6 +7,8 @@ import style from "./style.module.scss";
 interface PhotoUploadProps {
   files: File[];
   onChange: (files: File[]) => void;
+  existingUrls?: string[];
+  onRemoveExisting?: (url: string) => void;
   maxCount?: number;
   maxSizeMb?: number;
   hint?: string;
@@ -15,6 +17,8 @@ interface PhotoUploadProps {
 export const PhotoUpload = ({
   files,
   onChange,
+  existingUrls = [],
+  onRemoveExisting,
   maxCount = 10,
   maxSizeMb = 25,
   hint = "Первое фото будет главным, выберите наиболее удачное. До 10 фото (JPG, PNG; до 25 МБ)",
@@ -54,6 +58,8 @@ export const PhotoUpload = ({
     onChange(files.filter((_, i) => i !== index));
   };
 
+  const hasPreviews = existingUrls.length > 0 || files.length > 0;
+
   return (
     <div className={style.wrap}>
       <div
@@ -63,9 +69,52 @@ export const PhotoUpload = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
-        <span className={style.dropzoneText}>
-          Перетащите сюда фото, видео или нажмите «Прикрепить файл»
-        </span>
+        {hasPreviews ? (
+          <div className={style.previewList}>
+            {existingUrls.map((url) => (
+              <div key={url} className={style.preview}>
+                <img src={url} alt="" className={style.previewImg} />
+                {onRemoveExisting && (
+                  <button
+                    type="button"
+                    className={style.removeBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveExisting(url);
+                    }}
+                    aria-label="Удалить"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            {files.map((file, index) => (
+              <div key={`${file.name}-${index}`} className={style.preview}>
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  className={style.previewImg}
+                />
+                <button
+                  type="button"
+                  className={style.removeBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove(index);
+                  }}
+                  aria-label="Удалить"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className={style.dropzoneText}>
+            Перетащите сюда фото, видео или нажмите «Прикрепить файл»
+          </span>
+        )}
 
         <span className={style.attachBtn}>
           <PaperclipIcon />
@@ -81,31 +130,6 @@ export const PhotoUpload = ({
           className={style.fileInput}
         />
       </div>
-
-      {files.length > 0 && (
-        <div className={style.previewList}>
-          {files.map((file, index) => (
-            <div key={`${file.name}-${index}`} className={style.preview}>
-              <img
-                src={URL.createObjectURL(file)}
-                alt={file.name}
-                className={style.previewImg}
-              />
-              <button
-                type="button"
-                className={style.removeBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove(index);
-                }}
-                aria-label="Удалить"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
 
       <span className={style.hint}>{hint}</span>
     </div>

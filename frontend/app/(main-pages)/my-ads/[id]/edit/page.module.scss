@@ -13,18 +13,21 @@
   flex-direction: column;
   padding: 40px 0;
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .container {
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 40px;
-  padding: 0 20px;
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .breadcrumbs {
@@ -70,6 +73,9 @@
   line-height: 22px;
   text-align: center;
   color: #1E1E1E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .layout {
@@ -98,6 +104,14 @@
   min-height: 300px;
 }
 
+.error {
+  margin: 40px auto;
+  font-family: Inter;
+  font-size: 14px;
+  color: #d32f2f;
+  text-align: center;
+}
+
 @media (min-width: 768px) {
   .container {
     padding: 0 60px;
@@ -123,7 +137,6 @@
 
   .layout {
     flex-direction: row;
-    gap: 40px;
     align-items: flex-start;
   }
 

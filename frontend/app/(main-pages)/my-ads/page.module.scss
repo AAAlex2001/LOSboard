@@ -13,23 +13,33 @@
   flex-direction: column;
   padding: 40px 0;
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-.container {
-  box-sizing: border-box;
+.layout {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
   gap: 40px;
-  padding: 0 20px;
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-.breadcrumbs {
+.crumbsSlot {
   display: none;
   width: 100%;
+}
+
+.feedSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
 }
 
 .feedHeading {
@@ -72,20 +82,7 @@
   color: #1E1E1E;
 }
 
-.layout {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  width: 100%;
-  min-width: 0;
-}
-
-.formCol {
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebarCol {
+.sidebarSlot {
   display: none;
 }
 
@@ -99,7 +96,7 @@
 }
 
 @media (min-width: 768px) {
-  .container {
+  .layout {
     padding: 0 60px;
   }
 }
@@ -109,8 +106,29 @@
     padding: 60px 0;
   }
 
-  .breadcrumbs {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    grid-template-areas:
+      "crumbs crumbs"
+      "feed sidebar";
+    column-gap: 40px;
+    row-gap: 40px;
+  }
+
+  .crumbsSlot {
     display: block;
+    grid-area: crumbs;
+  }
+
+  .feedSlot {
+    grid-area: feed;
+  }
+
+  .sidebarSlot {
+    grid-area: sidebar;
+    display: block;
+    flex-shrink: 0;
   }
 
   .backBtn {
@@ -119,16 +137,5 @@
 
   .title {
     text-align: left;
-  }
-
-  .layout {
-    flex-direction: row;
-    gap: 40px;
-    align-items: flex-start;
-  }
-
-  .sidebarCol {
-    display: block;
-    flex-shrink: 0;
   }
 }

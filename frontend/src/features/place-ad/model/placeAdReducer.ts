@@ -11,6 +11,7 @@ export const initialPlaceAdState: PlaceAdState = {
   price: "",
   description: "",
   files: [],
+  existingPhotoUrl: null,
   address: "",
   latitude: null,
   longitude: null,
@@ -44,6 +45,20 @@ export function placeAdReducer(
         latitude: action.payload.latitude,
         longitude: action.payload.longitude,
       };
+    case "PREFILL":
+      return {
+        ...state,
+        categoryId: action.payload.categoryId,
+        subcategoryId: action.payload.subcategoryId,
+        title: action.payload.title.slice(0, TITLE_MAX),
+        price: action.payload.price.replace(/[^0-9]/g, ""),
+        description: action.payload.description.slice(0, DESCRIPTION_MAX),
+        address: action.payload.address,
+        existingPhotoUrl: action.payload.photoUrl ?? null,
+        error: null,
+      };
+    case "CLEAR_EXISTING_PHOTO":
+      return { ...state, existingPhotoUrl: null };
     case "GO_TO_PREVIEW":
       return { ...state, step: 2, error: null };
     case "GO_TO_EDIT":

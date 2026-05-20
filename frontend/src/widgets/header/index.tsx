@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SearchBar } from "@/src/shared/ui/SearchBar";
+import { Tooltip } from "@/src/shared/ui/Tooltip";
 import BurgerIcon from "@/src/shared/ui/Icons/BurgerIcon";
 import CategoriesIcon from "@/src/shared/ui/Icons/CategoriesIcon";
 import MapIcon from "@/src/shared/ui/Icons/MapIcon";
@@ -11,6 +12,7 @@ import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
 import { UserAvatar } from "@/src/entities/user";
 import { CategoriesPanel, type Category, type Subcategory } from "@/src/entities/category";
 import { BurgerMenu } from "@/src/widgets/burger-menu";
+import { ProfilePopup } from "@/src/widgets/profile-popup";
 import { Button } from "@/src/shared/ui/Button";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
@@ -38,6 +40,7 @@ export const Header = ({
   const [query, setQuery] = useState("");
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
   const categoriesWrapRef = useRef<HTMLDivElement>(null);
 
@@ -91,8 +94,22 @@ export const Header = ({
   const handleAvatarClick = () => {
     if (onAvatarClick) {
       onAvatarClick();
+      return;
+    }
+    if (authed) {
+      setProfileOpen((v) => !v);
     } else {
-      router.push("/profile");
+      router.push("/login");
+    }
+  };
+
+  const handleFavoritesClick = () => {
+    if (onFavoritesClick) {
+      onFavoritesClick();
+    } else if (authed) {
+      router.push("/favorites");
+    } else {
+      router.push("/login");
     }
   };
 
@@ -142,30 +159,36 @@ export const Header = ({
             </div>
 
             <div className={style.icons}>
-              <button
-                type="button"
-                className={style.iconBtn}
-                onClick={onMapClick}
-                aria-label="Карта"
-              >
-                <MapIcon />
-              </button>
-              <button
-                type="button"
-                className={style.iconBtn}
-                onClick={onChatClick}
-                aria-label="Чат"
-              >
-                <ChatIcon />
-              </button>
-              <button
-                type="button"
-                className={style.iconBtn}
-                onClick={onFavoritesClick}
-                aria-label="Избранное"
-              >
-                <HeartIcon />
-              </button>
+              <Tooltip label="Карта">
+                <button
+                  type="button"
+                  className={style.iconBtn}
+                  onClick={onMapClick}
+                  aria-label="Карта"
+                >
+                  <MapIcon />
+                </button>
+              </Tooltip>
+              <Tooltip label="Сообщения">
+                <button
+                  type="button"
+                  className={style.iconBtn}
+                  onClick={onChatClick}
+                  aria-label="Чат"
+                >
+                  <ChatIcon />
+                </button>
+              </Tooltip>
+              <Tooltip label="Избранное">
+                <button
+                  type="button"
+                  className={style.iconBtn}
+                  onClick={handleFavoritesClick}
+                  aria-label="Избранное"
+                >
+                  <HeartIcon />
+                </button>
+              </Tooltip>
             </div>
 
             <div className={style.actions}>
@@ -177,14 +200,20 @@ export const Header = ({
               >
                 Разместить объявление
               </Button>
-              <button
-                type="button"
-                className={style.avatarBtn}
-                onClick={handleAvatarClick}
-                aria-label="Профиль"
-              >
-                <UserAvatar size={39} />
-              </button>
+              <div className={style.avatarWrap}>
+                <button
+                  type="button"
+                  className={style.avatarBtn}
+                  onClick={handleAvatarClick}
+                  aria-label="Профиль"
+                >
+                  <UserAvatar size={39} />
+                </button>
+                <ProfilePopup
+                  open={profileOpen}
+                  onClose={() => setProfileOpen(false)}
+                />
+              </div>
             </div>
 
             <button

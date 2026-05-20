@@ -1,0 +1,46 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  padding: 6px 10px;
+  background: #1E1E1E;
+  color: #FFFFFF;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 200;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: #1E1E1E;
+  }
+}
+
+.tipVisible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Только на десктопе */
+@media (max-width: 1439px) {
+  .tip {
+    display: none;
+  }
+}

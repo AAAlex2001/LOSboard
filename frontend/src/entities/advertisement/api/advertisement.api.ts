@@ -1,5 +1,5 @@
 import { config } from "@/src/shared/config/config";
-import { getAccessToken } from "@/src/shared/auth/auth-storage";
+import { apiFetch } from "@/src/shared/auth/api-fetch";
 import type { Advertisement, CreateAdvertisementPayload } from "../model/types";
 
 export interface GetAdvertisementsParams {
@@ -7,6 +7,7 @@ export interface GetAdvertisementsParams {
   subcategoryId?: number | null;
   skip?: number;
   limit?: number;
+  signal?: AbortSignal;
 }
 
 const apiOrigin = () => {
@@ -23,21 +24,26 @@ export const resolveAssetUrl = (path: string | null | undefined): string | null 
   return `${apiOrigin()}${path}`;
 };
 
+async function readErrorDetail(response: Response, fallback: string): Promise<string> {
+  const errorData = await response.json().catch(() => ({}));
+  const detail = errorData.detail;
+  if (Array.isArray(detail)) {
+    return detail.map((d) => d.msg).join("; ");
+  }
+  return typeof detail === "string" ? detail : fallback;
+}
+
 export async function uploadAdvertisementImage(file: File): Promise<string> {
-  const token = getAccessToken();
   const form = new FormData();
   form.append("file", file);
 
-  const response = await fetch(`${config.API_BASE_URL}uploads/image`, {
+  const response = await apiFetch("uploads/image", {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: form,
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const detail = errorData.detail;
-    throw new Error(typeof detail === "string" ? detail : "Не удалось загрузить фото");
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить фото"));
   }
 
   const data = (await response.json()) as { url: string };
@@ -47,24 +53,13 @@ export async function uploadAdvertisementImage(file: File): Promise<string> {
 export async function createAdvertisement(
   payload: CreateAdvertisementPayload
 ): Promise<Advertisement> {
-  const token = getAccessToken();
-
-  const response = await fetch(`${config.API_BASE_URL}advertisements/create`, {
+  const response = await apiFetch("advertisements/create", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const detail = errorData.detail;
-    if (Array.isArray(detail)) {
-      throw new Error(detail.map((d) => d.msg).join("; "));
-    }
-    throw new Error(typeof detail === "string" ? detail : "Не удалось создать объявление");
+    throw new Error(await readErrorDetail(response, "Не удалось создать объявление"));
   }
 
   return response.json();
@@ -73,8 +68,7 @@ export async function createAdvertisement(
 export async function getAdvertisements(
   params: GetAdvertisementsParams = {}
 ): Promise<Advertisement[]> {
-  const { categoryId, subcategoryId, skip = 0, limit = 20 } = params;
-  const token = getAccessToken();
+  const { categoryId, subcategoryId, skip = 0, limit = 20, signal } = params;
 
   const search = new URLSearchParams();
   search.set("skip", String(skip));
@@ -82,19 +76,94 @@ export async function getAdvertisements(
   if (categoryId != null) search.set("category_id", String(categoryId));
   if (subcategoryId != null) search.set("subcategory_id", String(subcategoryId));
 
-  const response = await fetch(
-    `${config.API_BASE_URL}advertisements/?${search.toString()}`,
-    {
-      method: "GET",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    }
-  );
+  const response = await apiFetch(`advertisements/?${search.toString()}`, {
+    method: "GET",
+    signal,
+  });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const detail = errorData.detail;
-    throw new Error(typeof detail === "string" ? detail : "Не удалось загрузить объявления");
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить объявления"));
   }
 
   return response.json();
+}
+
+export interface GetMyAdvertisementsParams {
+  skip?: number;
+  limit?: number;
+  signal?: AbortSignal;
+}
+
+export async function getMyAdvertisements(
+  params: GetMyAdvertisementsParams = {}
+): Promise<Advertisement[]> {
+  const { skip = 0, limit = 20, signal } = params;
+
+  const search = new URLSearchParams();
+  search.set("skip", String(skip));
+  search.set("limit", String(limit));
+
+  const response = await apiFetch(`advertisements/my?${search.toString()}`, {
+    method: "GET",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить ваши объявления"));
+  }
+
+  return response.json();
+}
+
+export async function getAdvertisement(
+  id: number,
+  options: { signal?: AbortSignal } = {}
+): Promise<Advertisement> {
+  const response = await apiFetch(`advertisements/${id}`, {
+    method: "GET",
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить объявление"));
+  }
+
+  return response.json();
+}
+
+export type UpdateAdvertisementPayload = Partial<{
+  title: string;
+  description: string | null;
+  price: number;
+  category_id: number;
+  subcategory_id: number;
+  location: string;
+  photo_url: string | null;
+  is_active: boolean;
+}>;
+
+export async function updateAdvertisement(
+  id: number,
+  payload: UpdateAdvertisementPayload
+): Promise<Advertisement> {
+  const response = await apiFetch(`advertisements/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось обновить объявление"));
+  }
+
+  return response.json();
+}
+
+export async function deleteAdvertisement(id: number): Promise<void> {
+  const response = await apiFetch(`advertisements/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось удалить объявление"));
+  }
 }

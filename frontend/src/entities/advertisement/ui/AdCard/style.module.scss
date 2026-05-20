@@ -22,11 +22,17 @@
 }
 
 .imageWrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 156 / 112;
-  background: #DEDEDE;
-  overflow: hidden;
   flex-shrink: 0;
+}
+
+.imageInner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #DEDEDE;
 }
 
 .image {
@@ -86,10 +92,11 @@
   white-space: nowrap;
 }
 
-.favBtn {
+.cornerBtn {
   position: absolute;
-  top: calc((100% / 161 * 112) - 16px);
-  right: 7px;
+  bottom: 0;
+  right: 10px;
+  transform: translateY(50%);
   width: 32px;
   height: 32px;
   display: flex;
@@ -105,12 +112,24 @@
   transition: transform 0.15s ease;
 
   &:hover {
-    transform: scale(1.08);
+    transform: translateY(50%) scale(1.08);
   }
+}
+
+.favBtn {
+  /* совмещается с .cornerBtn — отдельные настройки для избранного */
 }
 
 .favBtnActive {
   /* отдельный класс на случай дополнительных стилей активного состояния */
+}
+
+.editBtn {
+  color: #1E1E1E;
+}
+
+.editPillBtn {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -129,9 +148,44 @@
     line-height: 19px;
   }
 
-  .favBtn {
+  .cornerBtn {
     width: 43px;
     height: 43px;
     right: 20px;
+  }
+
+  .editBtn {
+    display: none;
+  }
+
+  .editPillBtn {
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    transform: translateY(50%);
+    width: 161px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: #FFFFFF;
+    border: none;
+    border-radius: 40px;
+    box-shadow: 0 1px 19.5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 1;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(27, 31, 38, 0.72);
+    text-align: center;
+    transition: color 0.15s ease, transform 0.15s ease;
+
+    &:hover {
+      color: #1129BD;
+      transform: translateY(50%) scale(1.02);
+    }
   }
 }

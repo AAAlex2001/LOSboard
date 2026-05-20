@@ -1,4 +1,5 @@
 export { useAdvertisementList } from "./model/useAdvertisementList";
+export { useMyAdvertisements } from "./model/useMyAdvertisements";
 export {
   advertisementListReducer,
   initialAdvertisementListState,

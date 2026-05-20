@@ -9,6 +9,7 @@ import ChatIcon from "@/src/shared/ui/Icons/ChatIcon";
 import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
 import UserIcon from "@/src/shared/ui/Icons/UserIcon";
 import LogoutIcon from "@/src/shared/ui/Icons/LogoutIcon";
+import MyAdsIcon from "@/src/shared/ui/Icons/MyAdsIcon";
 import { Button } from "@/src/shared/ui/Button";
 import { logout } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
@@ -81,6 +82,20 @@ export const BurgerMenu = ({
     router.push("/profile");
   };
 
+  const handleMyAds = () => {
+    onClose();
+    router.push("/my-ads");
+  };
+
+  const handleFavorites = () => {
+    onClose();
+    if (onFavoritesClick) {
+      onFavoritesClick();
+    } else {
+      router.push("/favorites");
+    }
+  };
+
   const handleLogin = () => {
     onClose();
     router.push("/login");
@@ -139,7 +154,16 @@ export const BurgerMenu = ({
                 <button
                   type="button"
                   className={style.menuItem}
-                  onClick={wrap(onFavoritesClick)}
+                  onClick={handleMyAds}
+                >
+                  <span className={style.menuIcon}><MyAdsIcon /></span>
+                  <span className={style.menuLabel}>Мои объявления</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={style.menuItem}
+                  onClick={handleFavorites}
                 >
                   <span className={style.menuIcon}><HeartIcon /></span>
                   <span className={style.menuLabel}>Избранное</span>

@@ -2,13 +2,34 @@ import { config } from "@/src/shared/config/config";
 import { getAccessToken, logout } from "@/src/shared/auth/auth-storage";
 import { refreshToken } from "@/src/shared/auth/auth-api";
 
-function makeHeaders(accessToken: string | null) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+function buildHeaders(
+  accessToken: string | null,
+  body: BodyInit | null | undefined,
+  override?: HeadersInit
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+
+  // JSON Content-Type только если body есть и это НЕ FormData
+  if (body != null && !(body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  if (override) {
+    if (override instanceof Headers) {
+      override.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(override)) {
+      override.forEach(([k, v]) => {
+        headers[k] = v;
+      });
+    } else {
+      Object.assign(headers, override);
+    }
   }
 
   return headers;
@@ -20,10 +41,7 @@ export async function apiFetch(
 ): Promise<Response> {
   let response = await fetch(`${config.API_BASE_URL}${path}`, {
     ...options,
-    headers: {
-      ...makeHeaders(getAccessToken()),
-      ...options.headers,
-    },
+    headers: buildHeaders(getAccessToken(), options.body, options.headers),
   });
 
   if (response.status !== 401) {
@@ -35,16 +53,15 @@ export async function apiFetch(
 
     response = await fetch(`${config.API_BASE_URL}${path}`, {
       ...options,
-      headers: {
-        ...makeHeaders(refreshed.access_token),
-        ...options.headers,
-      },
+      headers: buildHeaders(refreshed.access_token, options.body, options.headers),
     });
 
     return response;
   } catch {
     logout();
-    window.location.href = "/login";
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return response;
   }
 }

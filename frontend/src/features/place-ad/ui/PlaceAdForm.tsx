@@ -3,15 +3,21 @@
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { Dropdown } from "@/src/shared/ui/Dropdown";
+import { Loader } from "@/src/shared/ui/Loader";
 import { PhotoUpload } from "@/src/shared/ui/PhotoUpload";
 import { AddressAutocomplete } from "@/src/shared/ui/AddressAutocomplete";
 import { Map } from "@/src/shared/ui/Map";
+import { resolveAssetUrl } from "@/src/entities/advertisement";
 import { usePlaceAd } from "../model/usePlaceAd";
 import { TITLE_MAX } from "../model/placeAdReducer";
 import { PlaceAdPreview } from "./PlaceAdPreview";
 import style from "./PlaceAdForm.module.scss";
 
-export const PlaceAdForm = () => {
+interface PlaceAdFormProps {
+  advertisementId?: number;
+}
+
+export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
   const {
     state,
     dispatch,
@@ -23,28 +29,52 @@ export const PlaceAdForm = () => {
     goToPreview,
     goToEdit,
     submit,
+    remove,
     reset,
-  } = usePlaceAd();
+    isEditing,
+    loadingAd,
+    loadError,
+  } = usePlaceAd({ advertisementId });
+
+  if (loadingAd) {
+    return (
+      <div className={style.loadingArea}>
+        <Loader />
+      </div>
+    );
+  }
+  if (loadError) {
+    return <p className={style.error}>{loadError}</p>;
+  }
+
+  const handleDelete = () => {
+    if (window.confirm("Удалить объявление?")) {
+      remove();
+    }
+  };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     goToPreview();
   };
 
-  if (state.step === 2) {
-    return (
-      <PlaceAdPreview
-        state={state}
-        category={selectedCategory}
-        subcategory={selectedSubcategory}
-        onBack={goToEdit}
-        onSubmit={submit}
-      />
-    );
-  }
-
   return (
-    <form className={style.form} onSubmit={handleFormSubmit}>
+    <>
+      {state.step === 2 && (
+        <PlaceAdPreview
+          state={state}
+          category={selectedCategory}
+          subcategory={selectedSubcategory}
+          onBack={goToEdit}
+          onSubmit={submit}
+          submitLabel={isEditing ? "Сохранить" : "Разместить объявление"}
+        />
+      )}
+      <form
+        className={`${style.form} ${state.step === 2 ? style.formHidden : ""}`}
+        onSubmit={handleFormSubmit}
+        aria-hidden={state.step === 2}
+      >
       <section className={style.category}>
         <div className={style.labelRow}>
           <span className={style.label}>Категория</span>
@@ -133,6 +163,12 @@ export const PlaceAdForm = () => {
           <PhotoUpload
             files={state.files}
             onChange={(files) => dispatch({ type: "SET_FILES", payload: files })}
+            existingUrls={
+              state.existingPhotoUrl
+                ? [resolveAssetUrl(state.existingPhotoUrl) ?? state.existingPhotoUrl]
+                : []
+            }
+            onRemoveExisting={() => dispatch({ type: "CLEAR_EXISTING_PHOTO" })}
           />
         </div>
       </section>
@@ -177,28 +213,42 @@ export const PlaceAdForm = () => {
             }
           />
           <div className={style.buttons}>
-            <Button
-              type="button"
-              variant="outlined"
-              color="blue"
-              onClick={reset}
-              disabled={state.submitting}
-            >
-              Отмена
-            </Button>
-            <Button
-              type="submit"
-              variant="filled"
-              color="blue"
-              disabled={!isValid || state.submitting}
-            >
-              Далее
-            </Button>
+            {isEditing && (
+              <Button
+                type="button"
+                variant="outlined"
+                color="delete"
+                onClick={handleDelete}
+                disabled={state.submitting}
+              >
+                Удалить объявление
+              </Button>
+            )}
+            <div className={style.buttonsRight}>
+              <Button
+                type="button"
+                variant="outlined"
+                color="blue"
+                onClick={reset}
+                disabled={state.submitting}
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                variant="filled"
+                color="blue"
+                disabled={!isValid || state.submitting}
+              >
+                Далее
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
       {state.error && <p className={style.error}>{state.error}</p>}
-    </form>
+      </form>
+    </>
   );
 };

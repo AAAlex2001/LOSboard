@@ -5,7 +5,7 @@ type ButtonProps = {
   text?: string;
   type?: "button" | "submit" | "reset" | "link";
   variant?: "filled" | "outlined";
-  color?: "blue" | "gray" | "green";
+  color?: "blue" | "gray" | "green" | "delete";
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
   disabled?: boolean;
@@ -32,6 +32,7 @@ export const Button = (props: ButtonProps) => {
         [style.blue]: !isLink && color === "blue",
         [style.green]: !isLink && color === "green",
         [style.gray]: !isLink && color === "gray",
+        [style.delete]: !isLink && color === "delete",
         [style.fullWidth]: props.fullWidth,
       })}
       type={buttonType}

@@ -36,12 +36,16 @@ export const AddressAutocomplete = ({
   const [loading, setLoading] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const skipFetchRef = useRef(false);
+  const userTypedRef = useRef(false);
 
   useEffect(() => {
     if (skipFetchRef.current) {
       skipFetchRef.current = false;
       return;
     }
+
+    // не дёргаем подсказки если value пришло программно (PREFILL) — только при ручном вводе
+    if (!userTypedRef.current) return;
 
     if (!value || value.trim().length < 3) {
       setSuggestions([]);
@@ -103,12 +107,17 @@ export const AddressAutocomplete = ({
     setSuggestions([]);
   };
 
+  const handleInputChange = (next: string) => {
+    userTypedRef.current = true;
+    onChange(next);
+  };
+
   return (
     <div className={style.wrap} ref={wrapRef}>
       <SearchBar
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChange={handleInputChange}
         onSubmit={() => suggestions[0] && handleSelect(suggestions[0])}
       />
 

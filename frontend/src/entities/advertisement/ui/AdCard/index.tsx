@@ -1,5 +1,6 @@
 "use client";
 
+import EditIcon from "@/src/shared/ui/Icons/EditIcon";
 import type { Advertisement } from "../../model/types";
 import { resolveAssetUrl } from "../../api/advertisement.api";
 import style from "./style.module.scss";
@@ -8,6 +9,7 @@ interface AdCardProps {
   advertisement: Advertisement;
   onClick?: (ad: Advertisement) => void;
   onToggleFavorite?: (ad: Advertisement) => void;
+  onEdit?: (ad: Advertisement) => void;
   favoritePending?: boolean;
 }
 
@@ -17,6 +19,7 @@ export const AdCard = ({
   advertisement,
   onClick,
   onToggleFavorite,
+  onEdit,
   favoritePending,
 }: AdCardProps) => {
   const { title, price, photo_url, is_liked } = advertisement;
@@ -27,6 +30,11 @@ export const AdCard = ({
     onToggleFavorite?.(advertisement);
   };
 
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onEdit?.(advertisement);
+  };
+
   return (
     <article
       className={style.card}
@@ -34,12 +42,60 @@ export const AdCard = ({
       role={onClick ? "button" : undefined}
     >
       <div className={style.imageWrap}>
-        {photoSrc ? (
-          <img src={photoSrc} alt={title} className={style.image} />
+        <div className={style.imageInner}>
+          {photoSrc ? (
+            <img src={photoSrc} alt={title} className={style.image} />
+          ) : (
+            <div className={style.imagePlaceholder}>
+              <span className={style.placeholderText}>Фото не добавлено</span>
+            </div>
+          )}
+        </div>
+
+        {onEdit ? (
+          <>
+            <button
+              type="button"
+              className={`${style.cornerBtn} ${style.editBtn}`}
+              onClick={handleEditClick}
+              aria-label="Редактировать"
+            >
+              <EditIcon />
+            </button>
+            <button
+              type="button"
+              className={style.editPillBtn}
+              onClick={handleEditClick}
+            >
+              Редактировать
+            </button>
+          </>
         ) : (
-          <div className={style.imagePlaceholder}>
-            <span className={style.placeholderText}>Фото не добавлено</span>
-          </div>
+          <button
+            type="button"
+            className={`${style.cornerBtn} ${style.favBtn} ${
+              is_liked ? style.favBtnActive : ""
+            }`}
+            onClick={handleFavoriteClick}
+            disabled={favoritePending}
+            aria-label={is_liked ? "Удалить из избранного" : "В избранное"}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill={is_liked ? "#FF2D55" : "none"}
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 21s-7-4.5-9-9c-1.5-3.4 0.7-7 4-7 2 0 3.5 1.2 5 3 1.5-1.8 3-3 5-3 3.3 0 5.5 3.6 4 7-2 4.5-9 9-9 9z"
+                stroke={is_liked ? "#FF2D55" : "#1129BD"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         )}
       </div>
 
@@ -47,30 +103,6 @@ export const AdCard = ({
         <span className={style.price}>{formatPrice(price)}</span>
         <span className={style.title}>{title}</span>
       </div>
-
-      <button
-        type="button"
-        className={`${style.favBtn} ${is_liked ? style.favBtnActive : ""}`}
-        onClick={handleFavoriteClick}
-        disabled={favoritePending}
-        aria-label={is_liked ? "Удалить из избранного" : "В избранное"}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill={is_liked ? "#FF2D55" : "none"}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 21s-7-4.5-9-9c-1.5-3.4 0.7-7 4-7 2 0 3.5 1.2 5 3 1.5-1.8 3-3 5-3 3.3 0 5.5 3.6 4 7-2 4.5-9 9-9 9z"
-            stroke={is_liked ? "#FF2D55" : "#1129BD"}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
     </article>
   );
 };

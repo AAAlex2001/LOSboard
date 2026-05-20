@@ -6,8 +6,14 @@
   padding: 0 20px;
   gap: 10px;
   width: 100%;
+  min-width: 0;
   background: #FFFFFF;
   border-radius: 10px;
+  overflow: hidden;
+}
+
+.formHidden {
+  display: none;
 }
 
 .labelRow {
@@ -177,14 +183,34 @@
 
 .buttons {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 10px;
   width: 100%;
 }
 
 .buttons > * {
   flex: 1;
+}
+
+.buttonsRight {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.buttonsRight > * {
+  flex: 1;
+}
+
+.loadingArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  width: 100%;
 }
 
 .categoryValue {
@@ -213,7 +239,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 10px;
+  padding: 10px 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -316,6 +342,7 @@
   .previewDescription,
   .previewPhotos {
     flex: 1;
+    min-width: 0;
   }
 
   .textarea {
@@ -334,6 +361,27 @@
   }
 }
 
+@media (min-width: 768px) {
+  .buttons {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .buttons > * {
+    flex: 0 0 auto;
+  }
+
+  .buttonsRight {
+    width: auto;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+
+  .buttonsRight > * {
+    flex: 0 0 auto;
+  }
+}
+
 @media (min-width: 1440px) {
   .form {
     padding: 20px;
@@ -346,15 +394,5 @@
   .images,
   .location {
     gap: 100px;
-  }
-
-  .buttons {
-    width: auto;
-    justify-content: flex-end;
-    margin-left: auto;
-  }
-
-  .buttons > * {
-    flex: 0 0 auto;
   }
 }

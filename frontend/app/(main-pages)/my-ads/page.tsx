@@ -6,19 +6,19 @@ import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
-import { PlaceAdForm } from "@/src/features/place-ad";
+import { MyAdsFeed } from "@/src/widgets/my-ads-feed";
 import { PlaceAdSidebar } from "@/src/widgets/place-ad-sidebar";
+import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./page.module.scss";
 
-export default function PlaceAdPage() {
+export default function MyAdsPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!checkAuth()) {
-      router.replace("/register");
+      router.replace("/login");
     } else {
       setReady(true);
     }
@@ -33,35 +33,33 @@ export default function PlaceAdPage() {
             <Loader />
           </div>
         ) : (
-          <div className={style.container}>
-            <div className={style.breadcrumbs}>
+          <div className={style.layout}>
+            <div className={style.crumbsSlot}>
               <Breadcrumbs
                 items={[
                   { label: "Главная", href: "/" },
-                  { label: "Разместить объявление" },
+                  { label: "Мои объявления" },
                 ]}
               />
             </div>
 
-            <div className={style.feedHeading}>
-              <button
-                type="button"
-                className={style.backBtn}
-                onClick={() => router.back()}
-                aria-label="Назад"
-              >
-                <ArrowLeftIcon />
-              </button>
-              <h1 className={style.title}>Размещение объявления</h1>
+            <div className={style.feedSlot}>
+              <div className={style.feedHeading}>
+                <button
+                  type="button"
+                  className={style.backBtn}
+                  onClick={() => router.back()}
+                  aria-label="Назад"
+                >
+                  <ArrowLeftIcon />
+                </button>
+                <h1 className={style.title}>Мои объявления</h1>
+              </div>
+              <MyAdsFeed />
             </div>
 
-            <div className={style.layout}>
-              <div className={style.formCol}>
-                <PlaceAdForm />
-              </div>
-              <div className={style.sidebarCol}>
-                <PlaceAdSidebar />
-              </div>
+            <div className={style.sidebarSlot}>
+              <PlaceAdSidebar />
             </div>
           </div>
         )}

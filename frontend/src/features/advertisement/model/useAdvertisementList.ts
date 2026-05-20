@@ -18,27 +18,27 @@ export function useAdvertisementList() {
   );
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     dispatch({ type: "FETCH_START" });
 
     getAdvertisements({
       categoryId: state.categoryId,
       subcategoryId: state.subcategoryId,
+      signal: controller.signal,
     })
       .then((data) => {
-        if (!cancelled) dispatch({ type: "FETCH_SUCCESS", payload: data });
+        if (controller.signal.aborted) return;
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
       })
       .catch((err: unknown) => {
-        if (cancelled) return;
+        if (controller.signal.aborted) return;
         dispatch({
           type: "FETCH_FAILURE",
           payload: err instanceof Error ? err.message : String(err),
         });
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [state.categoryId, state.subcategoryId]);
 
   const setCategory = (cat: Category | null) =>

@@ -53,6 +53,14 @@
   }
 }
 
+.filled.delete {
+  background-color: #D32F2F;
+
+  &:hover:not(:disabled) {
+    background-color: #B71C1C;
+  }
+}
+
 .outlined.blue {
   border-color: #1129BD;
   color: #1129BD;
@@ -79,6 +87,16 @@
 
   &:hover:not(:disabled) {
     background-color: #B8BBC2;
+    color: #FFFFFF;
+  }
+}
+
+.outlined.delete {
+  border-color: #D32F2F;
+  color: #D32F2F;
+
+  &:hover:not(:disabled) {
+    background-color: #D32F2F;
     color: #FFFFFF;
   }
 }

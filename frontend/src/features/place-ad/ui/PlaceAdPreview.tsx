@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader } from "@/src/shared/ui/Loader";
 import { Button } from "@/src/shared/ui/Button";
+import { resolveAssetUrl } from "@/src/entities/advertisement";
 import type { PlaceAdState } from "../model/types";
 import type { Category, Subcategory } from "@/src/entities/category";
 import style from "./PlaceAdForm.module.scss";
@@ -13,6 +14,7 @@ interface PlaceAdPreviewProps {
   subcategory: Subcategory | null;
   onBack: () => void;
   onSubmit: () => void;
+  submitLabel?: string;
 }
 
 const formatPrice = (price: string) => {
@@ -27,14 +29,18 @@ export const PlaceAdPreview = ({
   subcategory,
   onBack,
   onSubmit,
+  submitLabel = "Разместить объявление",
 }: PlaceAdPreviewProps) => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    const urls = state.files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls(urls);
-    return () => urls.forEach(URL.revokeObjectURL);
-  }, [state.files]);
+    const blobUrls = state.files.map((file) => URL.createObjectURL(file));
+    const existing = state.existingPhotoUrl
+      ? [resolveAssetUrl(state.existingPhotoUrl) ?? state.existingPhotoUrl]
+      : [];
+    setPreviewUrls([...existing, ...blobUrls]);
+    return () => blobUrls.forEach(URL.revokeObjectURL);
+  }, [state.files, state.existingPhotoUrl]);
 
   return (
     <div className={style.form}>
@@ -125,7 +131,7 @@ export const PlaceAdPreview = ({
           onClick={onSubmit}
           disabled={state.submitting}
         >
-          {state.submitting ? <Loader /> : "Разместить объявление"}
+          {state.submitting ? <Loader /> : submitLabel}
         </Button>
       </div>
 
