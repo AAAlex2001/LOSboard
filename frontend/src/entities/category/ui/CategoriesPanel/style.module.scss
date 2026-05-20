@@ -27,6 +27,42 @@
   width: 100%;
 }
 
+.subcategoryHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 0;
+  width: 100%;
+}
+
+.backBtn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(17, 41, 189, 0.06);
+  }
+}
+
+.subcategoryTitle {
+  flex: 1;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  color: #1E1E1E;
+}
+
 .subcategoryList {
   display: flex;
   flex-direction: column;

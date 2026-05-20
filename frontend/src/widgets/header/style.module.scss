@@ -1,21 +1,18 @@
-.header {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .hero {
   display: none;
 }
 
 .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 57px;
   box-sizing: border-box;
-  padding: 10px 10px 10px 20px;
+  padding: 10px 0;
   background:
     linear-gradient(0deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
     url("/los.jpg");
@@ -25,12 +22,15 @@
 }
 
 .navInner {
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 20px;
   width: 100%;
   max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .categoriesWrap {
@@ -52,6 +52,7 @@
   border-radius: 10px;
   cursor: pointer;
   flex-shrink: 0;
+  color: #FFFFFF;
 
   &:hover {
     background: #0d1f8b;
@@ -187,7 +188,7 @@
 
   .navbar {
     height: 59px;
-    padding: 10px 60px;
+    padding: 10px 0;
     background: #FFFFFF;
     box-shadow: 0px 14px 24.2px rgba(0, 0, 0, 0.05);
   }
@@ -195,6 +196,7 @@
   .navInner {
     margin: 0 auto;
     gap: 20px;
+    padding: 0 60px;
   }
 
   .categoriesWrap {

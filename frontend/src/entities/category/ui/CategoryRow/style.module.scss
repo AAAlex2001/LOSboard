@@ -24,10 +24,11 @@
 }
 
 .plain {
-  padding: 5px 0;
+  padding: 5px 10px;
+  border-radius: 8px;
 
-  &:hover .label {
-    color: #1129BD;
+  &:hover {
+    background: rgba(17, 41, 189, 0.06);
   }
 }
 

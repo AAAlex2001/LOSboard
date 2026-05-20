@@ -2,30 +2,107 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   border: none;
   border-radius: 10px;
-  background-color: #1129bd;
-  color: #fff;
   font-size: 16px;
-  line-height: 100%;
+  line-height: 19px;
   cursor: pointer;
   font-family: Inter;
   font-weight: 500;
-  padding: 10px;
-  min-height: 39px;
+  padding: 9px 20px;
+  height: 37px;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.button:hover {
-  background-color: #0d1f8b;
+.fullWidth {
+  width: 100%;
+}
+
+.filled {
+  color: #FFFFFF;
+}
+
+.outlined {
+  background-color: #FFFFFF;
+  border: 2px solid;
+}
+
+.filled.blue {
+  background-color: #1129BD;
+
+  &:hover:not(:disabled) {
+    background-color: #0d1f8b;
+  }
+}
+
+.filled.green {
+  background-color: #11BD33;
+
+  &:hover:not(:disabled) {
+    background-color: #0fa12c;
+  }
+}
+
+.filled.gray {
+  background-color: #B8BBC2;
+
+  &:hover:not(:disabled) {
+    background-color: #9da1ab;
+  }
+}
+
+.outlined.blue {
+  border-color: #1129BD;
+  color: #1129BD;
+
+  &:hover:not(:disabled) {
+    background-color: #1129BD;
+    color: #FFFFFF;
+  }
+}
+
+.outlined.green {
+  border-color: #11BD33;
+  color: #11BD33;
+
+  &:hover:not(:disabled) {
+    background-color: #11BD33;
+    color: #FFFFFF;
+  }
+}
+
+.outlined.gray {
+  border-color: #B8BBC2;
+  color: #1E1E1E;
+
+  &:hover:not(:disabled) {
+    background-color: #B8BBC2;
+    color: #FFFFFF;
+  }
 }
 
 .button:disabled {
-  background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.button:disabled:hover {
-  background-color: #cccccc;
+.filled:disabled {
+  background-color: #B8BBC2;
+
+  &:hover {
+    background-color: #B8BBC2;
+  }
+}
+
+.outlined:disabled {
+  border-color: #B8BBC2;
+  color: #B8BBC2;
+  background-color: #FFFFFF;
+
+  &:hover {
+    background-color: #FFFFFF;
+  }
 }
 
 .link {
@@ -33,6 +110,7 @@
   border-radius: 0;
   padding: 0;
   min-height: auto;
+  gap: 0;
 }
 
 .link:hover {
@@ -40,7 +118,7 @@
 }
 
 .linkBlue {
-  color: #1129bd;
+  color: #1129BD;
 }
 
 .linkGray {

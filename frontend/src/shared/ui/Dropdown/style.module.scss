@@ -1,0 +1,132 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  gap: 9px;
+  width: 100%;
+  height: 40px;
+  background: #FFFFFF;
+  border: 1px solid #B8BBC2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: Inter;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #1129BD;
+  }
+
+  &:disabled {
+    background: #F9F9FB;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.boxOpen {
+  border-color: #1129BD;
+}
+
+.label {
+  flex: 1;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  letter-spacing: 0.03em;
+  color: #1E1E1E;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.placeholder {
+  flex: 1;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  letter-spacing: 0.03em;
+  color: #B8BBC2;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 2px;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.option {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #1E1E1E;
+  text-align: left;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(17, 41, 189, 0.06);
+  }
+}
+
+.optionActive {
+  background: rgba(17, 41, 189, 0.1);
+  color: #1129BD;
+
+  &:hover {
+    background: rgba(17, 41, 189, 0.14);
+  }
+}
+
+.empty {
+  padding: 8px 10px;
+  font-family: Inter;
+  font-size: 14px;
+  color: #B8BBC2;
+}

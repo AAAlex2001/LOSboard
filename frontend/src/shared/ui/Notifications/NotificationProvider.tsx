@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Toast, type ToastType } from "./Toast";
 import s from "./Toast.module.scss";
 
@@ -20,13 +20,13 @@ const Ctx = createContext<NotificationContextType | null>(null);
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [item, setItem] = useState<ToastItem | null>(null);
 
-  const dismiss = useCallback((id: string) => {
+  const dismiss = (id: string) => {
     setItem((prev) => (prev && prev.id === id ? null : prev));
-  }, []);
+  };
 
-  const push = useCallback((type: ToastType, message: string) => {
+  const push = (type: ToastType, message: string) => {
     setItem({ id: `${Date.now()}-${Math.random()}`, type, message });
-  }, []);
+  };
 
   return (
     <Ctx.Provider

@@ -11,13 +11,16 @@ type InputProps = {
     pattern?: string;
     autoFocus?: boolean;
     disabled?: boolean;
-    variant?: "default" | "filled";
+    variant?: "default" | "filled" | "form";
     className?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const Input = (props: InputProps) => {
-    const variantClass = props.variant === "filled" ? style.filled : style.default;
+    const variantClass =
+        props.variant === "filled" ? style.filled :
+        props.variant === "form" ? style.form :
+        style.default;
     const className = `${style.input} ${variantClass} ${props.className || ""}`.trim();
 
     return (

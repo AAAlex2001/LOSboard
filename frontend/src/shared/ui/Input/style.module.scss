@@ -13,6 +13,11 @@
   box-sizing: border-box;
   width: 100%;
   outline: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &::placeholder {
     color: #B8BBC2;
@@ -47,5 +52,25 @@
 
   &:focus {
     background: #F0F2F8;
+  }
+}
+
+/* ---------- variant: form (для форм с полями) ---------- */
+.form {
+  background: #FFFFFF;
+  border: 1px solid #B8BBC2;
+  border-radius: 10px;
+  height: 39px;
+  font-size: 16px;
+  line-height: 19px;
+  font-weight: 500;
+  color: #1E1E1E;
+
+  &:hover {
+    border-color: #1129BD;
+  }
+
+  &:focus {
+    border-color: #1129BD;
   }
 }

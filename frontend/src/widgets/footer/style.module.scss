@@ -226,7 +226,8 @@
   .container {
     flex-direction: row;
     align-items: flex-start;
-    gap: 100px;
+    justify-content: space-between;
+    gap: 40px;
     padding: 0 60px;
   }
 
@@ -236,10 +237,11 @@
     width: auto;
   }
 
+  /* На десктопе .links не имеет своего бокса — её дети
+     (linksGroup и contacts) становятся прямыми детьми .container,
+     получая равномерный space-between со всеми 3 колонками */
   .links {
-    flex: 1 1 auto;
-    justify-content: space-between;
-    gap: 36px;
+    display: contents;
   }
 
   .linksGroup {

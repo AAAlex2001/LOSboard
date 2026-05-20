@@ -1,0 +1,92 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 250px;
+}
+
+.socialBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.socialTitle {
+  margin: 0;
+  width: 100%;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: center;
+  color: #1129BD;
+}
+
+.socials {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+
+  & svg path {
+    fill: #1E1E1E;
+    transition: fill 0.15s ease;
+  }
+
+  &:hover svg path {
+    fill: #1129BD;
+  }
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+.link {
+  width: 100%;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+  text-decoration: underline;
+  color: #1E1E1E;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #1129BD;
+  }
+}
+
+.adsBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+}
