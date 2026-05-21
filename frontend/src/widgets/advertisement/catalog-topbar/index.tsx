@@ -9,7 +9,7 @@ import {
   type Category,
   type Subcategory,
 } from "@/src/entities/category";
-import { CategoriesStrip } from "@/src/widgets/categories-strip";
+import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
 import { AdBanner } from "@/src/entities/ad-banner";
 import style from "./style.module.scss";
 

@@ -12,7 +12,7 @@ import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
 import { UserAvatar } from "@/src/entities/user";
 import { CategoriesPanel, type Category, type Subcategory } from "@/src/entities/category";
 import { BurgerMenu } from "@/src/widgets/burger-menu";
-import { ProfilePopup } from "@/src/widgets/profile-popup";
+import { ProfilePopup } from "@/src/widgets/profile/profile-popup";
 import { Button } from "@/src/shared/ui/Button";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";

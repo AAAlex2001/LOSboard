@@ -1,4 +1,4 @@
-import { RegisterWidget } from "@/src/widgets/register/RegisterWidget";
+import { RegisterWidget } from "@/src/widgets/auth/register/RegisterWidget";
 import style from "./page.module.scss";
 
 export default function RegisterPage() {

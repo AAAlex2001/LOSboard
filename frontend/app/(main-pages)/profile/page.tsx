@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
-import { ProfileDetails } from "@/src/widgets/profile-details";
+import { ProfileDetails } from "@/src/widgets/profile/profile-details";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
 import { useMe } from "@/src/entities/user";

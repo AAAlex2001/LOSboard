@@ -12,8 +12,8 @@ import {
   type Advertisement,
 } from "@/src/entities/advertisement";
 import { useCategories } from "@/src/entities/category";
-import { AdvertisementDetail } from "@/src/widgets/advertisement-detail";
-import { AdvertisementSidebar } from "@/src/widgets/advertisement-sidebar";
+import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
+import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import style from "./page.module.scss";
 
 export default function AdvertisementPage() {

@@ -2,9 +2,9 @@
 
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
-import { CatalogTopBar } from "@/src/widgets/catalog-topbar";
-import { CatalogFeed } from "@/src/widgets/catalog-feed";
-import { PlaceAdSidebar } from "@/src/widgets/place-ad-sidebar";
+import { CatalogTopBar } from "@/src/widgets/advertisement/catalog-topbar";
+import { CatalogFeed } from "@/src/widgets/advertisement/catalog-feed";
+import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
 import { useCategories, type Category, type Subcategory } from "@/src/entities/category";
 import { useAdvertisementList } from "@/src/features/advertisement";
 import style from "./page.module.scss";

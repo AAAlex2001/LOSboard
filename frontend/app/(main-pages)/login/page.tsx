@@ -1,4 +1,4 @@
-import { LoginWidget } from "@/src/widgets/login/LoginWidget";
+import { LoginWidget } from "@/src/widgets/auth/login/LoginWidget";
 import { LoginInfo } from "@/src/shared/ui/LoginInfo";
 import style from "./page.module.scss";
 

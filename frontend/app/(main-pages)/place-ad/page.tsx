@@ -8,7 +8,7 @@ import { Loader } from "@/src/shared/ui/Loader";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import { PlaceAdForm } from "@/src/features/place-ad";
-import { PlaceAdSidebar } from "@/src/widgets/place-ad-sidebar";
+import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./page.module.scss";
 
