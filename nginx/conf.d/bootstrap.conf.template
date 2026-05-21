@@ -1,0 +1,17 @@
+# Bootstrap nginx config — used ONLY for the first Let's Encrypt cert issuance.
+# Copy this to nginx/conf.d/app.conf and replace example.com with your domain.
+# After the cert is issued, replace nginx/conf.d/app.conf with app.conf.template.
+
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 200 "OK";
+        add_header Content-Type text/plain;
+    }
+}

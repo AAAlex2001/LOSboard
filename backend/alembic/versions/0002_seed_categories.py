@@ -1,7 +1,20 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+"""seed categories and subcategories
 
-from models.category import Category, Subcategory
+Revision ID: 0002_seed_categories
+Revises: 0001_initial_schema
+Create Date: 2026-05-21 00:00:01.000000
+
+"""
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+
+
+revision: str = "0002_seed_categories"
+down_revision: Union[str, None] = "0001_initial_schema"
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
 CATEGORIES_DATA = [
@@ -150,29 +163,53 @@ def _slugify(name: str, category_slug: str, index: int) -> str:
     return f"{category_slug}-{index}-{base}"[:90]
 
 
-async def seed_categories(session: AsyncSession) -> None:
-    existing = await session.execute(select(Category.id).limit(1))
-    if existing.scalar_one_or_none() is not None:
-        return
+def upgrade() -> None:
+    conn = op.get_bind()
+    categories_table = sa.table(
+        "categories",
+        sa.column("id", sa.Integer()),
+        sa.column("name", sa.String()),
+        sa.column("slug", sa.String()),
+        sa.column("sort_order", sa.Integer()),
+        sa.column("is_active", sa.Boolean()),
+    )
+    subcategories_table = sa.table(
+        "subcategories",
+        sa.column("id", sa.Integer()),
+        sa.column("name", sa.String()),
+        sa.column("slug", sa.String()),
+        sa.column("sort_order", sa.Integer()),
+        sa.column("is_active", sa.Boolean()),
+        sa.column("category_id", sa.Integer()),
+    )
 
     for cat_order, cat_data in enumerate(CATEGORIES_DATA):
-        category = Category(
-            name=cat_data["name"],
-            slug=cat_data["slug"],
-            sort_order=cat_order,
-            is_active=True,
-        )
-        session.add(category)
-        await session.flush()
-
-        for sub_order, sub_name in enumerate(cat_data["subcategories"]):
-            subcategory = Subcategory(
-                name=sub_name,
-                slug=_slugify(sub_name, cat_data["slug"], sub_order),
-                sort_order=sub_order,
+        result = conn.execute(
+            categories_table.insert()
+            .values(
+                name=cat_data["name"],
+                slug=cat_data["slug"],
+                sort_order=cat_order,
                 is_active=True,
-                category_id=category.id,
             )
-            session.add(subcategory)
+            .returning(categories_table.c.id)
+        )
+        category_id = result.scalar_one()
 
-    await session.commit()
+        subcategory_rows = [
+            {
+                "name": sub_name,
+                "slug": _slugify(sub_name, cat_data["slug"], sub_order),
+                "sort_order": sub_order,
+                "is_active": True,
+                "category_id": category_id,
+            }
+            for sub_order, sub_name in enumerate(cat_data["subcategories"])
+        ]
+        conn.execute(subcategories_table.insert(), subcategory_rows)
+
+
+def downgrade() -> None:
+    conn = op.get_bind()
+    conn.execute(sa.text("DELETE FROM subcategories"))
+    conn.execute(sa.text("DELETE FROM categories"))

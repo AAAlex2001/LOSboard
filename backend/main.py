@@ -1,101 +1,37 @@
-from contextlib import asynccontextmanager
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import text
-from database import engine, Base, AsyncSessionLocal
-import models.user
-import models.advertisement
-import models.category
-import models.chat
+import uvicorn
+
+import models.user  # noqa: F401
+import models.advertisement  # noqa: F401
+import models.category  # noqa: F401
+import models.chat  # noqa: F401
+
 from routes.auth import router as auth_router
 from routes.advertisement import router as advertisement_router
 from routes.category import router as category_router
 from routes.upload import router as upload_router
 from routes.chat import router as chat_router
-from seeds.categories_seed import seed_categories
-import uvicorn
 
 
-async def run_migrations(conn):
-    """create_all не альтерит существующие таблицы, поэтому добавляем недостающие колонки руками."""
-    await conn.execute(text(
-        "ALTER TABLE users "
-        "ADD COLUMN IF NOT EXISTS avatar_url VARCHAR"
-    ))
-    await conn.execute(text(
-        "ALTER TABLE messages "
-        "ALTER COLUMN text SET DEFAULT ''"
-    ))
-    await conn.execute(text(
-        "ALTER TABLE advertisements "
-        "ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT now()"
-    ))
-    await conn.execute(text(
-        "ALTER TABLE advertisements "
-        "ADD COLUMN IF NOT EXISTS photo_urls TEXT[] NOT NULL DEFAULT '{}'"
-    ))
-    await conn.execute(text(
-        "ALTER TABLE advertisements "
-        "ADD COLUMN IF NOT EXISTS likes_count INTEGER NOT NULL DEFAULT 0"
-    ))
-    await conn.execute(text(
-        "ALTER TABLE advertisements "
-        "ADD COLUMN IF NOT EXISTS views_count INTEGER NOT NULL DEFAULT 0"
-    ))
-    # переносим старое single photo_url в массив (если колонка ещё есть)
-    await conn.execute(text("""
-        DO $$
-        BEGIN
-            IF EXISTS (
-                SELECT 1 FROM information_schema.columns
-                WHERE table_name = 'advertisements' AND column_name = 'photo_url'
-            ) THEN
-                UPDATE advertisements
-                   SET photo_urls = ARRAY[photo_url]
-                 WHERE photo_url IS NOT NULL
-                   AND photo_url <> ''
-                   AND cardinality(photo_urls) = 0;
-                ALTER TABLE advertisements DROP COLUMN photo_url;
-            END IF;
-        END $$;
-    """))
-    # бэкфил likes_count из таблицы лайков (актуально для существующих БД)
-    await conn.execute(text("""
-        UPDATE advertisements a
-           SET likes_count = sub.cnt
-          FROM (
-              SELECT advertisement_id, COUNT(*) AS cnt
-                FROM liked_advertisements
-               GROUP BY advertisement_id
-          ) sub
-         WHERE a.id = sub.advertisement_id
-           AND a.likes_count <> sub.cnt
-    """))
+app = FastAPI(title="LOSboard API")
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        await run_migrations(conn)
-
-    async with AsyncSessionLocal() as session:
-        await seed_categories(session)
-
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000",
+    ).split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
