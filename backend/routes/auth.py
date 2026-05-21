@@ -1,8 +1,4 @@
-import os
-import secrets
-from pathlib import Path
-
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -24,13 +20,9 @@ from services.auth.use_cases.login_account import LoginAccountUseCase
 from services.auth.use_cases.create_account import CreateAccountUseCase
 from services.auth.use_cases.update_account import UpdateAccountUseCase
 from services.auth.use_cases.refresh_token import RefreshTokenUseCase
+from services.auth.use_cases.upload_avatar import UploadAvatarUseCase
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-ALLOWED_AVATAR_MIME = {"image/jpeg", "image/png", "image/webp", "image/gif"}
-AVATAR_MAX_BYTES = 5 * 1024 * 1024
-AVATARS_DIR = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
-AVATARS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.post("/create-account", response_model=CreateAccountResponse)
@@ -66,45 +58,13 @@ async def me_endpoint(
 
 
 @router.post("/avatar", response_model=UploadAvatarResponse)
-async def upload_avatar(
+async def upload_avatar_endpoint(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if file.content_type not in ALLOWED_AVATAR_MIME:
-        raise HTTPException(status_code=400, detail="Недопустимый формат файла")
-
-    contents = await file.read()
-    if len(contents) > AVATAR_MAX_BYTES:
-        raise HTTPException(status_code=400, detail="Файл слишком большой (макс 5 МБ)")
-    if len(contents) == 0:
-        raise HTTPException(status_code=400, detail="Пустой файл")
-
-    ext_map = {
-        "image/jpeg": ".jpg",
-        "image/png": ".png",
-        "image/webp": ".webp",
-        "image/gif": ".gif",
-    }
-    ext = ext_map[file.content_type]
-    filename = f"{current_user.id}_{secrets.token_hex(8)}{ext}"
-    target_path = AVATARS_DIR / filename
-    target_path.write_bytes(contents)
-
-    old_url = current_user.avatar_url
-    avatar_url = f"/static/uploads/avatars/{filename}"
-    current_user.avatar_url = avatar_url
-    db.add(current_user)
-    await db.commit()
-
-    if old_url and old_url.startswith("/static/uploads/avatars/"):
-        old_path = AVATARS_DIR / Path(old_url).name
-        try:
-            if old_path.exists():
-                os.remove(old_path)
-        except OSError:
-            pass
-
+    use_case = UploadAvatarUseCase()
+    avatar_url = await use_case.upload(file=file, db=db, current_user=current_user)
     return UploadAvatarResponse(avatar_url=avatar_url)
 
 

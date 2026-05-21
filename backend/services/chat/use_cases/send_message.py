@@ -43,6 +43,6 @@ class SendMessageUseCase:
         db.add(message)
         conversation.last_message_at = now
 
-        await db.commit()
+        await db.flush()
         await db.refresh(message)
         return MessageResponse.model_validate(message)

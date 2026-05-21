@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getUnreadTotal } from "../api/chat.api";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 
@@ -26,8 +20,9 @@ export const useUnreadTotal = () => useContext(UnreadContext);
 
 export const UnreadProvider = ({ children }: { children: React.ReactNode }) => {
   const [total, setTotal] = useState(0);
+  const refreshRef = useRef<() => void>(() => {});
 
-  const refresh = useCallback(() => {
+  refreshRef.current = () => {
     if (!isAuthenticated()) {
       setTotal(0);
       return;
@@ -35,19 +30,25 @@ export const UnreadProvider = ({ children }: { children: React.ReactNode }) => {
     getUnreadTotal()
       .then(({ count }) => setTotal(count))
       .catch(() => {});
-  }, []);
-
-  const decrement = useCallback((by: number) => {
-    if (by <= 0) return;
-    setTotal((prev) => Math.max(0, prev - by));
-  }, []);
+  };
 
   useEffect(() => {
-    refresh();
-    const handleFocus = () => refresh();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refresh]);
+    refreshRef.current();
+    const onAuth = () => refreshRef.current();
+    const onFocus = () => refreshRef.current();
+    window.addEventListener("auth:changed", onAuth);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      window.removeEventListener("auth:changed", onAuth);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
+  const refresh = () => refreshRef.current();
+  const decrement = (by: number) => {
+    if (by <= 0) return;
+    setTotal((prev) => Math.max(0, prev - by));
+  };
 
   return (
     <UnreadContext.Provider value={{ total, decrement, refresh }}>

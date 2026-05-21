@@ -42,13 +42,12 @@ class ViewAdvertisementUseCase:
         inserted_id = insert_result.scalar_one_or_none()
 
         if inserted_id is not None:
-            # Атомарный инкремент счётчика — без race condition.
             await db.execute(
                 update(Advertisement)
                 .where(Advertisement.id == advertisement_id)
                 .values(views_count=Advertisement.views_count + 1)
             )
-            await db.commit()
+            await db.flush()
             await db.refresh(advertisement)
 
         return advertisement

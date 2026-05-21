@@ -70,6 +70,6 @@ class LikeAdvertisementUseCase:
                 )
             advertisement.is_liked = False
 
-        await db.commit()
+        await db.flush()
         await db.refresh(advertisement)
         return advertisement

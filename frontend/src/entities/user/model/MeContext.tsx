@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { User } from "./types";
 import { getMe } from "../api/user.api";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
@@ -30,8 +24,9 @@ export const useMeContext = () => useContext(MeContext);
 export const MeProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const refreshRef = useRef<() => void>(() => {});
 
-  const refresh = useCallback(() => {
+  refreshRef.current = () => {
     if (!isAuthenticated()) {
       setUser(null);
       setLoading(false);
@@ -42,11 +37,16 @@ export const MeProvider = ({ children }: { children: React.ReactNode }) => {
       .then((data) => setUser(data))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
-  }, []);
+  };
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    refreshRef.current();
+    const onChange = () => refreshRef.current();
+    window.addEventListener("auth:changed", onChange);
+    return () => window.removeEventListener("auth:changed", onChange);
+  }, []);
+
+  const refresh = () => refreshRef.current();
 
   return (
     <MeContext.Provider value={{ user, loading, setUser, refresh }}>

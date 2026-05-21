@@ -49,7 +49,7 @@ class GetConversationUseCase:
             )
             .values(is_read=True)
         )
-        await db.commit()
+        await db.flush()
 
         peer = (
             conversation.seller

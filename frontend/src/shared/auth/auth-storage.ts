@@ -1,6 +1,13 @@
+function emitAuthChange() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("auth:changed"));
+  }
+}
+
 export function setTokens(accessToken: string, refreshToken: string) {
   localStorage.setItem("access_token", accessToken);
   localStorage.setItem("refresh_token", refreshToken);
+  emitAuthChange();
 }
 
 export function getAccessToken(): string | null {
@@ -14,6 +21,7 @@ export function getRefreshToken(): string | null {
 export function logout() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  emitAuthChange();
 }
 
 export function isAuthenticated(): boolean {

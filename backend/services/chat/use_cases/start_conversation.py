@@ -77,6 +77,6 @@ class StartConversationUseCase:
             )
             conversation.last_message_at = now
 
-        await db.commit()
+        await db.flush()
         await db.refresh(conversation)
         return conversation
