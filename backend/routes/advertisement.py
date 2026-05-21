@@ -105,7 +105,7 @@ async def get_my_liked_advertisements(
 async def get_advertisement(
     advertisement_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     use_case = GetAdvertisementUseCase()
 

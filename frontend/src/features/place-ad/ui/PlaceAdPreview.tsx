@@ -35,12 +35,12 @@ export const PlaceAdPreview = ({
 
   useEffect(() => {
     const blobUrls = state.files.map((file) => URL.createObjectURL(file));
-    const existing = state.existingPhotoUrl
-      ? [resolveAssetUrl(state.existingPhotoUrl) ?? state.existingPhotoUrl]
-      : [];
+    const existing = state.existingPhotoUrls.map(
+      (url) => resolveAssetUrl(url) ?? url
+    );
     setPreviewUrls([...existing, ...blobUrls]);
     return () => blobUrls.forEach(URL.revokeObjectURL);
-  }, [state.files, state.existingPhotoUrl]);
+  }, [state.files, state.existingPhotoUrls]);
 
   return (
     <div className={style.form}>

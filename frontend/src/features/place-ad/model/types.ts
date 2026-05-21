@@ -8,7 +8,7 @@ export interface PlaceAdState {
   price: string;
   description: string;
   files: File[];
-  existingPhotoUrl: string | null;
+  existingPhotoUrls: string[];
   address: string;
   latitude: number | null;
   longitude: number | null;
@@ -23,7 +23,7 @@ export interface PrefillPayload {
   price: string;
   description: string;
   address: string;
-  photoUrl?: string | null;
+  photoUrls?: string[];
 }
 
 export type PlaceAdAction =
@@ -36,7 +36,7 @@ export type PlaceAdAction =
   | { type: "SET_ADDRESS"; payload: string }
   | { type: "SET_LOCATION"; payload: { address: string; latitude: number; longitude: number } }
   | { type: "PREFILL"; payload: PrefillPayload }
-  | { type: "CLEAR_EXISTING_PHOTO" }
+  | { type: "REMOVE_EXISTING_PHOTO"; payload: string }
   | { type: "GO_TO_PREVIEW" }
   | { type: "GO_TO_EDIT" }
   | { type: "SUBMIT_START" }

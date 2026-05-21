@@ -1,0 +1,333 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 40px;
+  width: 100%;
+  min-width: 0;
+}
+
+.photoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 27px;
+  width: 100%;
+  position: relative;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 23px;
+  color: #0D0D0D;
+  overflow-wrap: anywhere;
+}
+
+.favBtn {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 1px 19.5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.06);
+  }
+}
+
+.favBtnActive {
+  /* отдельный класс на случай дополнительной стилизации */
+}
+
+.photoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 320 / 237;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+  background: #DEDEDE;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #DEDEDE;
+  border-radius: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #1129BD;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.23);
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0;
+}
+
+.navBtnLeft {
+  left: -15px;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.navBtnRight {
+  right: -15px;
+  transform: translateY(-50%);
+}
+
+.navIcon {
+  display: inline-flex;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5px 0;
+  border-bottom: 1px solid #E7EAF8;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.label {
+  padding: 5px 0;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #A6A6A6;
+}
+
+.value {
+  padding: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #1E1E1E;
+  overflow-wrap: anywhere;
+}
+
+.valueBold {
+  font-weight: 700;
+}
+
+.valueMultiline {
+  white-space: pre-wrap;
+}
+
+.contactsBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5px 0 20px;
+  gap: 10px;
+}
+
+.contactButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.callLink {
+  display: block;
+  text-decoration: none;
+  width: 100%;
+}
+
+.messageBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  height: 39px;
+  background: #BBD3FF;
+  border: none;
+  border-radius: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #1129BD;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: #a8c3f5;
+  }
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.statRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.statLabel {
+  flex: 1;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  color: #A6A6A6;
+}
+
+.statValue {
+  flex: 1;
+  padding: 0 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  color: #1E1E1E;
+}
+
+.reportBtn {
+  align-self: flex-end;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #A6A6A6;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #1E1E1E;
+  }
+}
+
+@media (min-width: 768px) {
+  .photoWrap {
+    aspect-ratio: 728 / 580;
+  }
+
+  .row {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .label {
+    width: 195px;
+    flex-shrink: 0;
+    padding: 10px 0;
+  }
+
+  .value {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .contactsBlock {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .contactsBlock .label {
+    align-self: center;
+  }
+
+  .contactButtons {
+    flex: 1;
+    flex-direction: row;
+    min-width: 0;
+  }
+
+  .contactButtons > * {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .statRow {
+    gap: 20px;
+  }
+
+  .statLabel {
+    width: 195px;
+    flex: 0 0 195px;
+    padding: 10px 0;
+  }
+
+  .statValue {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  .contactsBlock {
+    display: none;
+  }
+}

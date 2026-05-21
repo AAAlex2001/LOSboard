@@ -138,7 +138,7 @@ export type UpdateAdvertisementPayload = Partial<{
   category_id: number;
   subcategory_id: number;
   location: string;
-  photo_url: string | null;
+  photo_urls: string[];
   is_active: boolean;
 }>;
 

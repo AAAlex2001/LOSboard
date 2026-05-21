@@ -52,7 +52,7 @@ class CreateAdvertisementUseCase:
             category_id=request.category_id,
             subcategory_id=request.subcategory_id,
             location=request.location,
-            photo_url=request.photo_url,
+            photo_urls=list(request.photo_urls or []),
             is_active=request.is_active,
             owner_id=current_user.id,
         )

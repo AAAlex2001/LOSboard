@@ -22,8 +22,8 @@ export const AdCard = ({
   onEdit,
   favoritePending,
 }: AdCardProps) => {
-  const { title, price, photo_url, is_liked } = advertisement;
-  const photoSrc = resolveAssetUrl(photo_url);
+  const { title, price, photo_urls, is_liked } = advertisement;
+  const photoSrc = resolveAssetUrl(photo_urls?.[0] ?? null);
 
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

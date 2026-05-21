@@ -6,10 +6,14 @@ export interface Advertisement {
   category_id: number;
   subcategory_id: number;
   location: string;
-  photo_url: string | null;
+  photo_urls: string[];
   is_active: boolean;
   is_liked: boolean;
   owner_id: number;
+  seller_name?: string | null;
+  seller_phone?: string | null;
+  likes_count?: number;
+  created_at?: string | null;
 }
 
 export interface CreateAdvertisementPayload {
@@ -19,6 +23,6 @@ export interface CreateAdvertisementPayload {
   category_id: number;
   subcategory_id: number;
   location: string;
-  photo_url?: string;
+  photo_urls?: string[];
   is_active?: boolean;
 }

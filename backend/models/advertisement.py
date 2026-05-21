@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, UniqueConstraint
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, UniqueConstraint, DateTime
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -13,8 +16,9 @@ class Advertisement(Base):
     description = Column(String, nullable=True)
     price = Column(Integer, nullable=False)
     location = Column(String, nullable=False)
-    photo_url = Column(String, nullable=True)
+    photo_urls = Column(ARRAY(String), nullable=False, server_default="{}")
     is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)

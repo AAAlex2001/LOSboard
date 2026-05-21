@@ -42,7 +42,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
             price: String(ad.price),
             description: ad.description ?? "",
             address: ad.location,
-            photoUrl: ad.photo_url,
+            photoUrls: ad.photo_urls,
           },
         });
       })
@@ -97,17 +97,15 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     dispatch({ type: "SUBMIT_START" });
 
     try {
-      let photoUrl: string | undefined;
-      if (state.files.length > 0) {
-        const urls = await Promise.all(
-          state.files.map((file) => uploadAdvertisementImage(file))
-        );
-        photoUrl = urls[0];
-      }
+      const uploadedUrls =
+        state.files.length > 0
+          ? await Promise.all(
+              state.files.map((file) => uploadAdvertisementImage(file))
+            )
+          : [];
+      const photoUrls = [...state.existingPhotoUrls, ...uploadedUrls];
 
       if (isEditing && advertisementId) {
-        const finalPhotoUrl =
-          photoUrl ?? state.existingPhotoUrl ?? null;
         await updateAdvertisement(advertisementId, {
           title: state.title.trim(),
           description: state.description.trim() || null,
@@ -115,7 +113,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           category_id: selectedCategory.id,
           subcategory_id: selectedSubcategory.id,
           location: state.address.trim(),
-          photo_url: finalPhotoUrl,
+          photo_urls: photoUrls,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
         router.push("/my-ads");
@@ -127,7 +125,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           category_id: selectedCategory.id,
           subcategory_id: selectedSubcategory.id,
           location: state.address.trim(),
-          photo_url: photoUrl,
+          photo_urls: photoUrls,
           is_active: true,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });

@@ -161,12 +161,17 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
           <PhotoUpload
             files={state.files}
             onChange={(files) => dispatch({ type: "SET_FILES", payload: files })}
-            existingUrls={
-              state.existingPhotoUrl
-                ? [resolveAssetUrl(state.existingPhotoUrl) ?? state.existingPhotoUrl]
-                : []
-            }
-            onRemoveExisting={() => dispatch({ type: "CLEAR_EXISTING_PHOTO" })}
+            existingUrls={state.existingPhotoUrls.map(
+              (url) => resolveAssetUrl(url) ?? url
+            )}
+            onRemoveExisting={(displayUrl) => {
+              const original = state.existingPhotoUrls.find(
+                (url) => (resolveAssetUrl(url) ?? url) === displayUrl
+              );
+              if (original) {
+                dispatch({ type: "REMOVE_EXISTING_PHOTO", payload: original });
+              }
+            }}
           />
         </div>
       </section>
