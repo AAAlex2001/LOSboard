@@ -28,6 +28,33 @@ export async function getMe(): Promise<User> {
   return response.json();
 }
 
+export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> {
+  const token = getAccessToken();
+  const form = new FormData();
+  form.append("file", file);
+
+  const response = await fetch(`${config.API_BASE_URL}auth/avatar`, {
+    method: "POST",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: form,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const detail = errorData.detail;
+    if (Array.isArray(detail)) {
+      throw new Error(detail.map((d) => d.msg).join("; "));
+    }
+    throw new Error(
+      typeof detail === "string" ? detail : "Не удалось загрузить аватар"
+    );
+  }
+
+  return response.json();
+}
+
 export async function updateAccount(payload: UpdateAccountPayload): Promise<User> {
   const token = getAccessToken();
 

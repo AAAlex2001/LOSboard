@@ -17,7 +17,7 @@ export const ConversationCard = ({
   active,
   onClick,
 }: ConversationCardProps) => {
-  const { advertisement, peer, last_message_text, last_message_at } =
+  const { advertisement, peer, last_message_text, last_message_at, unread_count } =
     conversation;
   const adPhoto = resolveAssetUrl(advertisement.photo_url);
 
@@ -38,7 +38,7 @@ export const ConversationCard = ({
       <div className={style.message}>
         <div className={style.headerRow}>
           <div className={style.peer}>
-            <UserAvatar size={20} />
+            <UserAvatar size={20} src={peer.avatar_url ?? undefined} />
             <span className={style.peerName}>{peer.name}</span>
           </div>
           <span className={style.date}>{formatChatDate(last_message_at)}</span>
@@ -52,6 +52,11 @@ export const ConversationCard = ({
           <span className={style.lastMessage}>
             {last_message_text ?? "Нет сообщений"}
           </span>
+          {unread_count > 0 && (
+            <span className={style.unread} aria-label={`Непрочитанных: ${unread_count}`}>
+              {unread_count > 99 ? "99+" : unread_count}
+            </span>
+          )}
         </div>
       </div>
     </button>

@@ -6,18 +6,18 @@ import { Header } from "@/src/widgets/header";
 import { ProfileDetails } from "@/src/widgets/profile/profile-details";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
-import { useMe } from "@/src/entities/user";
+import { useMeContext } from "@/src/entities/user";
 import style from "./page.module.scss";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, loading, error, setUser } = useMe();
+  const { user, loading, setUser } = useMeContext();
 
   useEffect(() => {
-    if (!loading && error) {
+    if (!loading && !user) {
       router.replace("/login");
     }
-  }, [loading, error, router]);
+  }, [loading, user, router]);
 
   return (
     <main className={style.page}>

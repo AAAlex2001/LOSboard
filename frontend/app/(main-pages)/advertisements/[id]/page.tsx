@@ -12,7 +12,7 @@ import {
   type Advertisement,
 } from "@/src/entities/advertisement";
 import { useCategories } from "@/src/entities/category";
-import { useMe } from "@/src/entities/user";
+import { useMeContext } from "@/src/entities/user";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import style from "./page.module.scss";
@@ -26,7 +26,7 @@ export default function AdvertisementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { categories } = useCategories();
-  const { user } = useMe();
+  const { user } = useMeContext();
 
   useEffect(() => {
     if (!Number.isFinite(adId)) {

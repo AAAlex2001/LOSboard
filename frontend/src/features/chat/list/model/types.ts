@@ -9,4 +9,5 @@ export interface ConversationListState {
 export type ConversationListAction =
   | { type: "FETCH_START" }
   | { type: "FETCH_SUCCESS"; payload: ConversationListItem[] }
-  | { type: "FETCH_FAILURE"; payload: string };
+  | { type: "FETCH_FAILURE"; payload: string }
+  | { type: "MARK_AS_READ"; payload: number };

@@ -9,15 +9,27 @@ from schemas.chat import (
     MessageResponse,
     SendMessageRequest,
     StartConversationRequest,
+    UnreadTotalResponse,
 )
 from services.auth.dependencies import get_current_user
 from services.chat.use_cases.get_conversation import GetConversationUseCase
+from services.chat.use_cases.get_unread_total import GetUnreadTotalUseCase
 from services.chat.use_cases.list_conversations import ListConversationsUseCase
 from services.chat.use_cases.send_message import SendMessageUseCase
 from services.chat.use_cases.start_conversation import StartConversationUseCase
 
 
 router = APIRouter(prefix="/conversations", tags=["chat"])
+
+
+@router.get("/unread/total", response_model=UnreadTotalResponse)
+async def get_unread_total(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    use_case = GetUnreadTotalUseCase()
+    count = await use_case.get(db=db, current_user=current_user)
+    return UnreadTotalResponse(count=count)
 
 
 @router.get("/", response_model=list[ConversationListItem])

@@ -70,6 +70,7 @@ class GetConversationUseCase:
             peer=ConversationPeer(
                 id=peer.id if peer else 0,
                 name=peer.name if peer else "",
+                avatar_url=peer.avatar_url if peer else None,
             ),
             messages=[MessageResponse.model_validate(m) for m in conversation.messages],
         )

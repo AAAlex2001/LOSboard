@@ -8,14 +8,6 @@ interface ChatsShellProps {
   children: React.ReactNode;
 }
 
-/**
- * Общий каркас для страниц чатов:
- *  - на мобильном (<768) показывает или сайдбар, или main (тред/заглушку) — управляется
- *    тем, выбран ли активный диалог;
- *  - на 768+ показывает split-view: список слева + main справа.
- *
- * Хранилище состояния — URL: /chats — без выбранного, /chats/[id] — выбран.
- */
 export const ChatsShell = ({
   activeConversationId = null,
   children,

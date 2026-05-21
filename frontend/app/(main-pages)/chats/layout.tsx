@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
+import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import { ChatsShell } from "@/src/widgets/chat/chats-shell";
@@ -12,7 +13,6 @@ import style from "./page.module.scss";
 
 export default function ChatsLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
   const params = useParams<{ id?: string }>();
   const [ready, setReady] = useState(false);
 
@@ -24,12 +24,9 @@ export default function ChatsLayout({ children }: { children: React.ReactNode })
     }
   }, [router]);
 
-  // /chats/[id] → params.id есть. /chats → нет
   const activeConversationId =
     params?.id && Number.isFinite(Number(params.id)) ? Number(params.id) : null;
 
-  // На мобиле кнопка «назад»: со страницы конкретного чата — обратно в список,
-  // со списка — назад в браузерной истории.
   const handleBack = () => {
     if (activeConversationId != null) {
       router.push("/chats");
@@ -81,6 +78,7 @@ export default function ChatsLayout({ children }: { children: React.ReactNode })
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }

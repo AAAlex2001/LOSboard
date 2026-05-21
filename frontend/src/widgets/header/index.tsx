@@ -9,11 +9,13 @@ import CategoriesIcon from "@/src/shared/ui/Icons/CategoriesIcon";
 import MapIcon from "@/src/shared/ui/Icons/MapIcon";
 import ChatIcon from "@/src/shared/ui/Icons/ChatIcon";
 import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
-import { UserAvatar } from "@/src/entities/user";
+import { UserAvatar, useMeContext } from "@/src/entities/user";
 import { CategoriesPanel, type Category, type Subcategory } from "@/src/entities/category";
+import { useUnreadTotal } from "@/src/entities/chat";
 import { BurgerMenu } from "@/src/widgets/burger-menu";
 import { ProfilePopup } from "@/src/widgets/profile/profile-popup";
 import { Button } from "@/src/shared/ui/Button";
+import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
@@ -40,6 +42,8 @@ export const Header = ({
   const [profileOpen, setProfileOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
   const categoriesWrapRef = useRef<HTMLDivElement>(null);
+  const { total: unreadTotal } = useUnreadTotal();
+  const { user: me } = useMeContext();
 
   useEffect(() => {
     setAuthed(checkAuth());
@@ -173,6 +177,12 @@ export const Header = ({
                   aria-label="Чат"
                 >
                   <ChatIcon />
+                  {authed && unreadTotal > 0 && (
+                    <UnreadBadge
+                      count={unreadTotal}
+                      className={style.iconBadge}
+                    />
+                  )}
                 </button>
               </Tooltip>
               <Tooltip label="Избранное">
@@ -203,7 +213,7 @@ export const Header = ({
                   onClick={handleAvatarClick}
                   aria-label="Профиль"
                 >
-                  <UserAvatar size={39} />
+                  <UserAvatar size={39} src={me?.avatar_url ?? undefined} />
                 </button>
                 <ProfilePopup
                   open={profileOpen}

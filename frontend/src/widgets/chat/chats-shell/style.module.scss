@@ -23,7 +23,6 @@
   display: none;
 }
 
-/* < 1024px: показываем что-то одно (single-pane) */
 .shell[data-has-active="true"] .sidebar {
   display: none;
 }
@@ -36,7 +35,7 @@
   height: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 850px) {
   .sidebar {
     flex: 0 0 320px;
     border-right: 1px solid #EEF4FF;

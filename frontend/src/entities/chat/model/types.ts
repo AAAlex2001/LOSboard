@@ -10,6 +10,7 @@ export interface ChatMessage {
 export interface ChatPeer {
   id: number;
   name: string;
+  avatar_url: string | null;
 }
 
 export interface ChatAdvertisement {

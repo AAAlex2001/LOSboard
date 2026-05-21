@@ -4,13 +4,13 @@
   align-items: flex-start;
   gap: 40px;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1480px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .profile {
     padding: 0 60px;
   }
@@ -59,7 +59,7 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .profile {
     gap: 40px;
     padding: 0 20px;

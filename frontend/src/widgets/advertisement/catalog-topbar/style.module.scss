@@ -54,12 +54,16 @@
   min-width: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .topbar {
     gap: 40px;
   }
 
   .heroHeading {
+    justify-content: flex-end;
+  }
+
+  .title {
     display: none;
   }
 

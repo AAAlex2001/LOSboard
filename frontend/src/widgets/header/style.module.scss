@@ -28,7 +28,7 @@
   align-items: center;
   gap: 20px;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1480px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -103,6 +103,7 @@
 }
 
 .iconBtn {
+  position: relative;
   width: 32px;
   height: 32px;
   border: none;
@@ -118,6 +119,12 @@
   &:hover {
     background: rgba(17, 41, 189, 0.08);
   }
+}
+
+.iconBadge {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
 }
 
 .actions {
@@ -182,7 +189,7 @@
   flex-shrink: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .navInner {
     padding: 0 60px;
   }

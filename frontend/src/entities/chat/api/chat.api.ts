@@ -55,6 +55,19 @@ export async function startConversation(
   return response.json();
 }
 
+export async function getUnreadTotal(
+  options: { signal?: AbortSignal } = {}
+): Promise<{ count: number }> {
+  const response = await apiFetch("conversations/unread/total", {
+    method: "GET",
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось получить счётчик"));
+  }
+  return response.json();
+}
+
 export async function sendMessage(
   conversationId: number,
   text: string

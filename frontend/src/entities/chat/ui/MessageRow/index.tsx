@@ -8,6 +8,7 @@ import style from "./style.module.scss";
 interface MessageRowProps {
   message: ChatMessage;
   authorName: string;
+  authorAvatarUrl?: string | null;
   mine: boolean;
   showAvatar?: boolean;
 }
@@ -15,12 +16,13 @@ interface MessageRowProps {
 export const MessageRow = ({
   message,
   authorName,
+  authorAvatarUrl,
   mine,
   showAvatar = true,
 }: MessageRowProps) => {
   const avatar = showAvatar ? (
     <div className={style.avatar}>
-      <UserAvatar size={50} />
+      <UserAvatar size={50} src={authorAvatarUrl ?? undefined} />
     </div>
   ) : (
     <div className={style.avatarSpacer} aria-hidden="true" />

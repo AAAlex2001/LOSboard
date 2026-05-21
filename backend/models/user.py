@@ -10,6 +10,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     phone_number = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
 
     advertisements = relationship("Advertisement", back_populates="owner")

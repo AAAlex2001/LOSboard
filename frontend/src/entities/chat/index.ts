@@ -11,7 +11,10 @@ export {
   getConversation,
   startConversation,
   sendMessage,
+  getUnreadTotal,
 } from "./api/chat.api";
+
+export { UnreadProvider, useUnreadTotal } from "./model/UnreadContext";
 
 export { ConversationCard } from "./ui/ConversationCard";
 export { ChatThreadHeader } from "./ui/ChatThreadHeader";

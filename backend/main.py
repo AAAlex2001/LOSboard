@@ -22,6 +22,10 @@ import uvicorn
 async def run_migrations(conn):
     """create_all не альтерит существующие таблицы, поэтому добавляем недостающие колонки руками."""
     await conn.execute(text(
+        "ALTER TABLE users "
+        "ADD COLUMN IF NOT EXISTS avatar_url VARCHAR"
+    ))
+    await conn.execute(text(
         "ALTER TABLE advertisements "
         "ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT now()"
     ))

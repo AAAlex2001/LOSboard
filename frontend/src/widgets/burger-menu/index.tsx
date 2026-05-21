@@ -11,6 +11,8 @@ import UserIcon from "@/src/shared/ui/Icons/UserIcon";
 import LogoutIcon from "@/src/shared/ui/Icons/LogoutIcon";
 import MyAdsIcon from "@/src/shared/ui/Icons/MyAdsIcon";
 import { Button } from "@/src/shared/ui/Button";
+import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
+import { useUnreadTotal } from "@/src/entities/chat";
 import { logout } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
@@ -35,6 +37,7 @@ export const BurgerMenu = ({
 }: BurgerMenuProps) => {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const { total: unreadTotal } = useUnreadTotal();
 
   useEffect(() => {
     setIsMounted(true);
@@ -158,6 +161,7 @@ export const BurgerMenu = ({
                 >
                   <span className={style.menuIcon}><ChatIcon /></span>
                   <span className={style.menuLabel}>Чат</span>
+                  <UnreadBadge count={unreadTotal} />
                 </button>
 
                 <button

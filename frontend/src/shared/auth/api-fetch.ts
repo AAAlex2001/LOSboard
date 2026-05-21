@@ -12,7 +12,6 @@ function buildHeaders(
 ): Record<string, string> {
   const headers: Record<string, string> = {};
 
-  // JSON Content-Type только если body есть и это НЕ FormData
   if (body != null && !(body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
   }
@@ -59,13 +58,10 @@ export async function apiFetch(
     });
   } catch (err) {
     if (err instanceof RefreshAuthError) {
-      // только реальная auth-ошибка отправляет на логин;
-      // logout уже вызван внутри refreshToken
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
     }
-    // на сетевую ошибку refresh'а отдаём оригинальный 401 — пусть caller решит
     return response;
   }
 }

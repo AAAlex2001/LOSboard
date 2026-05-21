@@ -98,6 +98,7 @@ class ListConversationsUseCase:
                     peer=ConversationPeer(
                         id=peer.id if peer else 0,
                         name=peer.name if peer else "",
+                        avatar_url=peer.avatar_url if peer else None,
                     ),
                     last_message_text=last_msg.text if last_msg else None,
                     last_message_at=conv.last_message_at,

@@ -23,7 +23,7 @@
   flex-direction: column;
   gap: 40px;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1480px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
@@ -40,7 +40,7 @@
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .layout {
     padding: 0 60px;
   }

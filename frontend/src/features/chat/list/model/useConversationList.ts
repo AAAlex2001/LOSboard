@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { getConversations } from "@/src/entities/chat";
 import {
   conversationListReducer,
@@ -33,5 +33,9 @@ export function useConversationList() {
     return () => controller.abort();
   }, []);
 
-  return state;
+  const markAsRead = useCallback((conversationId: number) => {
+    dispatch({ type: "MARK_AS_READ", payload: conversationId });
+  }, []);
+
+  return { ...state, markAsRead };
 }

@@ -16,7 +16,7 @@
   padding: 0 20px;
   gap: 100px;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1480px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -157,7 +157,7 @@
   padding: 15px 20px;
   gap: 10px;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1480px;
   margin: 0 auto;
 }
 
@@ -183,7 +183,7 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
   .container {
     gap: 50px;
   }

@@ -4,7 +4,6 @@ import { useEffect, useRef, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
 import MyAdsIcon from "@/src/shared/ui/Icons/MyAdsIcon";
 import AdPromoIcon from "@/src/shared/ui/Icons/AdPromoIcon";
-import ChatIcon from "@/src/shared/ui/Icons/ChatIcon";
 import SettingsIcon from "@/src/shared/ui/Icons/SettingsIcon";
 import LogoutIcon from "@/src/shared/ui/Icons/LogoutIcon";
 import { logout } from "@/src/shared/auth/auth-storage";
@@ -60,7 +59,6 @@ export const ProfilePopup = ({ open, onClose }: ProfilePopupProps) => {
 
   const items: MenuItem[] = [
     { label: "Мои объявления", Icon: MyAdsIcon, onClick: navigate("/my-ads") },
-    { label: "Сообщения", Icon: ChatIcon, onClick: navigate("/chats") },
     {
       label: "Размещение рекламы на сайте LOS",
       Icon: AdPromoIcon,

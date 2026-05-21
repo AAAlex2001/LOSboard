@@ -5,7 +5,8 @@ import Typography from "@/src/shared/ui/Typography";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import { formatPhone } from "@/src/shared/lib/phone";
-import { UserAvatar, UserInfoRow, type User } from "@/src/entities/user";
+import { UserInfoRow, type User } from "@/src/entities/user";
+import { AvatarUploader } from "@/src/features/upload-avatar";
 import {
   EditProfileFieldModal,
   useEditProfileField,
@@ -47,7 +48,7 @@ export const ProfileDetails = ({ user, onUserUpdated }: ProfileDetailsProps) => 
             <Typography variant="h1">Личный профиль</Typography>
           </div>
 
-          <UserAvatar size={50} />
+          <AvatarUploader size={50} />
         </div>
 
         <div className={style.fields}>

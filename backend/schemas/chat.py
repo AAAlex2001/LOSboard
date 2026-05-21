@@ -27,6 +27,7 @@ class MessageResponse(BaseModel):
 class ConversationPeer(BaseModel):
     id: int
     name: str
+    avatar_url: Optional[str] = None
 
 
 class ConversationAdvertisement(BaseModel):
@@ -50,3 +51,7 @@ class ConversationDetail(BaseModel):
     advertisement: ConversationAdvertisement
     peer: ConversationPeer
     messages: List[MessageResponse]
+
+
+class UnreadTotalResponse(BaseModel):
+    count: int

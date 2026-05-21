@@ -62,20 +62,17 @@ async function doRefresh(): Promise<LoginResponse> {
       body: JSON.stringify({ refresh_token: currentRefreshToken }),
     });
   } catch (err) {
-    // сеть упала — это НЕ повод разлогинивать, токен ещё может быть валиден
     throw new RefreshNetworkError(
       err instanceof Error ? err.message : "network error"
     );
   }
 
   if (response.status === 401 || response.status === 403 || response.status === 422) {
-    // refresh-токен реально невалиден/протух — стираем
     logout();
     throw new RefreshAuthError("Refresh token rejected");
   }
 
   if (!response.ok) {
-    // 5xx и другие серверные ошибки — токен не трогаем
     throw new RefreshNetworkError(`refresh status ${response.status}`);
   }
 
@@ -85,7 +82,6 @@ async function doRefresh(): Promise<LoginResponse> {
 }
 
 export async function refreshToken(): Promise<LoginResponse> {
-  // single-flight: пока один запрос в полёте, остальные ждут его результат
   if (!inflightRefresh) {
     inflightRefresh = doRefresh().finally(() => {
       inflightRefresh = null;

@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/src/shared/auth/auth-provider";
 import { NotificationProvider } from "@/src/shared/ui/Notifications";
+import { UnreadProvider } from "@/src/entities/chat";
+import { MeProvider } from "@/src/entities/user";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,7 +29,11 @@ export default function RootLayout({
     >
       <body>
         <NotificationProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <MeProvider>
+              <UnreadProvider>{children}</UnreadProvider>
+            </MeProvider>
+          </AuthProvider>
         </NotificationProvider>
       </body>
     </html>

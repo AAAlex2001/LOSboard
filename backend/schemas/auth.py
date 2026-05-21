@@ -71,3 +71,8 @@ class MeResponse(BaseModel):
     email: EmailStr
     name: str
     phone_number: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+class UploadAvatarResponse(BaseModel):
+    avatar_url: str

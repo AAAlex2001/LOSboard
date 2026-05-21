@@ -9,9 +9,10 @@ import {
   MessageRow,
   groupMessagesByDay,
 } from "@/src/entities/chat";
-import { useMe } from "@/src/entities/user";
+import { useMeContext } from "@/src/entities/user";
 import { useConversationThread } from "@/src/features/chat";
 import { ChatComposer } from "@/src/features/chat/composer";
+import { useUnreadTotal } from "@/src/entities/chat";
 import style from "./style.module.scss";
 
 interface ConversationThreadProps {
@@ -24,16 +25,22 @@ export const ConversationThread = ({
   onClose,
 }: ConversationThreadProps) => {
   const router = useRouter();
-  const { user } = useMe();
+  const { user } = useMeContext();
   const { conversation, loading, sending, error, sendError, send } =
     useConversationThread(conversationId);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const { refresh: refreshUnread } = useUnreadTotal();
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    const el = messagesRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
     }
   }, [conversation?.messages.length]);
+
+  useEffect(() => {
+    if (conversation) refreshUnread();
+  }, [conversation?.id, refreshUnread]);
 
   if (loading) {
     return (
@@ -61,7 +68,7 @@ export const ConversationThread = ({
         onClose={onClose}
       />
 
-      <div className={style.messages}>
+      <div className={style.messages} ref={messagesRef}>
         {groups.length === 0 ? (
           <p className={style.empty}>Начните диалог — отправьте первое сообщение</p>
         ) : (
@@ -77,6 +84,11 @@ export const ConversationThread = ({
                     key={message.id}
                     message={message}
                     authorName={mine ? myName : peerName}
+                    authorAvatarUrl={
+                      mine
+                        ? user?.avatar_url ?? null
+                        : conversation.peer.avatar_url
+                    }
                     mine={mine}
                     showAvatar={showAvatar}
                   />
@@ -85,7 +97,6 @@ export const ConversationThread = ({
             </div>
           ))
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       <div className={style.composerWrap}>

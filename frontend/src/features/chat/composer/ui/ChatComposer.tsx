@@ -27,7 +27,7 @@ export const ChatComposer = ({ disabled, onSend }: ChatComposerProps) => {
         <input
           type="text"
           className={style.input}
-          placeholder="Type something..."
+          placeholder="Напишите сообщение..."
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={disabled}

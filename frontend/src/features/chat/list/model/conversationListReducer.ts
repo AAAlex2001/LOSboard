@@ -20,6 +20,15 @@ export function conversationListReducer(
       return { items: action.payload, loading: false, error: null };
     case "FETCH_FAILURE":
       return { items: [], loading: false, error: action.payload };
+    case "MARK_AS_READ":
+      return {
+        ...state,
+        items: state.items.map((item) =>
+          item.id === action.payload && item.unread_count > 0
+            ? { ...item, unread_count: 0 }
+            : item
+        ),
+      };
     default:
       return state;
   }

@@ -24,7 +24,6 @@ export interface MessageDayGroup {
   messages: ChatMessage[];
 }
 
-/** Группирует сообщения по дню в порядке возрастания времени. */
 export function groupMessagesByDay(messages: ChatMessage[]): MessageDayGroup[] {
   const groups: MessageDayGroup[] = [];
   const now = new Date();
