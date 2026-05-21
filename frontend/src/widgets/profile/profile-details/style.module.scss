@@ -10,12 +10,6 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 1440px) {
-  .profile {
-    padding: 0 60px;
-  }
-}
-
 .breadcrumbs {
   display: none;
   width: 100%;
@@ -60,11 +54,6 @@
 }
 
 @media (min-width: 850px) {
-  .profile {
-    gap: 40px;
-    padding: 0 20px;
-  }
-
   .breadcrumbs {
     display: flex;
   }
@@ -85,5 +74,11 @@
 
   .fields {
     gap: 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  .profile {
+    padding: 0 60px;
   }
 }

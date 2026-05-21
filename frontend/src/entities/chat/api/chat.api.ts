@@ -1,4 +1,6 @@
+import { config } from "@/src/shared/config/config";
 import { apiFetch } from "@/src/shared/auth/api-fetch";
+import { getAccessToken } from "@/src/shared/auth/auth-storage";
 import type {
   ChatAttachment,
   ChatMessage,
@@ -107,4 +109,13 @@ export async function fetchAttachmentBlob(url: string): Promise<Blob> {
     throw new Error(await readErrorDetail(response, "Не удалось загрузить вложение"));
   }
   return response.blob();
+}
+
+export function buildAttachmentStreamUrl(url: string): string {
+  const path = url.replace(/^\//, "");
+  const base = `${config.API_BASE_URL}${path}`;
+  const token = getAccessToken();
+  if (!token) return base;
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}access_token=${encodeURIComponent(token)}`;
 }

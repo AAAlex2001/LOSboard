@@ -13,7 +13,10 @@ from schemas.chat import (
     StartConversationRequest,
     UnreadTotalResponse,
 )
-from services.auth.dependencies import get_current_user
+from services.auth.dependencies import (
+    get_current_user,
+    get_current_user_or_query_token,
+)
 from services.chat.use_cases.get_attachment import GetChatAttachmentUseCase
 from services.chat.use_cases.get_conversation import GetConversationUseCase
 from services.chat.use_cases.get_unread_total import GetUnreadTotalUseCase
@@ -121,7 +124,7 @@ async def download_attachment(
     conversation_id: int,
     filename: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_or_query_token),
 ) -> FileResponse:
     use_case = GetChatAttachmentUseCase()
     return await use_case.get(

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import PaperclipIcon from "@/src/shared/ui/Icons/PaperclipIcon";
 import { Lightbox } from "@/src/shared/ui/Lightbox";
+import { buildAttachmentStreamUrl } from "../../api/chat.api";
 import { useSecureAsset } from "../../model/useSecureAsset";
 import type { ChatAttachment } from "../../model/types";
 import style from "./style.module.scss";
@@ -24,20 +25,6 @@ export const MessageAttachmentView = ({
   const [docDownloading, setDocDownloading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { src, error } = useSecureAsset(kind === "image" ? url : null);
-
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const [videoLoading, setVideoLoading] = useState(false);
-  const [videoError, setVideoError] = useState<string | null>(null);
-  const videoSrcRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (videoSrcRef.current) {
-        URL.revokeObjectURL(videoSrcRef.current);
-        videoSrcRef.current = null;
-      }
-    };
-  }, []);
 
   if (kind === "image") {
     if (error) return <span className={style.error}>{error}</span>;
@@ -70,51 +57,24 @@ export const MessageAttachmentView = ({
   }
 
   if (kind === "video") {
-    const handleVideoClick = async () => {
-      if (videoSrc) {
-        setLightboxOpen(true);
-        return;
-      }
-      setVideoLoading(true);
-      setVideoError(null);
-      try {
-        const { fetchAttachmentBlob } = await import("../../api/chat.api");
-        const blob = await fetchAttachmentBlob(url);
-        const objectUrl = URL.createObjectURL(blob);
-        videoSrcRef.current = objectUrl;
-        setVideoSrc(objectUrl);
-        setLightboxOpen(true);
-      } catch (err: unknown) {
-        setVideoError(err instanceof Error ? err.message : String(err));
-      } finally {
-        setVideoLoading(false);
-      }
-    };
-
-    if (videoError) return <span className={style.error}>{videoError}</span>;
-
+    const videoUrl = buildAttachmentStreamUrl(url);
     return (
       <>
         <button
           type="button"
           className={style.videoBtn}
-          onClick={handleVideoClick}
-          disabled={videoLoading}
+          onClick={() => setLightboxOpen(true)}
           aria-label={`Открыть ${filename}`}
         >
           <span className={style.playOverlay} aria-hidden="true">
-            {videoLoading ? (
-              <span className={style.videoSpinner} />
-            ) : (
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M8 5v14l11-7z" fill="#FFFFFF" />
-              </svg>
-            )}
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5v14l11-7z" fill="#FFFFFF" />
+            </svg>
           </span>
         </button>
-        {lightboxOpen && videoSrc && (
+        {lightboxOpen && (
           <Lightbox
-            src={videoSrc}
+            src={videoUrl}
             kind="video"
             alt={filename}
             onClose={() => setLightboxOpen(false)}
