@@ -86,6 +86,25 @@
   border: 1px solid #E7EAF8;
 }
 
+.previewBtn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
 .previewImg {
   width: 100%;
   height: 100%;

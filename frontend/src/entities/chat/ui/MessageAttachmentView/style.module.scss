@@ -1,0 +1,148 @@
+.imageLink {
+  display: block;
+  width: 100px;
+  height: 100px;
+  padding: 0;
+  border: none;
+  background: #EEF4FF;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imageSkeleton,
+.videoSkeleton {
+  width: 100px;
+  height: 100px;
+  background: #EEF4FF;
+  border-radius: 10px;
+}
+
+.videoBtn {
+  position: relative;
+  display: block;
+  width: 100px;
+  height: 100px;
+  padding: 0;
+  border: none;
+  background: #000000;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.doc {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  max-width: 220px;
+  padding: 10px 14px;
+  background: #EEF4FF;
+  border: 1px solid rgba(17, 41, 189, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: Inter;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #1129BD;
+    background: #E2ECFF;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
+}
+
+.docIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: #1129BD;
+}
+
+.docBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.docName {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: #1E1E1E;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docSize {
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: rgba(27, 31, 38, 0.6);
+}
+
+.error {
+  display: inline-block;
+  padding: 4px 8px;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 11px;
+  color: #FF3B30;
+  background: #FFEAEA;
+  border-radius: 6px;
+}
+
+@media (min-width: 850px) {
+  .imageLink,
+  .imageSkeleton,
+  .videoSkeleton,
+  .videoBtn {
+    width: 156px;
+    height: 156px;
+  }
+}

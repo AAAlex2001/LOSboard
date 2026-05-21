@@ -10,6 +10,7 @@ import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
 import UserIcon from "@/src/shared/ui/Icons/UserIcon";
 import LogoutIcon from "@/src/shared/ui/Icons/LogoutIcon";
 import MyAdsIcon from "@/src/shared/ui/Icons/MyAdsIcon";
+import AdPromoIcon from "@/src/shared/ui/Icons/AdPromoIcon";
 import { Button } from "@/src/shared/ui/Button";
 import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
 import { useUnreadTotal } from "@/src/entities/chat";
@@ -113,6 +114,11 @@ export const BurgerMenu = ({
     router.push("/login");
   };
 
+  const handleAdvertising = () => {
+    onClose();
+    router.push("/advertising");
+  };
+
   return createPortal(
     <div
       className={`${style.overlay} ${open ? style.overlayOpen : ""}`}
@@ -150,6 +156,15 @@ export const BurgerMenu = ({
             >
               <span className={style.menuIcon}><MapIcon /></span>
               <span className={style.menuLabel}>Карта</span>
+            </button>
+
+            <button
+              type="button"
+              className={style.menuItem}
+              onClick={handleAdvertising}
+            >
+              <span className={style.menuIcon}><AdPromoIcon /></span>
+              <span className={style.menuLabel}>Размещение рекламы</span>
             </button>
 
             {isAuthenticated && (

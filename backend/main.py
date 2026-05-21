@@ -26,6 +26,10 @@ async def run_migrations(conn):
         "ADD COLUMN IF NOT EXISTS avatar_url VARCHAR"
     ))
     await conn.execute(text(
+        "ALTER TABLE messages "
+        "ALTER COLUMN text SET DEFAULT ''"
+    ))
+    await conn.execute(text(
         "ALTER TABLE advertisements "
         "ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT now()"
     ))

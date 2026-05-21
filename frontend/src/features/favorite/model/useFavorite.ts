@@ -1,31 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useReducer } from "react";
 import type { Advertisement } from "@/src/entities/advertisement";
 import { toggleFavorite } from "@/src/entities/favorite";
+import {
+  favoriteToggleReducer,
+  initialFavoriteToggleState,
+} from "./favoriteToggleReducer";
 
 export function useFavorite() {
-  const [pendingIds, setPendingIds] = useState<Set<number>>(new Set());
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(
+    favoriteToggleReducer,
+    initialFavoriteToggleState
+  );
 
   const toggle = async (ad: Advertisement): Promise<Advertisement | null> => {
-    if (pendingIds.has(ad.id)) return null;
-
-    setPendingIds((prev) => new Set(prev).add(ad.id));
-    setError(null);
+    if (state.pendingIds.has(ad.id)) return null;
+    dispatch({ type: "TOGGLE_START", payload: ad.id });
     try {
-      return await toggleFavorite(ad.id);
+      const result = await toggleFavorite(ad.id);
+      dispatch({ type: "TOGGLE_END", payload: ad.id });
+      return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-      return null;
-    } finally {
-      setPendingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(ad.id);
-        return next;
+      dispatch({
+        type: "TOGGLE_FAILURE",
+        payload: {
+          id: ad.id,
+          error: err instanceof Error ? err.message : String(err),
+        },
       });
+      return null;
     }
   };
 
-  return { toggle, pendingIds, error };
+  return { toggle, ...state };
 }

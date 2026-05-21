@@ -1,41 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import {
   getMyAdvertisements,
-  type Advertisement,
   type GetMyAdvertisementsParams,
 } from "@/src/entities/advertisement";
+import {
+  initialMyAdvertisementsState,
+  myAdvertisementsReducer,
+} from "./myAdvertisementsReducer";
 
 export function useMyAdvertisements(params: GetMyAdvertisementsParams = {}) {
-  const [items, setItems] = useState<Advertisement[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(
+    myAdvertisementsReducer,
+    initialMyAdvertisementsState
+  );
 
   const { skip = 0, limit = 20 } = params;
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-    setItems([]);
+    dispatch({ type: "FETCH_START" });
 
     getMyAdvertisements({ skip, limit, signal: controller.signal })
       .then((data) => {
         if (controller.signal.aborted) return;
-        setItems(data);
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
       })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
-        setError(err instanceof Error ? err.message : String(err));
-      })
-      .finally(() => {
-        if (controller.signal.aborted) return;
-        setLoading(false);
+        dispatch({
+          type: "FETCH_FAILURE",
+          payload: err instanceof Error ? err.message : String(err),
+        });
       });
 
     return () => controller.abort();
   }, [skip, limit]);
 
-  return { items, loading, error };
+  return state;
 }

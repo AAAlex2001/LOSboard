@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useReducer } from "react";
-import { getConversation, sendMessage } from "@/src/entities/chat";
+import {
+  getConversation,
+  sendMessage,
+  type ChatAttachment,
+} from "@/src/entities/chat";
 import {
   conversationThreadReducer,
   initialConversationThreadState,
@@ -33,12 +37,12 @@ export function useConversationThread(conversationId: number) {
     return () => controller.abort();
   }, [conversationId]);
 
-  const send = async (text: string) => {
+  const send = async (text: string, attachments: ChatAttachment[] = []) => {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed && attachments.length === 0) return;
     dispatch({ type: "SEND_START" });
     try {
-      const msg = await sendMessage(conversationId, trimmed);
+      const msg = await sendMessage(conversationId, trimmed, attachments);
       dispatch({ type: "SEND_SUCCESS", payload: msg });
     } catch (err: unknown) {
       dispatch({

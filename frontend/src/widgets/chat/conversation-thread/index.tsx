@@ -100,7 +100,11 @@ export const ConversationThread = ({
       </div>
 
       <div className={style.composerWrap}>
-        <ChatComposer disabled={sending} onSend={send} />
+        <ChatComposer
+          conversationId={conversationId}
+          disabled={sending}
+          onSend={send}
+        />
         {sendError && <p className={style.sendError}>{sendError}</p>}
       </div>
     </div>

@@ -4,13 +4,24 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class AttachmentMeta(BaseModel):
+    url: str
+    filename: str
+    kind: str
+    mime_type: str
+    size_bytes: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class StartConversationRequest(BaseModel):
     advertisement_id: int
     text: Optional[str] = Field(None, max_length=2000)
 
 
 class SendMessageRequest(BaseModel):
-    text: str = Field(..., min_length=1, max_length=2000)
+    text: str = Field("", max_length=2000)
+    attachments: List[AttachmentMeta] = Field(default_factory=list)
 
 
 class MessageResponse(BaseModel):
@@ -20,6 +31,7 @@ class MessageResponse(BaseModel):
     text: str
     created_at: datetime
     is_read: bool
+    attachments: List[AttachmentMeta] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -278,11 +278,19 @@
 .previewPhoto {
   width: 60px;
   height: 60px;
+  padding: 0;
+  border: none;
   border-radius: 10px;
   background-color: #EFEFEF;
   background-size: cover;
   background-position: center;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .previewButtons {

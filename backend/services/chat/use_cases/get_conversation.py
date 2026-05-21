@@ -5,7 +5,9 @@ from sqlalchemy.orm import selectinload
 
 from models.chat import Conversation, Message
 from models.user import User
+
 from schemas.chat import (
+    AttachmentMeta,
     ConversationAdvertisement,
     ConversationDetail,
     ConversationPeer,
@@ -28,7 +30,9 @@ class GetConversationUseCase:
                 selectinload(Conversation.advertisement),
                 selectinload(Conversation.buyer),
                 selectinload(Conversation.seller),
-                selectinload(Conversation.messages),
+                selectinload(Conversation.messages).selectinload(
+                    Message.attachments
+                ),
             )
             .where(Conversation.id == conversation_id)
         )
@@ -72,5 +76,25 @@ class GetConversationUseCase:
                 name=peer.name if peer else "",
                 avatar_url=peer.avatar_url if peer else None,
             ),
-            messages=[MessageResponse.model_validate(m) for m in conversation.messages],
+            messages=[
+                MessageResponse(
+                    id=m.id,
+                    conversation_id=m.conversation_id,
+                    sender_id=m.sender_id,
+                    text=m.text,
+                    created_at=m.created_at,
+                    is_read=m.is_read,
+                    attachments=[
+                        AttachmentMeta(
+                            url=a.url,
+                            filename=a.filename,
+                            kind=a.kind,
+                            mime_type=a.mime_type,
+                            size_bytes=a.size_bytes,
+                        )
+                        for a in m.attachments
+                    ],
+                )
+                for m in conversation.messages
+            ],
         )

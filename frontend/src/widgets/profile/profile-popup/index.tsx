@@ -62,7 +62,7 @@ export const ProfilePopup = ({ open, onClose }: ProfilePopupProps) => {
     {
       label: "Размещение рекламы на сайте LOS",
       Icon: AdPromoIcon,
-      onClick: navigate("/place-ad"),
+      onClick: navigate("/advertising"),
     },
     { label: "Настройки аккаунта", Icon: SettingsIcon, onClick: navigate("/profile") },
     { label: "Выйти", Icon: LogoutIcon, onClick: handleLogout },

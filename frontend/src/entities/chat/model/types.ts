@@ -1,3 +1,13 @@
+export type AttachmentKind = "image" | "video" | "document";
+
+export interface ChatAttachment {
+  url: string;
+  filename: string;
+  kind: AttachmentKind;
+  mime_type: string;
+  size_bytes: number;
+}
+
 export interface ChatMessage {
   id: number;
   conversation_id: number;
@@ -5,6 +15,7 @@ export interface ChatMessage {
   text: string;
   created_at: string;
   is_read: boolean;
+  attachments: ChatAttachment[];
 }
 
 export interface ChatPeer {

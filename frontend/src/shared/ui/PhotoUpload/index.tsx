@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PaperclipIcon from "@/src/shared/ui/Icons/PaperclipIcon";
+import { Lightbox } from "@/src/shared/ui/Lightbox";
 import style from "./style.module.scss";
 
 interface PhotoUploadProps {
@@ -25,6 +26,14 @@ export const PhotoUpload = ({
 }: PhotoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [blobUrls, setBlobUrls] = useState<string[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setBlobUrls(urls);
+    return () => urls.forEach(URL.revokeObjectURL);
+  }, [files]);
 
   const addFiles = (incoming: FileList | File[]) => {
     const maxBytes = maxSizeMb * 1024 * 1024;
@@ -60,6 +69,11 @@ export const PhotoUpload = ({
 
   const hasPreviews = existingUrls.length > 0 || files.length > 0;
 
+  const openLightbox = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    setLightboxUrl(url);
+  };
+
   return (
     <div className={style.wrap}>
       <div
@@ -73,7 +87,14 @@ export const PhotoUpload = ({
           <div className={style.previewList}>
             {existingUrls.map((url) => (
               <div key={url} className={style.preview}>
-                <img src={url} alt="" className={style.previewImg} />
+                <button
+                  type="button"
+                  className={style.previewBtn}
+                  onClick={(e) => openLightbox(e, url)}
+                  aria-label="Открыть фото"
+                >
+                  <img src={url} alt="" className={style.previewImg} />
+                </button>
                 {onRemoveExisting && (
                   <button
                     type="button"
@@ -89,26 +110,35 @@ export const PhotoUpload = ({
                 )}
               </div>
             ))}
-            {files.map((file, index) => (
-              <div key={`${file.name}-${index}`} className={style.preview}>
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={file.name}
-                  className={style.previewImg}
-                />
-                <button
-                  type="button"
-                  className={style.removeBtn}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemove(index);
-                  }}
-                  aria-label="Удалить"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+            {files.map((file, index) => {
+              const url = blobUrls[index];
+              return (
+                <div key={`${file.name}-${index}`} className={style.preview}>
+                  <button
+                    type="button"
+                    className={style.previewBtn}
+                    onClick={(e) => openLightbox(e, url)}
+                    aria-label={`Открыть ${file.name}`}
+                    disabled={!url}
+                  >
+                    {url && (
+                      <img src={url} alt={file.name} className={style.previewImg} />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className={style.removeBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(index);
+                    }}
+                    aria-label="Удалить"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <span className={style.dropzoneText}>
@@ -132,6 +162,10 @@ export const PhotoUpload = ({
       </div>
 
       <span className={style.hint}>{hint}</span>
+
+      {lightboxUrl && (
+        <Lightbox src={lightboxUrl} onClose={() => setLightboxUrl(null)} />
+      )}
     </div>
   );
 };

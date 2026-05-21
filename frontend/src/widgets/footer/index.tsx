@@ -27,7 +27,7 @@ export const Footer = () => {
 
         <nav className={style.links}>
           <div className={style.linksGroup}>
-            <a className={style.link} href="#">Размещение рекламы на сайте</a>
+            <a className={style.link} href="/advertising">Размещение рекламы на сайте</a>
             <a className={style.link} href="#">Тур-гид по Абхазии от LOS</a>
             <a className={style.link} href="#">Связаться с нами</a>
           </div>
@@ -47,7 +47,7 @@ export const Footer = () => {
         <div className={style.legal}>
           <a className={style.legalLink} href="#">Политика конфиденциальности</a>
           <a className={style.legalLink} href="#">Пользовательское соглашение</a>
-          <a className={style.legalLink} href="#">Правила размещения</a>
+          <a className={style.legalLink} href="/advertising">Правила размещения</a>
           <p className={style.copyright}>
             © {new Date().getFullYear()} Land of soul Abkhazia. Все права защищены. Дизайн: @Amosssik
           </p>

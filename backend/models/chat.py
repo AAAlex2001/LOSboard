@@ -56,13 +56,39 @@ class Message(Base):
     id = Column(Integer, primary_key=True, index=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False)
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    text = Column(String, nullable=False)
+    text = Column(String, nullable=False, server_default="")
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     is_read = Column(Boolean, default=False, nullable=False)
 
     conversation = relationship("Conversation", back_populates="messages")
     sender = relationship("User")
+    attachments = relationship(
+        "MessageAttachment",
+        back_populates="message",
+        cascade="all, delete-orphan",
+        order_by="MessageAttachment.id",
+    )
 
     __table_args__ = (
         Index("ix_messages_conversation_created", "conversation_id", "created_at"),
+    )
+
+
+class MessageAttachment(Base):
+    __tablename__ = "message_attachments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    message_id = Column(
+        Integer, ForeignKey("messages.id", ondelete="CASCADE"), nullable=False
+    )
+    url = Column(String, nullable=False)
+    filename = Column(String, nullable=False)
+    kind = Column(String, nullable=False)
+    mime_type = Column(String, nullable=False)
+    size_bytes = Column(Integer, nullable=False)
+
+    message = relationship("Message", back_populates="attachments")
+
+    __table_args__ = (
+        Index("ix_message_attachments_message", "message_id"),
     )

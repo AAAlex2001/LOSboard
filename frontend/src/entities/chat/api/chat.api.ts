@@ -1,5 +1,6 @@
 import { apiFetch } from "@/src/shared/auth/api-fetch";
 import type {
+  ChatAttachment,
   ChatMessage,
   ConversationDetail,
   ConversationListItem,
@@ -70,14 +71,40 @@ export async function getUnreadTotal(
 
 export async function sendMessage(
   conversationId: number,
-  text: string
+  text: string,
+  attachments: ChatAttachment[] = []
 ): Promise<ChatMessage> {
   const response = await apiFetch(`conversations/${conversationId}/messages`, {
     method: "POST",
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, attachments }),
   });
   if (!response.ok) {
     throw new Error(await readErrorDetail(response, "Не удалось отправить сообщение"));
   }
   return response.json();
+}
+
+export async function uploadChatAttachment(
+  conversationId: number,
+  file: File
+): Promise<ChatAttachment> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await apiFetch(
+    `conversations/${conversationId}/attachments`,
+    { method: "POST", body: form }
+  );
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить файл"));
+  }
+  return response.json();
+}
+
+export async function fetchAttachmentBlob(url: string): Promise<Blob> {
+  const path = url.replace(/^\//, "");
+  const response = await apiFetch(path, { method: "GET" });
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось загрузить вложение"));
+  }
+  return response.blob();
 }

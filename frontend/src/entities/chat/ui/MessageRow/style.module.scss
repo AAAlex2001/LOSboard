@@ -75,3 +75,14 @@
 .mine .text {
   text-align: right;
 }
+
+.attachments {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mine .attachments {
+  justify-content: flex-end;
+}

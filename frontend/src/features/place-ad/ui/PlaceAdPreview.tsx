@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader } from "@/src/shared/ui/Loader";
 import { Button } from "@/src/shared/ui/Button";
+import { Lightbox } from "@/src/shared/ui/Lightbox";
 import { resolveAssetUrl } from "@/src/entities/advertisement";
 import type { PlaceAdState } from "../model/types";
 import type { Category, Subcategory } from "@/src/entities/category";
@@ -32,6 +33,7 @@ export const PlaceAdPreview = ({
   submitLabel = "Разместить объявление",
 }: PlaceAdPreviewProps) => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const blobUrls = state.files.map((file) => URL.createObjectURL(file));
@@ -93,12 +95,13 @@ export const PlaceAdPreview = ({
           </div>
           <div className={style.previewPhotos}>
             {previewUrls.map((url, index) => (
-              <div
+              <button
                 key={url}
+                type="button"
                 className={style.previewPhoto}
                 style={{ backgroundImage: `url(${url})` }}
-                role="img"
-                aria-label={`Фото ${index + 1}`}
+                onClick={() => setLightboxUrl(url)}
+                aria-label={`Открыть фото ${index + 1}`}
               />
             ))}
           </div>
@@ -136,6 +139,10 @@ export const PlaceAdPreview = ({
       </div>
 
       {state.error && <p className={style.error}>{state.error}</p>}
+
+      {lightboxUrl && (
+        <Lightbox src={lightboxUrl} onClose={() => setLightboxUrl(null)} />
+      )}
     </div>
   );
 };
