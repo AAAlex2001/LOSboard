@@ -1,18 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
 
 from schemas.auth import CreateAccountRequest, CreateAccountResponse
 from models.user import User
-
-
-password_context = CryptContext(
-    schemes=["argon2"],
-    argon2__memory_cost=19456,
-    argon2__time_cost=2,
-    argon2__parallelism=1,
-)
+from services.auth.password import password_context
 
 
 class CreateAccountUseCase:
@@ -46,4 +38,3 @@ class CreateAccountUseCase:
             email=new_user.email,
             id=new_user.id,
         )
-     

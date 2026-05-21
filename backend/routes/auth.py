@@ -80,6 +80,7 @@ async def login_account_endpoint(
 @router.post("/refresh", response_model=RefreshTokenResponse)
 async def refresh_token_endpoint(
     request: RefreshTokenRequest,
+    db: AsyncSession = Depends(get_db),
 ):
     use_case = RefreshTokenUseCase()
-    return await use_case.refresh_token(request)
+    return await use_case.refresh_token(request, db)

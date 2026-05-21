@@ -27,10 +27,10 @@ async def get_current_user(
 ) -> User:
     result = await db.execute(select(User).where(User.id == token_payload.user_id))
     user = result.scalars().first()
-
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
-
+    if user.token_version != token_payload.token_version:
+        raise HTTPException(status_code=401, detail="Token has been revoked")
     return user
 
 
@@ -45,7 +45,10 @@ async def get_optional_user(
     except HTTPException:
         return None
     result = await db.execute(select(User).where(User.id == payload.user_id))
-    return result.scalars().first()
+    user = result.scalars().first()
+    if not user or user.token_version != payload.token_version:
+        return None
+    return user
 
 
 async def get_current_user_or_query_token(
@@ -62,4 +65,6 @@ async def get_current_user_or_query_token(
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
+    if user.token_version != payload.token_version:
+        raise HTTPException(status_code=401, detail="Token has been revoked")
     return user

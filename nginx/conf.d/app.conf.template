@@ -1,6 +1,15 @@
 # Production nginx config — copy this to nginx/conf.d/app.conf
 # and replace example.com with your domain.
 
+# Rate limiting zones (10 MB ~= 160k clients tracked):
+#   auth_login: brute-force protection on /api/auth/login
+#   auth_signup: anti-spam on /api/auth/create-account
+#   auth_misc:  protection on /api/auth/refresh and password/email changes
+limit_req_zone $binary_remote_addr zone=auth_login:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=auth_signup:10m rate=5r/m;
+limit_req_zone $binary_remote_addr zone=auth_misc:10m rate=30r/m;
+limit_req_status 429;
+
 server {
     listen 80;
     server_name example.com www.example.com;
@@ -27,7 +36,50 @@ server {
 
     client_max_body_size 25M;
 
-    # Backend (FastAPI) — anything under /api/* gets proxied, stripping /api prefix.
+    # Login: brute-force protection (10 req/min/IP, burst 5).
+    location = /api/auth/login {
+        limit_req zone=auth_login burst=5 nodelay;
+        proxy_pass http://backend:8000/auth/login;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Signup: spam protection (5 req/min/IP, burst 3).
+    location = /api/auth/create-account {
+        limit_req zone=auth_signup burst=3 nodelay;
+        proxy_pass http://backend:8000/auth/create-account;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Refresh + sensitive account updates (30 req/min/IP).
+    location = /api/auth/refresh {
+        limit_req zone=auth_misc burst=10 nodelay;
+        proxy_pass http://backend:8000/auth/refresh;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location = /api/auth/update-account {
+        limit_req zone=auth_misc burst=10 nodelay;
+        proxy_pass http://backend:8000/auth/update-account;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Backend (FastAPI) — anything else under /api/* gets proxied, stripping /api prefix.
     location /api/ {
         proxy_pass http://backend:8000/;
         proxy_http_version 1.1;

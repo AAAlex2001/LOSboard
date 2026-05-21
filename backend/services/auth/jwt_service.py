@@ -24,6 +24,7 @@ class TokenPayloadDTO:
     user_id: int
     email: str
     token_type: str
+    token_version: int
 
 
 class JWTService:
@@ -42,38 +43,35 @@ class JWTService:
         self.access_token_expire_minutes = access_token_expire_minutes
         self.refresh_token_expire_days = refresh_token_expire_days
 
-    def create_access_token(self, user_id: int, email: str) -> str:
+    def create_access_token(self, user_id: int, email: str, token_version: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=self.access_token_expire_minutes
         )
-
         payload = {
             "sub": str(user_id),
             "email": email,
             "type": "access",
+            "tv": token_version,
             "exp": expire,
         }
-
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
 
-    def create_refresh_token(self, user_id: int, email: str) -> str:
+    def create_refresh_token(self, user_id: int, email: str, token_version: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(
             days=self.refresh_token_expire_days
         )
-
         payload = {
             "sub": str(user_id),
             "email": email,
             "type": "refresh",
+            "tv": token_version,
             "exp": expire,
         }
-
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
 
-    def create_tokens(self, user_id: int, email: str) -> TokenDTO:
-        access_token = self.create_access_token(user_id, email)
-        refresh_token = self.create_refresh_token(user_id, email)
-
+    def create_tokens(self, user_id: int, email: str, token_version: int) -> TokenDTO:
+        access_token = self.create_access_token(user_id, email, token_version)
+        refresh_token = self.create_refresh_token(user_id, email, token_version)
         return TokenDTO(
             access_token=access_token,
             refresh_token=refresh_token,
@@ -90,14 +88,21 @@ class JWTService:
             user_id = payload.get("sub")
             email = payload.get("email")
             token_type = payload.get("type")
+            token_version = payload.get("tv")
 
-            if user_id is None or email is None or token_type is None:
+            if (
+                user_id is None
+                or email is None
+                or token_type is None
+                or token_version is None
+            ):
                 raise HTTPException(status_code=401, detail="Invalid token")
 
             return TokenPayloadDTO(
                 user_id=int(user_id),
                 email=email,
                 token_type=token_type,
+                token_version=int(token_version),
             )
 
         except JWTError:
@@ -105,16 +110,12 @@ class JWTService:
 
     def verify_access_token(self, token: str) -> TokenPayloadDTO:
         payload = self.verify_token(token)
-
         if payload.token_type != "access":
             raise HTTPException(status_code=401, detail="Invalid token type")
-
         return payload
 
     def verify_refresh_token(self, token: str) -> TokenPayloadDTO:
         payload = self.verify_token(token)
-
         if payload.token_type != "refresh":
             raise HTTPException(status_code=401, detail="Invalid token type")
-
         return payload

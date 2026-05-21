@@ -1,19 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
 
 from schemas.auth import LoginRequest, LoginResponse
 from models.user import User
 from services.auth.jwt_service import JWTService
-
-
-password_context = CryptContext(
-    schemes=["argon2"],
-    argon2__memory_cost=19456,
-    argon2__time_cost=2,
-    argon2__parallelism=1,
-)
+from services.auth.password import password_context, DUMMY_PASSWORD_HASH
 
 
 class LoginAccountUseCase:
@@ -31,11 +23,18 @@ class LoginAccountUseCase:
         )
         user = result.scalar_one_or_none()
 
-        if not user or not self.password_context.verify(request.password, user.password):
+        password_to_check = user.password if user else DUMMY_PASSWORD_HASH
+        password_ok = self.password_context.verify(request.password, password_to_check)
+
+        if not user or not password_ok:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        access_token = self.jwt_service.create_access_token(user.id, user.email)
-        refresh_token = self.jwt_service.create_refresh_token(user.id, user.email)
+
+        access_token = self.jwt_service.create_access_token(
+            user.id, user.email, user.token_version
+        )
+        refresh_token = self.jwt_service.create_refresh_token(
+            user.id, user.email, user.token_version
+        )
 
         return LoginResponse(
             message="Login successful",

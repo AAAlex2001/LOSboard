@@ -1,18 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
 
 from schemas.auth import UpdateAccountRequest, UpdateAccountResponse
 from models.user import User
-
-
-password_context = CryptContext(
-    schemes=["argon2"],
-    argon2__memory_cost=19456,
-    argon2__time_cost=2,
-    argon2__parallelism=1,
-)
+from services.auth.password import password_context
 
 
 class UpdateAccountUseCase:
@@ -33,22 +25,37 @@ class UpdateAccountUseCase:
         if not existing_user:
             raise HTTPException(status_code=404, detail="User not found")
 
+        if request.password is not None or request.email is not None:
+            if not request.current_password:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Для смены email или пароля укажите текущий пароль",
+                )
+            if not self.password_context.verify(
+                request.current_password, existing_user.password
+            ):
+                raise HTTPException(
+                    status_code=401, detail="Неверный текущий пароль"
+                )
+
         if request.name is not None:
             existing_user.name = request.name
         if request.password is not None:
             existing_user.password = self.password_context.hash(request.password)
+            existing_user.token_version = (existing_user.token_version or 0) + 1
         if request.phone_number is not None:
             if not request.phone_number.isdigit() or len(request.phone_number) != 11:
                 raise HTTPException(status_code=400, detail="Invalid phone number format")
             existing_user.phone_number = request.phone_number
 
-        if request.email is not None:
+        if request.email is not None and request.email != existing_user.email:
             email_check = await db.execute(
                 select(User).where(User.email == request.email, User.id != user_id)
             )
             if email_check.scalar_one_or_none():
                 raise HTTPException(status_code=400, detail="Email already in use")
             existing_user.email = request.email
+            existing_user.token_version = (existing_user.token_version or 0) + 1
 
         await db.flush()
         return UpdateAccountResponse(
@@ -58,4 +65,3 @@ class UpdateAccountUseCase:
             name=existing_user.name,
             id=existing_user.id,
         )
-    

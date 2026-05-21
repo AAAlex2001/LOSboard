@@ -1,21 +1,18 @@
+import io
 import os
 import secrets
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile
+from PIL import Image, ImageOps, UnidentifiedImageError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.user import User
 
 
-ALLOWED_AVATAR_MIME = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 AVATAR_MAX_BYTES = 5 * 1024 * 1024
-EXTENSION_BY_MIME = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-    "image/webp": ".webp",
-    "image/gif": ".gif",
-}
+AVATAR_MAX_DIMENSION = 512
+AVATAR_WEBP_QUALITY = 85
 AVATARS_DIR = Path(__file__).resolve().parents[3] / "uploads" / "avatars"
 AVATARS_PUBLIC_PREFIX = "/static/uploads/avatars/"
 
@@ -31,19 +28,31 @@ class UploadAvatarUseCase:
         db: AsyncSession,
         current_user: User,
     ) -> str:
-        if file.content_type not in ALLOWED_AVATAR_MIME:
-            raise HTTPException(status_code=400, detail="Недопустимый формат файла")
-
         contents = await file.read()
         if len(contents) == 0:
             raise HTTPException(status_code=400, detail="Пустой файл")
         if len(contents) > AVATAR_MAX_BYTES:
-            raise HTTPException(status_code=400, detail="Файл слишком большой (макс 5 МБ)")
+            raise HTTPException(
+                status_code=400, detail="Файл слишком большой (макс 5 МБ)"
+            )
 
-        ext = EXTENSION_BY_MIME[file.content_type]
-        filename = f"{current_user.id}_{secrets.token_hex(8)}{ext}"
+        try:
+            with Image.open(io.BytesIO(contents)) as img:
+                img = ImageOps.exif_transpose(img)
+                img = img.convert("RGB")
+                img.thumbnail(
+                    (AVATAR_MAX_DIMENSION, AVATAR_MAX_DIMENSION),
+                    Image.Resampling.LANCZOS,
+                )
+                buf = io.BytesIO()
+                img.save(buf, format="WEBP", quality=AVATAR_WEBP_QUALITY, method=6)
+                processed = buf.getvalue()
+        except (UnidentifiedImageError, OSError):
+            raise HTTPException(status_code=400, detail="Файл не является изображением")
+
+        filename = f"{current_user.id}_{secrets.token_hex(8)}.webp"
         target_path = AVATARS_DIR / filename
-        target_path.write_bytes(contents)
+        target_path.write_bytes(processed)
 
         old_url = current_user.avatar_url
         avatar_url = f"{AVATARS_PUBLIC_PREFIX}{filename}"

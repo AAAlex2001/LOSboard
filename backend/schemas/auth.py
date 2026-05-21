@@ -24,6 +24,7 @@ class UpdateAccountRequest(BaseModel):
     password: Optional[str] = Field(None, min_length=8, max_length=128)
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     phone_number: Optional[str] = Field(None, min_length=11, max_length=11)
+    current_password: Optional[str] = Field(None, max_length=128)
 
     @field_validator("email", mode="before")
     @classmethod

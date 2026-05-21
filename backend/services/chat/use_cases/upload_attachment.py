@@ -1,38 +1,19 @@
+import io
 import secrets
-from pathlib import Path
 
 from fastapi import HTTPException, UploadFile
+from PIL import Image, UnidentifiedImageError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.chat import Conversation
 from models.user import User
 from schemas.chat import AttachmentMeta
-
-
-CHAT_UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads" / "chat"
-
-SINGLE_FILE_MAX_BYTES = 30 * 1024 * 1024
-
-ALLOWED_MIME: dict[str, tuple[str, str]] = {
-    "image/jpeg": ("image", ".jpg"),
-    "image/png": ("image", ".png"),
-    "image/webp": ("image", ".webp"),
-    "image/gif": ("image", ".gif"),
-    "video/mp4": ("video", ".mp4"),
-    "video/quicktime": ("video", ".mov"),
-    "video/webm": ("video", ".webm"),
-    "application/pdf": ("document", ".pdf"),
-    "application/msword": ("document", ".doc"),
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
-        "document",
-        ".docx",
-    ),
-    "application/vnd.ms-excel": ("document", ".xls"),
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
-        "document",
-        ".xlsx",
-    ),
-}
+from services.chat.attachments import (
+    ALLOWED_MIME,
+    CHAT_UPLOAD_DIR,
+    SINGLE_FILE_MAX_BYTES,
+    safe_filename,
+)
 
 
 class UploadChatAttachmentUseCase:
@@ -62,16 +43,23 @@ class UploadChatAttachmentUseCase:
                 status_code=400, detail="Файл слишком большой (макс 30 МБ)"
             )
 
+        if kind == "image":
+            try:
+                with Image.open(io.BytesIO(contents)) as img:
+                    img.verify()
+            except (UnidentifiedImageError, OSError):
+                raise HTTPException(
+                    status_code=400, detail="Файл не является корректным изображением"
+                )
+
         target_dir = CHAT_UPLOAD_DIR / str(conversation_id)
         target_dir.mkdir(parents=True, exist_ok=True)
         stored_name = f"{secrets.token_hex(12)}{ext}"
         (target_dir / stored_name).write_bytes(contents)
 
-        original_name = (file.filename or "file")[:200]
-
         return AttachmentMeta(
             url=f"/conversations/{conversation_id}/attachments/{stored_name}",
-            filename=original_name,
+            filename=safe_filename(file.filename or "file"),
             kind=kind,
             mime_type=file.content_type,
             size_bytes=len(contents),
