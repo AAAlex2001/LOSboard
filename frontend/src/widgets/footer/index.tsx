@@ -28,7 +28,14 @@ export const Footer = () => {
         <nav className={style.links}>
           <div className={style.linksGroup}>
             <a className={style.link} href="/advertising">Размещение рекламы на сайте</a>
-            <a className={style.link} href="#">Тур-гид по Абхазии от LOS</a>
+            <a
+              className={style.link}
+              href="https://www.landofsoul-apsny.ru/ru"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Тур-гид по Абхазии от LOS
+            </a>
             <a className={style.link} href="/contacts">Связаться с нами</a>
           </div>
 
