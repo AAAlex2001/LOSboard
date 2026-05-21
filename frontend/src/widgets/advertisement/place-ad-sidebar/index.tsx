@@ -24,13 +24,13 @@ export const PlaceAdSidebar = () => {
         </div>
 
         <div className={style.links}>
-          <a className={style.link} href="#">
+          <a className={style.link} href="/advertising">
             Размещение рекламы на сайте LOS
           </a>
-          <a className={style.link} href="#">
+          <a className={style.link} href="/contacts">
             Связаться с нами
           </a>
-          <a className={style.link} href="#">
+          <a className={style.link} href="/docs">
             Документы сайта
           </a>
         </div>

@@ -1,11 +1,11 @@
-from sqlalchemy import or_, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.advertisement import Advertisement
 
 
 class SearchAdvertisementsUseCase:
-    """Поиск активных объявлений по подстроке в названии или описании."""
+    """Поиск активных объявлений по подстроке в названии."""
 
     async def search(
         self,
@@ -21,12 +21,7 @@ class SearchAdvertisementsUseCase:
         stmt = (
             select(Advertisement)
             .where(Advertisement.is_active == True)  # noqa: E712
-            .where(
-                or_(
-                    Advertisement.title.ilike(pattern),
-                    Advertisement.description.ilike(pattern),
-                )
-            )
+            .where(Advertisement.title.ilike(pattern))
             .order_by(Advertisement.id.desc())
             .limit(limit)
         )

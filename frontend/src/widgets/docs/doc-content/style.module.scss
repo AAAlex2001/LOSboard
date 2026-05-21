@@ -1,0 +1,70 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 40px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1440px) {
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: BlinkMacSystemFont, -apple-system, Inter, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: #0D0D0D;
+  overflow-wrap: anywhere;
+}
+
+.paragraph {
+  margin: 0;
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #383F45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.paragraphBold {
+  font-weight: 700;
+}
+
+.list {
+  margin: 0;
+  padding: 0 0 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: disc;
+}
+
+.listItem {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #383F45;
+  overflow-wrap: anywhere;
+
+  &::marker {
+    color: #383F45;
+  }
+}

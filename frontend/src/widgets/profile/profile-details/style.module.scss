@@ -10,7 +10,7 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 850px) {
+@media (min-width: 1440px) {
   .profile {
     padding: 0 60px;
   }
@@ -85,11 +85,5 @@
 
   .fields {
     gap: 0;
-  }
-}
-
-@media (min-width: 1440px) {
-  .profile {
-    padding: 0 60px;
   }
 }
