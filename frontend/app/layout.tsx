@@ -15,7 +15,20 @@ const SITE_NAME = "LOSboard";
 const SITE_DESCRIPTION =
   "Доска объявлений Республики Абхазия. Купить, продать, обменять — быстро и без посредников.";
 
+function getSiteUrl(): string {
+  const api = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (api) {
+    try {
+      return new URL(api).origin;
+    } catch {
+      // fallthrough
+    }
+  }
+  return "http://localhost:3000";
+}
+
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: `${SITE_NAME} — Доска объявлений Республики Абхазия`,
     template: `%s | ${SITE_NAME}`,
