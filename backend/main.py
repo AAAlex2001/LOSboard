@@ -22,10 +22,7 @@ app = FastAPI(title="LOSboard API")
 
 CORS_ORIGINS = [
     origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:3000,http://127.0.0.1:3000",
-    ).split(",")
+    for origin in os.environ["CORS_ORIGINS"].split(",")
     if origin.strip()
 ]
 

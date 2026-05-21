@@ -1,25 +1,23 @@
 import os
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from sqlalchemy.orm import declarative_base
 
 
 Base = declarative_base()
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL must be set in .env file")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 
-ECHO_SQL = os.getenv("ECHO_SQL", "False").lower() == "true"
-DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "20"))
-DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", "20"))
-DB_POOL_TIMEOUT = int(os.getenv("DB_POOL_TIMEOUT", "30"))
-DB_POOL_RECYCLE = int(os.getenv("DB_POOL_RECYCLE", "1800"))
-DB_COMMAND_TIMEOUT = int(os.getenv("DB_COMMAND_TIMEOUT", "30"))
+ECHO_SQL = os.environ["ECHO_SQL"].lower() == "true"
+DB_POOL_SIZE = int(os.environ["DB_POOL_SIZE"])
+DB_MAX_OVERFLOW = int(os.environ["DB_MAX_OVERFLOW"])
+DB_POOL_TIMEOUT = int(os.environ["DB_POOL_TIMEOUT"])
+DB_POOL_RECYCLE = int(os.environ["DB_POOL_RECYCLE"])
+DB_COMMAND_TIMEOUT = int(os.environ["DB_COMMAND_TIMEOUT"])
 
 engine = create_async_engine(
     DATABASE_URL,
