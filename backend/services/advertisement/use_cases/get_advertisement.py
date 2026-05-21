@@ -49,10 +49,11 @@ class GetAdvertisementUseCase:
             advertisement.is_liked = False
             advertisement.is_viewed = False
 
-        # seller info
         if advertisement.owner:
             advertisement.seller_name = advertisement.owner.name
-            advertisement.seller_phone = advertisement.owner.phone_number
+            advertisement.seller_phone = (
+                advertisement.owner.phone_number if current_user else None
+            )
         else:
             advertisement.seller_name = None
             advertisement.seller_phone = None
