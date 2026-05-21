@@ -12,6 +12,7 @@ import {
   type Advertisement,
 } from "@/src/entities/advertisement";
 import { useCategories } from "@/src/entities/category";
+import { useMe } from "@/src/entities/user";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import style from "./page.module.scss";
@@ -25,6 +26,7 @@ export default function AdvertisementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { categories } = useCategories();
+  const { user } = useMe();
 
   useEffect(() => {
     if (!Number.isFinite(adId)) {
@@ -115,8 +117,10 @@ export default function AdvertisementPage() {
 
                 <div className={style.sidebarSlot}>
                   <AdvertisementSidebar
+                    advertisementId={ad.id}
                     price={ad.price}
                     sellerPhone={ad.seller_phone}
+                    canMessageSeller={user == null || user.id !== ad.owner_id}
                   />
                 </div>
               </div>

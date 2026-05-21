@@ -1,0 +1,141 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 320 / 237;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #DEDEDE;
+  isolation: isolate;
+}
+
+.slider {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.navBtn {
+  display: none;
+  position: absolute;
+  top: 50%;
+  margin-top: -20px;
+  z-index: 4;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #1129BD;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.23);
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: #0d1f8b;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+  }
+}
+
+@media (min-width: 768px) {
+  .navBtn {
+    display: flex;
+  }
+}
+
+.navBtnLeft {
+  left: 10px;
+}
+
+.navBtnRight {
+  right: 10px;
+}
+
+.navIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navBtnLeft .navIcon {
+  transform: scaleX(-1);
+}
+
+.dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.dotActive {
+  background: #FFFFFF;
+  transform: scale(1.25);
+
+  &:hover {
+    background: #FFFFFF;
+  }
+}

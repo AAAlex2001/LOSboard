@@ -1,0 +1,104 @@
+.header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+  padding: 20px 10px 20px 20px;
+  background: #FFFFFF;
+  box-shadow: 8px 4px 16px rgba(238, 244, 255, 0.6);
+  box-sizing: border-box;
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) .title {
+    text-decoration: underline;
+  }
+}
+
+.image {
+  position: relative;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #DEDEDE;
+}
+
+.imageImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #DEDEDE;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.title {
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  color: #1129BD;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  color: #1E1E1E;
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #1E1E1E;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #1129BD;
+  }
+}

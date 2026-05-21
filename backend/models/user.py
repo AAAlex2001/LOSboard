@@ -14,3 +14,4 @@ class User(Base):
 
     advertisements = relationship("Advertisement", back_populates="owner")
     liked_advertisements = relationship("LikedAdvertisement", back_populates="user", cascade="all, delete-orphan")
+    viewed_advertisements = relationship("ViewedAdvertisement", back_populates="user", cascade="all, delete-orphan")

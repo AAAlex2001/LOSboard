@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/src/shared/ui/Button";
-import ArrowRightLongIcon from "@/src/shared/ui/Icons/ArrowRightLongIcon";
+import { PhotoGallery } from "@/src/shared/ui/PhotoGallery";
 import {
   resolveAssetUrl,
   type Advertisement,
 } from "@/src/entities/advertisement";
 import { useFavorite } from "@/src/features/favorite";
+import { useViewAdvertisement } from "@/src/features/advertisement";
 import { formatPostedAt } from "@/src/shared/lib/date";
+import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
 interface AdvertisementDetailProps {
@@ -24,18 +27,30 @@ export const AdvertisementDetail = ({
   categoryName,
   subcategoryName,
 }: AdvertisementDetailProps) => {
+  const router = useRouter();
   const [item, setItem] = useState<Advertisement>(advertisement);
-  const [photoIndex, setPhotoIndex] = useState(0);
   const { toggle, pendingIds } = useFavorite();
 
-  const photos = item.photo_urls ?? [];
-  const currentPhoto = photos[photoIndex] ?? null;
-  const photoSrc = resolveAssetUrl(currentPhoto);
-  const hasMultiplePhotos = photos.length > 1;
+  const viewState = useViewAdvertisement({
+    advertisementId: item.id,
+    initialViewsCount: item.views_count ?? 0,
+    initialIsViewed: item.is_viewed ?? false,
+  });
+
+  const guardAuth = (): boolean => {
+    if (isAuthenticated()) return true;
+    router.push("/register");
+    return false;
+  };
+
+  const photoUrls = (item.photo_urls ?? [])
+    .map((url) => resolveAssetUrl(url))
+    .filter((url): url is string => Boolean(url));
   const phoneTel = item.seller_phone ?? "";
   const isPending = pendingIds.has(item.id);
 
   const handleFavorite = async () => {
+    if (!guardAuth()) return;
     const updated = await toggle(item);
     if (updated) {
       setItem({
@@ -46,9 +61,16 @@ export const AdvertisementDetail = ({
     }
   };
 
-  const showPrev = () =>
-    setPhotoIndex((i) => (i - 1 + photos.length) % photos.length);
-  const showNext = () => setPhotoIndex((i) => (i + 1) % photos.length);
+  const handleCall = (e: React.MouseEvent) => {
+    if (!guardAuth()) {
+      e.preventDefault();
+    }
+  };
+
+  const handleMessage = () => {
+    if (!guardAuth()) return;
+    // TODO: открыть чат с продавцом, когда будет готов
+  };
 
   return (
     <div className={style.detail}>
@@ -80,37 +102,7 @@ export const AdvertisementDetail = ({
           </button>
         </div>
 
-        <div className={style.photoWrap}>
-          {photoSrc ? (
-            <img src={photoSrc} alt={item.title} className={style.photo} />
-          ) : (
-            <div className={style.photoPlaceholder}>
-              <span>Фото не добавлено</span>
-            </div>
-          )}
-          {hasMultiplePhotos && (
-            <>
-              <button
-                type="button"
-                className={`${style.navBtn} ${style.navBtnLeft}`}
-                onClick={showPrev}
-                aria-label="Предыдущее фото"
-              >
-                <span className={style.navIcon}>
-                  <ArrowRightLongIcon />
-                </span>
-              </button>
-              <button
-                type="button"
-                className={`${style.navBtn} ${style.navBtnRight}`}
-                onClick={showNext}
-                aria-label="Следующее фото"
-              >
-                <ArrowRightLongIcon />
-              </button>
-            </>
-          )}
-        </div>
+        <PhotoGallery photos={photoUrls} alt={item.title} />
       </section>
 
       <section className={style.info}>
@@ -140,7 +132,11 @@ export const AdvertisementDetail = ({
             <span className={style.label}>Узнайте больше</span>
             <div className={style.contactButtons}>
               {phoneTel ? (
-                <a href={`tel:${phoneTel}`} className={style.callLink}>
+                <a
+                  href={`tel:${phoneTel}`}
+                  className={style.callLink}
+                  onClick={handleCall}
+                >
                   <Button type="button" variant="filled" color="blue" fullWidth>
                     Позвонить продавцу
                   </Button>
@@ -156,7 +152,11 @@ export const AdvertisementDetail = ({
                   Позвонить продавцу
                 </Button>
               )}
-              <button type="button" className={style.messageBtn}>
+              <button
+                type="button"
+                className={style.messageBtn}
+                onClick={handleMessage}
+              >
                 Написать продавцу
               </button>
             </div>
@@ -165,7 +165,10 @@ export const AdvertisementDetail = ({
 
         <div className={style.stats}>
           <StatRow label="В избранном" value={String(item.likes_count ?? 0)} />
-          <StatRow label="Просмотры" value="—" />
+          <StatRow
+            label="Просмотры"
+            value={String(viewState.views_count ?? item.views_count ?? 0)}
+          />
           <StatRow
             label="Размещено"
             value={item.created_at ? formatPostedAt(item.created_at) : "—"}

@@ -42,7 +42,7 @@ export const AdCard = ({
       role={onClick ? "button" : undefined}
     >
       <div className={style.imageWrap}>
-        <div className={style.imageInner}>
+        <div className={style.imageClip}>
           {photoSrc ? (
             <img src={photoSrc} alt={title} className={style.image} />
           ) : (

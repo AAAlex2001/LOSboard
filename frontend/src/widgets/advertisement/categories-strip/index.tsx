@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 import ChevronRightIcon from "@/src/shared/ui/Icons/ChevronRightIcon";
 import { Loader } from "@/src/shared/ui/Loader";
 import {
@@ -15,42 +17,37 @@ interface CategoriesStripProps {
   onSelect: (category: Category) => void;
 }
 
-const SCROLL_STEP = 248;
-
 export const CategoriesStrip = ({
   activeCategoryId,
   onSelect,
 }: CategoriesStripProps) => {
   const { categories, loading } = useCategories();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
 
-  const updateScrollState = () => {
-    const node = scrollRef.current;
-    if (!node) return;
-    setCanScrollLeft(node.scrollLeft > 0);
-    setCanScrollRight(node.scrollLeft + node.clientWidth < node.scrollWidth - 1);
-  };
-
-  useEffect(() => {
-    updateScrollState();
-    const node = scrollRef.current;
-    if (!node) return;
-    node.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
-    return () => {
-      node.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
-    };
-  }, [categories.length]);
-
-  const scrollBy = (direction: -1 | 1) => {
-    scrollRef.current?.scrollBy({
-      left: SCROLL_STEP * direction,
-      behavior: "smooth",
-    });
-  };
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    slides: { perView: "auto", spacing: 4 },
+    mode: "free-snap",
+    drag: true,
+    rubberband: false,
+    slideChanged(slider) {
+      const rel = slider.track.details.rel;
+      const max = slider.track.details.maxIdx;
+      setAtStart(rel <= 0);
+      setAtEnd(rel >= max);
+    },
+    created(slider) {
+      const max = slider.track.details.maxIdx;
+      setAtStart(true);
+      setAtEnd(max === 0);
+    },
+    updated(slider) {
+      const rel = slider.track.details.rel;
+      const max = slider.track.details.maxIdx;
+      setAtStart(rel <= 0);
+      setAtEnd(rel >= max);
+    },
+  });
 
   if (loading) {
     return (
@@ -62,34 +59,33 @@ export const CategoriesStrip = ({
 
   return (
     <div className={style.strip}>
-      <div className={style.scrollWrap} ref={scrollRef}>
-        <div className={style.list}>
-          {categories.map((cat) => (
+      <div ref={sliderRef} className={`keen-slider ${style.slider}`}>
+        {categories.map((cat) => (
+          <div key={cat.id} className={`keen-slider__slide ${style.slide}`}>
             <CategoryCard
-              key={cat.id}
               category={cat}
               active={activeCategoryId === cat.id}
               onClick={onSelect}
             />
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      {canScrollLeft && (
+      {!atStart && (
         <button
           type="button"
           className={`${style.navBtn} ${style.navLeft}`}
-          onClick={() => scrollBy(-1)}
+          onClick={() => instanceRef.current?.prev()}
           aria-label="Прокрутить влево"
         >
           <ChevronRightIcon />
         </button>
       )}
-      {canScrollRight && (
+      {!atEnd && (
         <button
           type="button"
           className={`${style.navBtn} ${style.navRight}`}
-          onClick={() => scrollBy(1)}
+          onClick={() => instanceRef.current?.next()}
           aria-label="Прокрутить вправо"
         >
           <ChevronRightIcon />

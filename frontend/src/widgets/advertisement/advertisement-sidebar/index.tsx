@@ -1,22 +1,51 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@/src/shared/ui/Button";
 import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
 import InstagramIcon from "@/src/shared/ui/Icons/InstagramIcon";
 import FacebookIcon from "@/src/shared/ui/Icons/FacebookIcon";
 import { AdBanner } from "@/src/entities/ad-banner";
+import { useStartChat } from "@/src/features/chat";
+import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
 interface AdvertisementSidebarProps {
+  advertisementId: number;
   price: number;
   sellerPhone?: string | null;
+  canMessageSeller?: boolean;
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const AdvertisementSidebar = ({
+  advertisementId,
   price,
   sellerPhone,
+  canMessageSeller = true,
 }: AdvertisementSidebarProps) => {
+  const router = useRouter();
   const phoneTel = sellerPhone ?? "";
+  const { loading: startingChat, start } = useStartChat();
+
+  const handleCall = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!checkAuth()) {
+      e.preventDefault();
+      router.push("/register");
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!checkAuth()) {
+      router.push("/register");
+      return;
+    }
+    const conversationId = await start(advertisementId);
+    if (conversationId != null) {
+      router.push(`/chats/${conversationId}`);
+    }
+  };
 
   return (
     <aside className={style.sidebar}>
@@ -24,7 +53,11 @@ export const AdvertisementSidebar = ({
         <div className={style.price}>{formatPrice(price)}</div>
         <div className={style.contactButtons}>
           {phoneTel ? (
-            <a href={`tel:${phoneTel}`} className={style.callLink}>
+            <a
+              href={`tel:${phoneTel}`}
+              className={style.callLink}
+              onClick={handleCall}
+            >
               <Button type="button" variant="filled" color="blue" fullWidth>
                 Позвонить продавцу
               </Button>
@@ -34,9 +67,16 @@ export const AdvertisementSidebar = ({
               Позвонить продавцу
             </Button>
           )}
-          <button type="button" className={style.messageBtn}>
-            Написать продавцу
-          </button>
+          {canMessageSeller && (
+            <button
+              type="button"
+              className={style.messageBtn}
+              onClick={handleMessage}
+              disabled={startingChat}
+            >
+              {startingChat ? "Открываем чат…" : "Написать продавцу"}
+            </button>
+          )}
         </div>
       </div>
 

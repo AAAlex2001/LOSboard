@@ -25,10 +25,12 @@ class AdvertisementResponse(BaseModel):
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool
     is_liked: bool = False
+    is_viewed: bool = False
     owner_id: int
     seller_name: Optional[str] = None
     seller_phone: Optional[str] = None
     likes_count: int = 0
+    views_count: int = 0
     created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

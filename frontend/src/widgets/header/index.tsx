@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SearchBar } from "@/src/shared/ui/SearchBar";
+import { AdvertisementSearch } from "@/src/features/advertisement";
 import { Tooltip } from "@/src/shared/ui/Tooltip";
 import BurgerIcon from "@/src/shared/ui/Icons/BurgerIcon";
 import CategoriesIcon from "@/src/shared/ui/Icons/CategoriesIcon";
@@ -18,7 +18,6 @@ import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
 interface HeaderProps {
-  onSearch?: (value: string) => void;
   onMapClick?: () => void;
   onChatClick?: () => void;
   onFavoritesClick?: () => void;
@@ -28,7 +27,6 @@ interface HeaderProps {
 }
 
 export const Header = ({
-  onSearch,
   onMapClick,
   onChatClick,
   onFavoritesClick,
@@ -37,7 +35,6 @@ export const Header = ({
   onSelectSubcategory,
 }: HeaderProps) => {
   const router = useRouter();
-  const [query, setQuery] = useState("");
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -113,6 +110,16 @@ export const Header = ({
     }
   };
 
+  const handleChatClick = () => {
+    if (onChatClick) {
+      onChatClick();
+    } else if (authed) {
+      router.push("/chats");
+    } else {
+      router.push("/login");
+    }
+  };
+
   return (
     <>
       <div className={style.hero} />
@@ -140,21 +147,10 @@ export const Header = ({
 
             <div className={style.searchTab}>
               <div className={style.searchMobile}>
-                <SearchBar
-                  placeholder="Поиск по объявлениям"
-                  value={query}
-                  onChange={setQuery}
-                  onSubmit={onSearch}
-                />
+                <AdvertisementSearch />
               </div>
               <div className={style.searchDesktop}>
-                <SearchBar
-                  placeholder="Поиск по объявлениям"
-                  value={query}
-                  onChange={setQuery}
-                  onSubmit={onSearch}
-                  submitText="Найти"
-                />
+                <AdvertisementSearch submitText="Найти" />
               </div>
             </div>
 
@@ -173,7 +169,7 @@ export const Header = ({
                 <button
                   type="button"
                   className={style.iconBtn}
-                  onClick={onChatClick}
+                  onClick={handleChatClick}
                   aria-label="Чат"
                 >
                   <ChatIcon />

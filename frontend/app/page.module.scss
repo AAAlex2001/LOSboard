@@ -5,6 +5,7 @@
   width: 100%;
   min-height: 100vh;
   background: #F9F9FB;
+  overflow-x: clip;
 }
 
 .content {
@@ -22,7 +23,7 @@
   flex-direction: column;
   gap: 40px;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1540px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;

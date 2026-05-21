@@ -1,5 +1,6 @@
 from fastapi import HTTPException
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.advertisement import Advertisement, LikedAdvertisement
@@ -7,7 +8,12 @@ from models.user import User
 
 
 class LikeAdvertisementUseCase:
-    """Toggle like for an advertisement by the current user."""
+    """Тоггл лайка с атомарным изменением счётчика.
+
+    Используем INSERT ... ON CONFLICT DO NOTHING RETURNING и
+    DELETE ... RETURNING — обе операции по природе атомарны на уровне
+    строки. Счётчик меняем только если операция реально что-то изменила.
+    """
 
     async def toggle_like(
         self,
@@ -22,30 +28,48 @@ class LikeAdvertisementUseCase:
         if not advertisement:
             raise HTTPException(status_code=404, detail="Advertisement not found")
 
-        existing = await db.execute(
-            select(LikedAdvertisement).where(
-                LikedAdvertisement.user_id == current_user.id,
-                LikedAdvertisement.advertisement_id == advertisement_id,
+        # Пытаемся поставить лайк (атомарно).
+        insert_stmt = (
+            insert(LikedAdvertisement)
+            .values(user_id=current_user.id, advertisement_id=advertisement_id)
+            .on_conflict_do_nothing(
+                index_elements=["user_id", "advertisement_id"]
             )
+            .returning(LikedAdvertisement.id)
         )
-        liked = existing.scalar_one_or_none()
+        insert_result = await db.execute(insert_stmt)
+        inserted_id = insert_result.scalar_one_or_none()
 
-        if liked:
+        if inserted_id is not None:
+            # Лайк поставлен — инкрементим счётчик.
             await db.execute(
-                delete(LikedAdvertisement).where(
+                update(Advertisement)
+                .where(Advertisement.id == advertisement_id)
+                .values(likes_count=Advertisement.likes_count + 1)
+            )
+            advertisement.is_liked = True
+        else:
+            # Лайк уже был — снимаем (тоже атомарно).
+            delete_result = await db.execute(
+                delete(LikedAdvertisement)
+                .where(
                     LikedAdvertisement.user_id == current_user.id,
                     LikedAdvertisement.advertisement_id == advertisement_id,
                 )
+                .returning(LikedAdvertisement.id)
             )
-            advertisement.is_liked = False
-        else:
-            db.add(
-                LikedAdvertisement(
-                    user_id=current_user.id,
-                    advertisement_id=advertisement_id,
+            removed_id = delete_result.scalar_one_or_none()
+            if removed_id is not None:
+                # GREATEST защищает от ухода в минус при гонках.
+                await db.execute(
+                    update(Advertisement)
+                    .where(Advertisement.id == advertisement_id)
+                    .values(
+                        likes_count=Advertisement.likes_count - 1
+                    )
                 )
-            )
-            advertisement.is_liked = True
+            advertisement.is_liked = False
 
         await db.commit()
+        await db.refresh(advertisement)
         return advertisement

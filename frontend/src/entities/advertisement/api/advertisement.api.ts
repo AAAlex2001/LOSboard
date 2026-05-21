@@ -167,3 +167,43 @@ export async function deleteAdvertisement(id: number): Promise<void> {
     throw new Error(await readErrorDetail(response, "Не удалось удалить объявление"));
   }
 }
+
+export async function viewAdvertisement(id: number): Promise<Advertisement> {
+  const response = await apiFetch(`advertisements/${id}/view`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorDetail(response, "Не удалось зарегистрировать просмотр")
+    );
+  }
+
+  return response.json();
+}
+
+export interface SearchAdvertisementsParams {
+  q: string;
+  limit?: number;
+  signal?: AbortSignal;
+}
+
+export async function searchAdvertisements(
+  params: SearchAdvertisementsParams
+): Promise<Advertisement[]> {
+  const { q, limit = 10, signal } = params;
+  const search = new URLSearchParams();
+  search.set("q", q);
+  search.set("limit", String(limit));
+
+  const response = await apiFetch(
+    `advertisements/search?${search.toString()}`,
+    { method: "GET", signal }
+  );
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось найти объявления"));
+  }
+
+  return response.json();
+}

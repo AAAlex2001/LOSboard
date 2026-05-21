@@ -129,7 +129,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           is_active: true,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
-        router.push("/profile");
+        router.push("/my-ads");
       }
     } catch (err) {
       dispatch({

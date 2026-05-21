@@ -1,0 +1,97 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Loader } from "@/src/shared/ui/Loader";
+import {
+  ChatThreadHeader,
+  MessageDayDivider,
+  MessageRow,
+  groupMessagesByDay,
+} from "@/src/entities/chat";
+import { useMe } from "@/src/entities/user";
+import { useConversationThread } from "@/src/features/chat";
+import { ChatComposer } from "@/src/features/chat/composer";
+import style from "./style.module.scss";
+
+interface ConversationThreadProps {
+  conversationId: number;
+  onClose?: () => void;
+}
+
+export const ConversationThread = ({
+  conversationId,
+  onClose,
+}: ConversationThreadProps) => {
+  const router = useRouter();
+  const { user } = useMe();
+  const { conversation, loading, sending, error, sendError, send } =
+    useConversationThread(conversationId);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [conversation?.messages.length]);
+
+  if (loading) {
+    return (
+      <div className={style.feedback}>
+        <Loader />
+      </div>
+    );
+  }
+  if (error || !conversation) {
+    return <p className={style.feedback}>{error ?? "Чат не найден"}</p>;
+  }
+
+  const groups = groupMessagesByDay(conversation.messages);
+  const myName = user?.name ?? "Вы";
+  const peerName = conversation.peer.name;
+
+  return (
+    <div className={style.thread}>
+      <ChatThreadHeader
+        advertisement={conversation.advertisement}
+        price={conversation.advertisement.price}
+        onAdClick={() =>
+          router.push(`/advertisements/${conversation.advertisement.id}`)
+        }
+        onClose={onClose}
+      />
+
+      <div className={style.messages}>
+        {groups.length === 0 ? (
+          <p className={style.empty}>Начните диалог — отправьте первое сообщение</p>
+        ) : (
+          groups.map((group) => (
+            <div key={group.key} className={style.dayGroup}>
+              <MessageDayDivider label={group.label} />
+              {group.messages.map((message, idx) => {
+                const mine = user != null && message.sender_id === user.id;
+                const next = group.messages[idx + 1];
+                const showAvatar = !next || next.sender_id !== message.sender_id;
+                return (
+                  <MessageRow
+                    key={message.id}
+                    message={message}
+                    authorName={mine ? myName : peerName}
+                    mine={mine}
+                    showAvatar={showAvatar}
+                  />
+                );
+              })}
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className={style.composerWrap}>
+        <ChatComposer disabled={sending} onSend={send} />
+        {sendError && <p className={style.sendError}>{sendError}</p>}
+      </div>
+    </div>
+  );
+};

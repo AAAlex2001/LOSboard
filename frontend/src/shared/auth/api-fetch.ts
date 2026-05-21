@@ -1,6 +1,9 @@
 import { config } from "@/src/shared/config/config";
-import { getAccessToken, logout } from "@/src/shared/auth/auth-storage";
-import { refreshToken } from "@/src/shared/auth/auth-api";
+import { getAccessToken } from "@/src/shared/auth/auth-storage";
+import {
+  refreshToken,
+  RefreshAuthError,
+} from "@/src/shared/auth/auth-api";
 
 function buildHeaders(
   accessToken: string | null,
@@ -39,7 +42,7 @@ export async function apiFetch(
   path: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  let response = await fetch(`${config.API_BASE_URL}${path}`, {
+  const response = await fetch(`${config.API_BASE_URL}${path}`, {
     ...options,
     headers: buildHeaders(getAccessToken(), options.body, options.headers),
   });
@@ -50,18 +53,19 @@ export async function apiFetch(
 
   try {
     const refreshed = await refreshToken();
-
-    response = await fetch(`${config.API_BASE_URL}${path}`, {
+    return await fetch(`${config.API_BASE_URL}${path}`, {
       ...options,
       headers: buildHeaders(refreshed.access_token, options.body, options.headers),
     });
-
-    return response;
-  } catch {
-    logout();
-    if (typeof window !== "undefined") {
-      window.location.href = "/login";
+  } catch (err) {
+    if (err instanceof RefreshAuthError) {
+      // только реальная auth-ошибка отправляет на логин;
+      // logout уже вызван внутри refreshToken
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
+    // на сетевую ошибку refresh'а отдаём оригинальный 401 — пусть caller решит
     return response;
   }
 }

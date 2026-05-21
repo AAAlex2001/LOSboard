@@ -96,6 +96,15 @@ export const BurgerMenu = ({
     }
   };
 
+  const handleChat = () => {
+    onClose();
+    if (onChatClick) {
+      onChatClick();
+    } else {
+      router.push("/chats");
+    }
+  };
+
   const handleLogin = () => {
     onClose();
     router.push("/login");
@@ -145,7 +154,7 @@ export const BurgerMenu = ({
                 <button
                   type="button"
                   className={style.menuItem}
-                  onClick={wrap(onChatClick)}
+                  onClick={handleChat}
                 >
                   <span className={style.menuIcon}><ChatIcon /></span>
                   <span className={style.menuLabel}>Чат</span>

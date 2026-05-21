@@ -9,10 +9,12 @@ export interface Advertisement {
   photo_urls: string[];
   is_active: boolean;
   is_liked: boolean;
+  is_viewed?: boolean;
   owner_id: number;
   seller_name?: string | null;
   seller_phone?: string | null;
   likes_count?: number;
+  views_count?: number;
   created_at?: string | null;
 }
 

@@ -9,10 +9,12 @@ from database import engine, Base, AsyncSessionLocal
 import models.user
 import models.advertisement
 import models.category
+import models.chat
 from routes.auth import router as auth_router
 from routes.advertisement import router as advertisement_router
 from routes.category import router as category_router
 from routes.upload import router as upload_router
+from routes.chat import router as chat_router
 from seeds.categories_seed import seed_categories
 import uvicorn
 
@@ -26,6 +28,14 @@ async def run_migrations(conn):
     await conn.execute(text(
         "ALTER TABLE advertisements "
         "ADD COLUMN IF NOT EXISTS photo_urls TEXT[] NOT NULL DEFAULT '{}'"
+    ))
+    await conn.execute(text(
+        "ALTER TABLE advertisements "
+        "ADD COLUMN IF NOT EXISTS likes_count INTEGER NOT NULL DEFAULT 0"
+    ))
+    await conn.execute(text(
+        "ALTER TABLE advertisements "
+        "ADD COLUMN IF NOT EXISTS views_count INTEGER NOT NULL DEFAULT 0"
     ))
     # переносим старое single photo_url в массив (если колонка ещё есть)
     await conn.execute(text("""
@@ -43,6 +53,18 @@ async def run_migrations(conn):
                 ALTER TABLE advertisements DROP COLUMN photo_url;
             END IF;
         END $$;
+    """))
+    # бэкфил likes_count из таблицы лайков (актуально для существующих БД)
+    await conn.execute(text("""
+        UPDATE advertisements a
+           SET likes_count = sub.cnt
+          FROM (
+              SELECT advertisement_id, COUNT(*) AS cnt
+                FROM liked_advertisements
+               GROUP BY advertisement_id
+          ) sub
+         WHERE a.id = sub.advertisement_id
+           AND a.likes_count <> sub.cnt
     """))
 
 
@@ -75,6 +97,7 @@ app.include_router(auth_router)
 app.include_router(advertisement_router)
 app.include_router(category_router)
 app.include_router(upload_router)
+app.include_router(chat_router)
 
 UPLOADS_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

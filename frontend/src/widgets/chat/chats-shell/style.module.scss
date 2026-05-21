@@ -1,0 +1,63 @@
+.shell {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.main {
+  display: none;
+}
+
+/* < 1024px: показываем что-то одно (single-pane) */
+.shell[data-has-active="true"] .sidebar {
+  display: none;
+}
+
+.shell[data-has-active="true"] .main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    flex: 0 0 320px;
+    border-right: 1px solid #EEF4FF;
+  }
+
+  .main,
+  .shell[data-has-active="true"] .main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .shell[data-has-active="true"] .sidebar {
+    display: flex;
+  }
+}
+
+@media (min-width: 1440px) {
+  .sidebar {
+    flex: 0 0 380px;
+  }
+}

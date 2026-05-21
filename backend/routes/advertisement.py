@@ -12,6 +12,8 @@ from services.advertisement.use_cases.get_list_advertisements import GetListAdve
 from services.advertisement.use_cases.update_advertisement import UpdateAdvertisementUseCase
 from services.advertisement.use_cases.delete_advertisement import DeleteAdvertisementUseCase
 from services.advertisement.use_cases.like_advertisement import LikeAdvertisementUseCase
+from services.advertisement.use_cases.view_advertisement import ViewAdvertisementUseCase
+from services.advertisement.use_cases.search_advertisements import SearchAdvertisementsUseCase
 
 from models.user import User
 from schemas.advertisement import (
@@ -39,6 +41,20 @@ async def create_advertisement(
     )
 
     return new_advertisement
+
+
+@router.get("/search", response_model=list[AdvertisementResponse])
+async def search_advertisements(
+    q: str = Query(..., min_length=1, max_length=255),
+    limit: int = Query(10, ge=1, le=50),
+    db: AsyncSession = Depends(get_db),
+):
+    """Поиск объявлений по подстроке (для автокомплита).
+
+    Открыт всем — поиск не требует авторизации.
+    """
+    use_case = SearchAdvertisementsUseCase()
+    return await use_case.search(q=q, limit=limit, db=db)
 
 
 @router.get("/", response_model=list[AdvertisementResponse])
@@ -145,6 +161,25 @@ async def toggle_like_advertisement(
 ):
     use_case = LikeAdvertisementUseCase()
     return await use_case.toggle_like(
+        advertisement_id=advertisement_id,
+        db=db,
+        current_user=current_user,
+    )
+
+
+@router.post("/{advertisement_id}/view", response_model=AdvertisementResponse)
+async def view_advertisement(
+    advertisement_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Регистрирует просмотр объявления текущим пользователем.
+
+    Один пользователь — один просмотр (за всё время). Счётчик растёт
+    атомарно. Доступно только авторизованным.
+    """
+    use_case = ViewAdvertisementUseCase()
+    return await use_case.view(
         advertisement_id=advertisement_id,
         db=db,
         current_user=current_user,
