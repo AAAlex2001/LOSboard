@@ -29,7 +29,13 @@ export const ConversationCard = ({
     >
       <div className={style.image}>
         {adPhoto ? (
-          <img src={adPhoto} alt={advertisement.title} className={style.imageImg} />
+          <img
+            src={adPhoto}
+            alt={advertisement.title}
+            className={style.imageImg}
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <div className={style.imagePlaceholder} />
         )}

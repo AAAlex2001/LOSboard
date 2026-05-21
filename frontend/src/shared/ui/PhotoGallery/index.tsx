@@ -47,7 +47,14 @@ export const PhotoGallery = ({
       >
         {photos.map((src, i) => (
           <div key={`${src}-${i}`} className={`keen-slider__slide ${style.slide}`}>
-            <img src={src} alt={alt} className={style.image} draggable={false} />
+            <img
+              src={src}
+              alt={alt}
+              className={style.image}
+              draggable={false}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+            />
           </div>
         ))}
       </div>

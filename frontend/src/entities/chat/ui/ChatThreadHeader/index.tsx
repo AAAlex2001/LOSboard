@@ -32,7 +32,13 @@ export const ChatThreadHeader = ({
       >
         <div className={style.image}>
           {photo ? (
-            <img src={photo} alt={advertisement.title} className={style.imageImg} />
+            <img
+              src={photo}
+              alt={advertisement.title}
+              className={style.imageImg}
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <div className={style.imagePlaceholder} />
           )}

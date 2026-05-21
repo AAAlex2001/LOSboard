@@ -44,7 +44,13 @@ export const AdCard = ({
       <div className={style.imageWrap}>
         <div className={style.imageClip}>
           {photoSrc ? (
-            <img src={photoSrc} alt={title} className={style.image} />
+            <img
+              src={photoSrc}
+              alt={title}
+              className={style.image}
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <div className={style.imagePlaceholder}>
               <span className={style.placeholderText}>Фото не добавлено</span>

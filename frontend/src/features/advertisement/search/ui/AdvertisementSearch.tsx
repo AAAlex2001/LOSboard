@@ -74,7 +74,13 @@ export const AdvertisementSearch = ({
                 >
                   <span className={style.thumb}>
                     {photo ? (
-                      <img src={photo} alt="" className={style.thumbImg} />
+                      <img
+                        src={photo}
+                        alt=""
+                        className={style.thumbImg}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     ) : (
                       <span className={style.thumbPlaceholder} />
                     )}

@@ -33,7 +33,13 @@ export const AdBanner = ({
       <div className={style.adTag}>{ageLabel}</div>
 
       {imageUrl ? (
-        <img src={imageUrl} alt="" className={style.image} />
+        <img
+          src={imageUrl}
+          alt=""
+          className={style.image}
+          loading="lazy"
+          decoding="async"
+        />
       ) : (
         <span className={style.placeholder}>{placeholderText}</span>
       )}

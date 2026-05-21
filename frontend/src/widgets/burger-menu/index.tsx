@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import HomeIcon from "@/src/shared/ui/Icons/HomeIcon";
 import CategoriesIcon from "@/src/shared/ui/Icons/CategoriesIcon";
 import MapIcon from "@/src/shared/ui/Icons/MapIcon";
 import ChatIcon from "@/src/shared/ui/Icons/ChatIcon";
@@ -119,6 +120,11 @@ export const BurgerMenu = ({
     router.push("/advertising");
   };
 
+  const handleHome = () => {
+    onClose();
+    router.push("/");
+  };
+
   return createPortal(
     <div
       className={`${style.overlay} ${open ? style.overlayOpen : ""}`}
@@ -140,6 +146,15 @@ export const BurgerMenu = ({
           </Button>
 
           <div className={style.menuItems}>
+            <button
+              type="button"
+              className={style.menuItem}
+              onClick={handleHome}
+            >
+              <span className={style.menuIcon}><HomeIcon /></span>
+              <span className={style.menuLabel}>Все объявления</span>
+            </button>
+
             <button
               type="button"
               className={style.menuItem}

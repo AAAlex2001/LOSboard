@@ -10,6 +10,7 @@ import {
 } from "@/src/entities/advertisement";
 import { useFavorite } from "@/src/features/favorite";
 import { useViewAdvertisement } from "@/src/features/advertisement";
+import { useStartChat } from "@/src/features/chat";
 import { formatPostedAt } from "@/src/shared/lib/date";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
@@ -18,6 +19,7 @@ interface AdvertisementDetailProps {
   advertisement: Advertisement;
   categoryName?: string;
   subcategoryName?: string;
+  canMessageSeller?: boolean;
 }
 
 const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
@@ -26,10 +28,12 @@ export const AdvertisementDetail = ({
   advertisement,
   categoryName,
   subcategoryName,
+  canMessageSeller = true,
 }: AdvertisementDetailProps) => {
   const router = useRouter();
   const [item, setItem] = useState<Advertisement>(advertisement);
   const { toggle, pendingIds } = useFavorite();
+  const { loading: startingChat, start } = useStartChat();
 
   const viewState = useViewAdvertisement({
     advertisementId: item.id,
@@ -67,9 +71,12 @@ export const AdvertisementDetail = ({
     }
   };
 
-  const handleMessage = () => {
+  const handleMessage = async () => {
     if (!guardAuth()) return;
-    // TODO: открыть чат с продавцом, когда будет готов
+    const conversationId = await start(item.id);
+    if (conversationId != null) {
+      router.push(`/chats/${conversationId}`);
+    }
   };
 
   return (
@@ -152,13 +159,16 @@ export const AdvertisementDetail = ({
                   Позвонить продавцу
                 </Button>
               )}
-              <button
-                type="button"
-                className={style.messageBtn}
-                onClick={handleMessage}
-              >
-                Написать продавцу
-              </button>
+              {canMessageSeller && (
+                <button
+                  type="button"
+                  className={style.messageBtn}
+                  onClick={handleMessage}
+                  disabled={startingChat}
+                >
+                  {startingChat ? "Открываем чат…" : "Написать продавцу"}
+                </button>
+              )}
             </div>
           </div>
         </div>

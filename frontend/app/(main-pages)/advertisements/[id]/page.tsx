@@ -112,6 +112,7 @@ export default function AdvertisementPage() {
                     advertisement={ad}
                     categoryName={category?.name}
                     subcategoryName={subcategory?.name}
+                    canMessageSeller={user == null || user.id !== ad.owner_id}
                   />
                 </div>
 

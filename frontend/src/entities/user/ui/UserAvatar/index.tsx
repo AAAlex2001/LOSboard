@@ -16,7 +16,13 @@ export const UserAvatar = ({ src, alt = "Avatar", size = 50 }: UserAvatarProps) 
       className={style.avatar}
       style={{ width: size, height: size, borderRadius: size }}
     >
-      <img src={resolved} alt={alt} className={style.image} />
+      <img
+        src={resolved}
+        alt={alt}
+        className={style.image}
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   );
 };
