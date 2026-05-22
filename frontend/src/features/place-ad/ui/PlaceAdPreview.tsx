@@ -77,6 +77,17 @@ export const PlaceAdPreview = ({
         </div>
       </section>
 
+      {state.isUrgent && (
+        <section className={style.urgent}>
+          <div className={style.labelRow}>
+            <span className={style.label}>Срочные</span>
+          </div>
+          <div className={style.previewField}>
+            <span className={style.urgentPreviewBadge}>Срочное объявление</span>
+          </div>
+        </section>
+      )}
+
       {state.description.trim().length > 0 && (
         <section className={style.description}>
           <div className={style.labelRow}>

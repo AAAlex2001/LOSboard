@@ -54,6 +54,7 @@ class CreateAdvertisementUseCase:
             location=request.location,
             photo_urls=list(request.photo_urls or []),
             is_active=request.is_active,
+            is_urgent=request.is_urgent,
             owner_id=current_user.id,
         )
 

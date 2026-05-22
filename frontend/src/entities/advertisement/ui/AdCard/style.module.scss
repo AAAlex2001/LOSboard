@@ -55,6 +55,34 @@
   box-sizing: border-box;
 }
 
+.cardUrgent {
+  border-color: #FF8D28;
+
+  &:hover {
+    border-color: #E46F09;
+  }
+}
+
+.urgentBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: #FFB020;
+  color: #1E1E1E;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+
 .placeholderText {
   font-family: Inter;
   font-weight: 500;

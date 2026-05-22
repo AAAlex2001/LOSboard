@@ -63,6 +63,7 @@ async def get_list_advertisements(
     limit: int = Query(20, ge=1, le=100),
     category_id: Optional[int] = Query(None),
     subcategory_id: Optional[int] = Query(None),
+    urgent_only: bool = Query(False),
     db: AsyncSession = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
@@ -75,6 +76,7 @@ async def get_list_advertisements(
         current_user=current_user,
         category_id=category_id,
         subcategory_id=subcategory_id,
+        urgent_only=urgent_only,
     )
 
     return advertisements

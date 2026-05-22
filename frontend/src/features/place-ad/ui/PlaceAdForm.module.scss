@@ -83,6 +83,7 @@
 .category,
 .name,
 .price,
+.urgent,
 .description,
 .images,
 .location {
@@ -94,6 +95,21 @@
 
 .price {
   padding: 20px 0;
+}
+
+.urgentPreviewBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #FFB020;
+  color: #1E1E1E;
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 16px;
+  text-transform: uppercase;
 }
 
 .images {
@@ -314,6 +330,7 @@
   .category,
   .name,
   .price,
+  .urgent,
   .description,
   .images,
   .location {
@@ -398,6 +415,7 @@
   .category,
   .name,
   .price,
+  .urgent,
   .description,
   .images,
   .location {

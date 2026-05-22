@@ -5,7 +5,12 @@ import { Footer } from "@/src/widgets/footer";
 import { CatalogTopBar } from "@/src/widgets/advertisement/catalog-topbar";
 import { CatalogFeed } from "@/src/widgets/advertisement/catalog-feed";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
-import { useCategories, type Category, type Subcategory } from "@/src/entities/category";
+import {
+  URGENT_CATEGORY,
+  useCategories,
+  type Category,
+  type Subcategory,
+} from "@/src/entities/category";
 import { useAdvertisementList } from "@/src/features/advertisement";
 import style from "./page.module.scss";
 
@@ -15,7 +20,9 @@ export default function HomePage() {
   const { categories } = useCategories();
 
   const activeCategory =
-    state.categoryId != null
+    state.urgentOnly
+      ? URGENT_CATEGORY
+      : state.categoryId != null
       ? categories.find((c) => c.id === state.categoryId) ?? null
       : null;
   const activeSubcategory =

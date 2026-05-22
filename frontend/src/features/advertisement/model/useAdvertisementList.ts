@@ -5,7 +5,11 @@ import {
   getAdvertisements,
   type Advertisement,
 } from "@/src/entities/advertisement";
-import type { Category, Subcategory } from "@/src/entities/category";
+import {
+  URGENT_CATEGORY_ID,
+  type Category,
+  type Subcategory,
+} from "@/src/entities/category";
 import {
   advertisementListReducer,
   initialAdvertisementListState,
@@ -24,6 +28,7 @@ export function useAdvertisementList() {
     getAdvertisements({
       categoryId: state.categoryId,
       subcategoryId: state.subcategoryId,
+      urgentOnly: state.urgentOnly,
       signal: controller.signal,
     })
       .then((data) => {
@@ -39,12 +44,21 @@ export function useAdvertisementList() {
       });
 
     return () => controller.abort();
-  }, [state.categoryId, state.subcategoryId]);
+  }, [state.categoryId, state.subcategoryId, state.urgentOnly]);
 
-  const setCategory = (cat: Category | null) =>
+  const setCategory = (cat: Category | null) => {
+    if (cat?.id === URGENT_CATEGORY_ID) {
+      dispatch({ type: "SET_URGENT_ONLY", payload: true });
+      return;
+    }
     dispatch({ type: "SET_CATEGORY", payload: cat?.id ?? null });
+  };
 
   const setSubcategory = (sub: Subcategory | null, cat: Category | null) => {
+    if (cat?.id === URGENT_CATEGORY_ID) {
+      dispatch({ type: "SET_URGENT_ONLY", payload: true });
+      return;
+    }
     if (cat) dispatch({ type: "SET_CATEGORY", payload: cat.id });
     dispatch({ type: "SET_SUBCATEGORY", payload: sub?.id ?? null });
   };

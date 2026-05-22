@@ -5,6 +5,8 @@ interface CategoryRowProps {
   label: string;
   variant?: "boxed" | "plain";
   bold?: boolean;
+  urgent?: boolean;
+  showArrow?: boolean;
   onClick?: () => void;
 }
 
@@ -12,12 +14,15 @@ export const CategoryRow = ({
   label,
   variant = "boxed",
   bold = false,
+  urgent = false,
+  showArrow = true,
   onClick,
 }: CategoryRowProps) => {
   const classes = [
     style.row,
     variant === "boxed" ? style.boxed : style.plain,
     bold ? style.bold : "",
+    urgent ? style.urgent : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -25,9 +30,11 @@ export const CategoryRow = ({
   return (
     <button type="button" className={classes} onClick={onClick}>
       <span className={style.label}>{label}</span>
-      <span className={style.arrow}>
-        <ArrowRightIcon />
-      </span>
+      {showArrow && (
+        <span className={style.arrow}>
+          <ArrowRightIcon />
+        </span>
+      )}
     </button>
   );
 };

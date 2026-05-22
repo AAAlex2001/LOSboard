@@ -9,6 +9,7 @@ export interface PlaceAdState {
   description: string;
   files: File[];
   existingPhotoUrls: string[];
+  isUrgent: boolean;
   address: string;
   latitude: number | null;
   longitude: number | null;
@@ -23,6 +24,7 @@ export interface PrefillPayload {
   price: string;
   description: string;
   address: string;
+  isUrgent?: boolean;
   photoUrls?: string[];
 }
 
@@ -33,6 +35,7 @@ export type PlaceAdAction =
   | { type: "SET_PRICE"; payload: string }
   | { type: "SET_DESCRIPTION"; payload: string }
   | { type: "SET_FILES"; payload: File[] }
+  | { type: "SET_IS_URGENT"; payload: boolean }
   | { type: "SET_ADDRESS"; payload: string }
   | { type: "SET_LOCATION"; payload: { address: string; latitude: number; longitude: number } }
   | { type: "PREFILL"; payload: PrefillPayload }

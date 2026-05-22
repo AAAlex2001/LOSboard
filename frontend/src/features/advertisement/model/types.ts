@@ -3,6 +3,7 @@ import type { Advertisement } from "@/src/entities/advertisement";
 export interface AdvertisementListState {
   categoryId: number | null;
   subcategoryId: number | null;
+  urgentOnly: boolean;
   items: Advertisement[];
   loading: boolean;
   error: string | null;
@@ -11,6 +12,7 @@ export interface AdvertisementListState {
 export type AdvertisementListAction =
   | { type: "SET_CATEGORY"; payload: number | null }
   | { type: "SET_SUBCATEGORY"; payload: number | null }
+  | { type: "SET_URGENT_ONLY"; payload: boolean }
   | { type: "RESET_FILTER" }
   | { type: "FETCH_START" }
   | { type: "FETCH_SUCCESS"; payload: Advertisement[] }

@@ -22,7 +22,7 @@ export const AdCard = ({
   onEdit,
   favoritePending,
 }: AdCardProps) => {
-  const { title, price, photo_urls, is_liked } = advertisement;
+  const { title, price, photo_urls, is_liked, is_urgent } = advertisement;
   const photoSrc = resolveAssetUrl(photo_urls?.[0] ?? null);
 
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,7 +37,7 @@ export const AdCard = ({
 
   return (
     <article
-      className={style.card}
+      className={`${style.card} ${advertisement.is_urgent ? style.cardUrgent : ""}`}
       onClick={onClick ? () => onClick(advertisement) : undefined}
       role={onClick ? "button" : undefined}
     >
@@ -57,6 +57,8 @@ export const AdCard = ({
             </div>
           )}
         </div>
+
+        {is_urgent && <span className={style.urgentBadge}>Срочно</span>}
 
         {onEdit ? (
           <>

@@ -12,11 +12,14 @@ interface CategoryCardProps {
 
 export const CategoryCard = ({ category, active, onClick }: CategoryCardProps) => {
   const Icon = getCategoryIcon(category.slug);
+  const urgent = category.slug === "urgent";
 
   return (
     <button
       type="button"
-      className={`${style.card} ${active ? style.cardActive : ""}`}
+      className={`${style.card} ${urgent ? style.cardUrgent : ""} ${
+        active ? style.cardActive : ""
+      }`}
       onClick={() => onClick?.(category)}
       title={category.name}
     >

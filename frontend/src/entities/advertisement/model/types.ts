@@ -8,6 +8,7 @@ export interface Advertisement {
   location: string;
   photo_urls: string[];
   is_active: boolean;
+  is_urgent: boolean;
   is_liked: boolean;
   is_viewed?: boolean;
   owner_id: number;
@@ -27,4 +28,5 @@ export interface CreateAdvertisementPayload {
   location: string;
   photo_urls?: string[];
   is_active?: boolean;
+  is_urgent?: boolean;
 }

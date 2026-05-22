@@ -5,6 +5,7 @@ import { Loader } from "@/src/shared/ui/Loader";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import { CategoryRow } from "../CategoryRow";
 import { useCategories } from "../../model/useCategories";
+import { URGENT_CATEGORY } from "../../model/urgentCategory";
 import type { Category, Subcategory } from "../../model/types";
 import style from "./style.module.scss";
 
@@ -78,11 +79,13 @@ export const CategoriesPanel = ({
   return (
     <div className={style.panel}>
       <div className={style.list}>
-        {categories.map((cat) => (
+        {[URGENT_CATEGORY, ...categories].map((cat) => (
           <CategoryRow
             key={cat.id}
             label={cat.name}
             variant="boxed"
+            urgent={cat.slug === "urgent"}
+            showArrow={cat.subcategories.length > 0}
             onClick={() => {
               if (cat.subcategories.length > 0) {
                 setSelectedId(cat.id);

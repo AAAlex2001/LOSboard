@@ -24,6 +24,36 @@
   border-color: #1129BD;
 }
 
+.cardUrgent {
+  width: 119px;
+  padding: 30px 0 20px;
+  border-color: #FF8D28;
+
+  &:hover {
+    border-color: #E46F09;
+  }
+}
+
+.cardUrgent.cardActive {
+  border-color: #FF8D28;
+}
+
+.cardUrgent .iconWrap {
+  width: 32px;
+  height: 32px;
+}
+
+.cardUrgent .icon {
+  width: 32px;
+  height: 32px;
+}
+
+.cardUrgent .label {
+  width: 119px;
+  padding: 0 20px;
+  color: #FF8D28;
+}
+
 .iconWrap {
   display: flex;
   align-items: center;

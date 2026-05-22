@@ -41,6 +41,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
             title: ad.title,
             price: String(ad.price),
             description: ad.description ?? "",
+            isUrgent: ad.is_urgent,
             address: ad.location,
             photoUrls: ad.photo_urls,
           },
@@ -114,6 +115,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           subcategory_id: selectedSubcategory.id,
           location: state.address.trim(),
           photo_urls: photoUrls,
+          is_urgent: state.isUrgent,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
         router.push("/my-ads");
@@ -127,6 +129,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           location: state.address.trim(),
           photo_urls: photoUrls,
           is_active: true,
+          is_urgent: state.isUrgent,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
         router.push("/my-ads");

@@ -5,6 +5,7 @@ import type { Advertisement, CreateAdvertisementPayload } from "../model/types";
 export interface GetAdvertisementsParams {
   categoryId?: number | null;
   subcategoryId?: number | null;
+  urgentOnly?: boolean;
   skip?: number;
   limit?: number;
   signal?: AbortSignal;
@@ -68,13 +69,21 @@ export async function createAdvertisement(
 export async function getAdvertisements(
   params: GetAdvertisementsParams = {}
 ): Promise<Advertisement[]> {
-  const { categoryId, subcategoryId, skip = 0, limit = 20, signal } = params;
+  const {
+    categoryId,
+    subcategoryId,
+    urgentOnly = false,
+    skip = 0,
+    limit = 20,
+    signal,
+  } = params;
 
   const search = new URLSearchParams();
   search.set("skip", String(skip));
   search.set("limit", String(limit));
   if (categoryId != null) search.set("category_id", String(categoryId));
   if (subcategoryId != null) search.set("subcategory_id", String(subcategoryId));
+  if (urgentOnly) search.set("urgent_only", "true");
 
   const response = await apiFetch(`advertisements/?${search.toString()}`, {
     method: "GET",
@@ -140,6 +149,7 @@ export type UpdateAdvertisementPayload = Partial<{
   location: string;
   photo_urls: string[];
   is_active: boolean;
+  is_urgent: boolean;
 }>;
 
 export async function updateAdvertisement(

@@ -15,9 +15,12 @@ class GetListAdvertisementsUseCase:
         current_user: Optional[User] = None,
         category_id: Optional[int] = None,
         subcategory_id: Optional[int] = None,
+        urgent_only: bool = False,
     ) -> list[Advertisement]:
 
         stmt = select(Advertisement).where(Advertisement.is_active == True)
+        if urgent_only:
+            stmt = stmt.where(Advertisement.is_urgent == True)
         if category_id is not None:
             stmt = stmt.where(Advertisement.category_id == category_id)
         if subcategory_id is not None:

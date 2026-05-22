@@ -4,6 +4,7 @@ import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { Dropdown } from "@/src/shared/ui/Dropdown";
 import { Loader } from "@/src/shared/ui/Loader";
+import { Toggle } from "@/src/shared/ui/Toggle";
 import { PhotoUpload } from "@/src/shared/ui/PhotoUpload";
 import { AddressAutocomplete } from "@/src/shared/ui/AddressAutocomplete";
 import { Map } from "@/src/shared/ui/Map";
@@ -134,6 +135,21 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
             }
           />
         </div>
+      </section>
+
+      <section className={style.urgent}>
+        <div className={style.labelRow}>
+          <span className={style.label}>Срочные</span>
+        </div>
+        <Toggle
+          className={style.field}
+          checked={state.isUrgent}
+          onChange={(checked) =>
+            dispatch({ type: "SET_IS_URGENT", payload: checked })
+          }
+          title="Разместить в Срочных"
+          description="Объявление появится в отдельной категории Срочные"
+        />
       </section>
 
       <section className={style.description}>

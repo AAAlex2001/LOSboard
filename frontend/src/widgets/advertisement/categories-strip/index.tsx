@@ -7,6 +7,7 @@ import ChevronRightIcon from "@/src/shared/ui/Icons/ChevronRightIcon";
 import { Loader } from "@/src/shared/ui/Loader";
 import {
   CategoryCard,
+  URGENT_CATEGORY,
   useCategories,
   type Category,
 } from "@/src/entities/category";
@@ -57,10 +58,12 @@ export const CategoriesStrip = ({
     );
   }
 
+  const displayCategories = [URGENT_CATEGORY, ...categories];
+
   return (
     <div className={style.strip}>
       <div ref={sliderRef} className={`keen-slider ${style.slider}`}>
-        {categories.map((cat) => (
+        {displayCategories.map((cat) => (
           <div key={cat.id} className={`keen-slider__slide ${style.slide}`}>
             <CategoryCard
               category={cat}

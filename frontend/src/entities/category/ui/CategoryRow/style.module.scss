@@ -23,6 +23,14 @@
   }
 }
 
+.urgent {
+  background: rgba(255, 141, 40, 0.3);
+
+  &:hover {
+    background: rgba(255, 141, 40, 0.4);
+  }
+}
+
 .plain {
   padding: 5px 10px;
   border-radius: 8px;

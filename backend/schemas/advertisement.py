@@ -12,6 +12,7 @@ class AdvertisementCreate(BaseModel):
     location: str = Field(..., min_length=1, max_length=255)
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool = True
+    is_urgent: bool = False
 
 
 class AdvertisementResponse(BaseModel):
@@ -24,6 +25,7 @@ class AdvertisementResponse(BaseModel):
     location: str
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool
+    is_urgent: bool = False
     is_liked: bool = False
     is_viewed: bool = False
     owner_id: int
@@ -45,5 +47,6 @@ class AdvertisementUpdate(BaseModel):
     location: Optional[str] = Field(None, min_length=1, max_length=255)
     photo_urls: Optional[List[str]] = None
     is_active: Optional[bool] = None
+    is_urgent: Optional[bool] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -18,6 +18,7 @@ class Advertisement(Base):
     location = Column(String, nullable=False)
     photo_urls = Column(ARRAY(String), nullable=False, server_default="{}")
     is_active = Column(Boolean, default=True)
+    is_urgent = Column(Boolean, nullable=False, server_default="false", default=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     likes_count = Column(Integer, nullable=False, server_default="0", default=0)

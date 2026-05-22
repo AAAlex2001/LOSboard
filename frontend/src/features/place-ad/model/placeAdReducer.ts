@@ -12,6 +12,7 @@ export const initialPlaceAdState: PlaceAdState = {
   description: "",
   files: [],
   existingPhotoUrls: [],
+  isUrgent: false,
   address: "",
   latitude: null,
   longitude: null,
@@ -36,6 +37,8 @@ export function placeAdReducer(
       return { ...state, description: action.payload.slice(0, DESCRIPTION_MAX) };
     case "SET_FILES":
       return { ...state, files: action.payload };
+    case "SET_IS_URGENT":
+      return { ...state, isUrgent: action.payload };
     case "SET_ADDRESS":
       return { ...state, address: action.payload };
     case "SET_LOCATION":
@@ -53,6 +56,7 @@ export function placeAdReducer(
         title: action.payload.title.slice(0, TITLE_MAX),
         price: action.payload.price.replace(/[^0-9]/g, ""),
         description: action.payload.description.slice(0, DESCRIPTION_MAX),
+        isUrgent: action.payload.isUrgent ?? false,
         address: action.payload.address,
         existingPhotoUrls: action.payload.photoUrls ?? [],
         error: null,

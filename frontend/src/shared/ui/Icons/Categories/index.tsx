@@ -11,6 +11,7 @@ import ElectronicsIcon from "./ElectronicsIcon";
 import HomeIcon from "./HomeIcon";
 import PartsIcon from "./PartsIcon";
 import BeautyIcon from "./BeautyIcon";
+import UrgentIcon from "./UrgentIcon";
 
 export type CategoryIconComponent = ComponentType<{ className?: string }>;
 
@@ -27,6 +28,7 @@ const CATEGORY_ICONS: Record<string, CategoryIconComponent> = {
   home: HomeIcon,
   parts: PartsIcon,
   beauty: BeautyIcon,
+  urgent: UrgentIcon,
 };
 
 export const getCategoryIcon = (slug: string): CategoryIconComponent | null =>
