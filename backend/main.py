@@ -16,6 +16,7 @@ from routes.advertisement import router as advertisement_router
 from routes.category import router as category_router
 from routes.upload import router as upload_router
 from routes.chat import router as chat_router
+from admin import setup_admin
 
 
 app = FastAPI(title="LOSboard API")
@@ -33,6 +34,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+setup_admin(app)
 
 app.include_router(auth_router)
 app.include_router(advertisement_router)

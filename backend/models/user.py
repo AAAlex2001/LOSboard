@@ -12,6 +12,7 @@ class User(Base):
     phone_number = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, nullable=False, server_default="false", default=False)
     token_version = Column(Integer, nullable=False, server_default="0", default=0)
 
     advertisements = relationship("Advertisement", back_populates="owner")

@@ -11,3 +11,5 @@ python-jose[cryptography]
 python-multipart
 aiofiles
 Pillow
+sqladmin
+itsdangerous
