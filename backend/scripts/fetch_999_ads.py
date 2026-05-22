@@ -11,12 +11,16 @@ import argparse
 import copy
 import json
 import os
+import re
 import sys
 import time
+import unicodedata
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 
@@ -672,6 +676,71 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def image_extension(url: str) -> str:
+    suffix = Path(urlparse(url).path).suffix.lower()
+    if suffix in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+        return suffix
+    return ".jpg"
+
+
+def download_file(url: str, path: Path, timeout: float) -> bool:
+    if path.exists() and path.stat().st_size > 0:
+        return True
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    request = Request(
+        url,
+        headers={
+            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "Referer": "https://999.md/",
+            "User-Agent": "LOSboard-import/1.0 (+https://landofsoul-apsny-daily.ru)",
+        },
+    )
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            path.write_bytes(response.read())
+    except (HTTPError, URLError, TimeoutError, OSError) as exc:
+        print(f"Failed to download image {url}: {exc}", file=sys.stderr)
+        return False
+
+    return True
+
+
+def download_ad_images(result: dict[str, Any], output_path: Path, timeout: float) -> int:
+    ads = result.get("ads")
+    if not isinstance(ads, list):
+        return 0
+
+    images_root = output_path.with_suffix("").parent / f"{output_path.stem}_images"
+    downloaded_count = 0
+
+    for ad in ads:
+        if not isinstance(ad, dict):
+            continue
+        images = ad.get("images") if isinstance(ad.get("images"), dict) else None
+        if not isinstance(images, dict):
+            continue
+
+        urls = images.get("urls")
+        if not isinstance(urls, list):
+            continue
+
+        ad_id = slugify(ad.get("source_id"), "ad", ascii_only=True)
+        local_files: list[str] = []
+        for index, url in enumerate(urls, start=1):
+            if not isinstance(url, str) or not url:
+                continue
+
+            image_path = images_root / ad_id / f"{index:02d}{image_extension(url)}"
+            if download_file(url, image_path, timeout):
+                downloaded_count += 1
+                local_files.append(str(image_path))
+
+        images["files"] = local_files
+
+    return downloaded_count
+
+
 def category_title(node: dict[str, Any], lang: str) -> str | None:
     title = node.get("title")
     if not isinstance(title, dict):
@@ -697,6 +766,59 @@ def category_titles(node: dict[str, Any]) -> dict[str, str | None]:
 
 def compact_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def slugify(value: Any, fallback: str, *, ascii_only: bool = False) -> str:
+    text = str(value or "").strip().lower()
+    text = unicodedata.normalize("NFKC", text)
+    if ascii_only:
+        text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+        text = re.sub(r"[^a-z0-9]+", "-", text).strip("-")
+    else:
+        text = re.sub(r'[<>:"/\\|?*\x00-\x1f]+', "-", text)
+        text = re.sub(r"\s+", "-", text)
+        text = re.sub(r"-+", "-", text).strip("-. ")
+    return text or fallback
+
+
+def locale_title_keys(locale: str) -> tuple[str, ...]:
+    if locale.lower().startswith("ru"):
+        return ("ru", "translated", "ro")
+    if locale.lower().startswith("ro"):
+        return ("ro", "translated", "ru")
+    return ("translated", "ro", "ru")
+
+
+def title_slug(node: dict[str, Any] | None, fallback: str, *, locale: str) -> str:
+    if not isinstance(node, dict):
+        return fallback
+
+    title = node.get("title") if isinstance(node.get("title"), dict) else {}
+    for key in locale_title_keys(locale):
+        value = title.get(key) if isinstance(title, dict) else None
+        slug = slugify(value, "")
+        if slug:
+            return slug
+
+    url = node.get("url")
+    if isinstance(url, str) and url.strip("/"):
+        return slugify(url.strip("/").split("/")[-1], fallback)
+
+    return fallback
+
+
+def target_slug(target: dict[str, Any], *, locale: str) -> str:
+    title = target.get("title") if isinstance(target.get("title"), dict) else {}
+    for key in locale_title_keys(locale):
+        slug = slugify(title.get(key), "")
+        if slug:
+            return slug
+
+    url = target.get("url")
+    if isinstance(url, str) and url.strip("/"):
+        return slugify(url.strip("/").split("/")[-1], "category")
+
+    return "category"
 
 
 def load_category_targets(
@@ -841,14 +963,27 @@ def summarize_targets(targets: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def batch_output_path(output_dir: Path, locale: str, target: dict[str, Any]) -> Path:
+def batch_output_path(output_dir: Path, locale: str, target: dict[str, Any], *, flat_output: bool) -> Path:
     node_id = target.get("node_id")
     search_subcategory_id = target.get("search_subcategory_id")
     node_type = str(target.get("node_type") or "category").lower()
-    suffix = f"{node_type}_{node_id}_target_{search_subcategory_id}"
+
+    if flat_output:
+        suffix = f"{node_type}_{node_id}_target_{search_subcategory_id}"
+        if target.get("filters"):
+            suffix += "_filters"
+        return output_dir / locale_to_path(locale) / f"{suffix}.json"
+
+    root = target.get("root") if isinstance(target.get("root"), dict) else {}
+    group = target.get("group") if isinstance(target.get("group"), dict) else {}
+    root_id = root.get("id") or "root"
+    group_id = group.get("id") or "group"
+    root_dir = f"{root_id}-{title_slug(root, 'category', locale=locale)}"
+    group_dir = f"{group_id}-{title_slug(group, 'group', locale=locale)}"
+    suffix = f"{search_subcategory_id}-{target_slug(target, locale=locale)}"
     if target.get("filters"):
         suffix += "_filters"
-    return output_dir / locale_to_path(locale) / f"{suffix}.json"
+    return output_dir / locale_to_path(locale) / root_dir / group_dir / f"{suffix}.json"
 
 
 def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
@@ -877,44 +1012,65 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
     total_ads = 0
     batch_started_at = datetime.now(timezone.utc).isoformat()
 
-    for locale in args.batch_locales:
-        for index, target in enumerate(targets, start=1):
-            output_path = batch_output_path(args.batch_output_dir, locale, target)
-            if args.skip_existing and output_path.exists():
+    def fetch_target(locale: str, index: int, target: dict[str, Any]) -> dict[str, Any] | None:
+        output_path = batch_output_path(args.batch_output_dir, locale, target, flat_output=args.flat_output)
+        if args.skip_existing and output_path.exists():
+            return None
+
+        target_args = copy.copy(args)
+        target_args.search = True
+        target_args.search_count = False
+        target_args.all_pages = True if args.repeat is None and args.target_count is None else args.all_pages
+        target_args.locale = locale
+        target_args.search_subcategory_id = target["search_subcategory_id"]
+        target_args.search_filters_json = compact_json(target.get("filters") or [])
+        target_args.search_input_json = None
+        target_args.output = output_path
+
+        print(
+            f"[{locale} {index}/{len(targets)}] "
+            f"subcategory {target_args.search_subcategory_id} -> {output_path}",
+            file=sys.stderr,
+        )
+
+        result = fetch_search_ads(target_args)
+        result["category_target"] = target
+        downloaded_images = download_ad_images(result, output_path, args.timeout) if args.download_images else 0
+        write_json(output_path, result)
+
+        return {
+            "locale": locale,
+            "path": str(output_path),
+            "search_subcategory_id": target_args.search_subcategory_id,
+            "node_id": target.get("node_id"),
+            "node_type": target.get("node_type"),
+            "count": result["count"],
+            "site_count": result.get("site_count"),
+            "downloaded_images": downloaded_images,
+        }
+
+    tasks = [
+        (locale, index, target)
+        for locale in args.batch_locales
+        for index, target in enumerate(targets, start=1)
+    ]
+
+    if args.batch_workers == 1:
+        for locale, index, target in tasks:
+            output_file = fetch_target(locale, index, target)
+            if output_file is None:
                 continue
-
-            target_args = copy.copy(args)
-            target_args.search = True
-            target_args.search_count = False
-            target_args.all_pages = True if args.repeat is None and args.target_count is None else args.all_pages
-            target_args.locale = locale
-            target_args.search_subcategory_id = target["search_subcategory_id"]
-            target_args.search_filters_json = compact_json(target.get("filters") or [])
-            target_args.search_input_json = None
-            target_args.output = output_path
-
-            print(
-                f"[{locale} {index}/{len(targets)}] "
-                f"subcategory {target_args.search_subcategory_id} -> {output_path}",
-                file=sys.stderr,
-            )
-
-            result = fetch_search_ads(target_args)
-            result["category_target"] = target
-            write_json(output_path, result)
-
-            output_files.append(
-                {
-                    "locale": locale,
-                    "path": str(output_path),
-                    "search_subcategory_id": target_args.search_subcategory_id,
-                    "node_id": target.get("node_id"),
-                    "node_type": target.get("node_type"),
-                    "count": result["count"],
-                    "site_count": result.get("site_count"),
-                }
-            )
-            total_ads += result["count"]
+            output_files.append(output_file)
+            total_ads += output_file["count"]
+    else:
+        with ThreadPoolExecutor(max_workers=args.batch_workers) as executor:
+            futures = [executor.submit(fetch_target, locale, index, target) for locale, index, target in tasks]
+            for future in as_completed(futures):
+                output_file = future.result()
+                if output_file is None:
+                    continue
+                output_files.append(output_file)
+                total_ads += output_file["count"]
 
     index_payload = {
         "source": "999.md",
@@ -935,6 +1091,9 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
             "include_cars_features": args.include_cars_features,
             "include_redirect_targets": args.include_redirect_targets,
             "include_symlink_targets": args.include_symlink_targets,
+            "batch_workers": args.batch_workers,
+            "delay": args.delay,
+            "download_images": args.download_images,
         },
     }
     index_path = args.batch_output_dir / "index.json"
@@ -957,6 +1116,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--categories-dry-run", action="store_true", help="Print category targets without network calls.")
     parser.add_argument("--batch-output-dir", type=Path, default=DEFAULT_BATCH_OUTPUT_DIR)
     parser.add_argument("--batch-locales", nargs="+", default=["ru_RU", "ro_RO"])
+    parser.add_argument("--batch-workers", type=int, default=4, help="Parallel category fetches in batch mode.")
+    parser.add_argument("--flat-output", action="store_true", help="Use the old flat batch filenames.")
     parser.add_argument("--max-categories", type=int, help="Limit category targets for testing batch mode.")
     parser.add_argument("--skip-existing", action="store_true", help="Skip category output files that already exist.")
     parser.add_argument(
@@ -1003,10 +1164,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Maximum request count. Defaults to 1, or an estimated safe cap when --target-count is set.",
     )
     parser.add_argument("--target-count", type=int, help="Stop after collecting this many unique ads.")
-    parser.add_argument("--delay", type=float, default=2.0)
+    parser.add_argument("--delay", type=float, default=0.2)
     parser.add_argument("--timeout", type=float, default=20.0)
     parser.add_argument("--with-body", action="store_true")
     parser.add_argument("--include-raw-ad", action="store_true")
+    parser.add_argument("--download-images", action="store_true", help="Download ad images next to each JSON file.")
     parser.add_argument(
         "--image-base-url",
         default=os.getenv("NINE_MD_IMAGE_BASE_URL", DEFAULT_IMAGE_BASE_URL),
@@ -1224,6 +1386,10 @@ def main(argv: list[str]) -> int:
         raise ValueError("--target-count must be positive")
     if args.max_categories is not None and args.max_categories < 1:
         raise ValueError("--max-categories must be positive")
+    if args.batch_workers < 1:
+        raise ValueError("--batch-workers must be positive")
+    if args.download_images and not args.search_all_categories and not args.output:
+        raise ValueError("--download-images requires --output outside --search-all-categories mode")
 
     if args.search_all_categories:
         result = fetch_all_category_ads(args)
@@ -1233,6 +1399,9 @@ def main(argv: list[str]) -> int:
         result = fetch_booster_ads(args)
 
     if args.output:
+        if args.download_images:
+            downloaded_images = download_ad_images(result, args.output, args.timeout)
+            print(f"Downloaded {downloaded_images} images for {args.output}", file=sys.stderr)
         write_json(args.output, result)
         saved_count = result.get("count")
         saved_label = "ads"
