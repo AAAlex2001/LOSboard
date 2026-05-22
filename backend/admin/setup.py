@@ -27,8 +27,9 @@ def setup_admin(app: FastAPI) -> None:
     admin = Admin(
         app=app,
         engine=engine,
-        title="LOSboard Admin",
+        title="Админка LOSboard",
         base_url=admin_base_url,
+        templates_dir="admin/templates",
         authentication_backend=AdminAuth(secret_key=secret_key),
     )
     admin.add_view(UserAdmin)
