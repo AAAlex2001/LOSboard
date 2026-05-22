@@ -21,13 +21,14 @@ from database import engine
 
 def setup_admin(app: FastAPI) -> None:
     secret_key = os.environ["JWT_SECRET_KEY"]
+    admin_base_url = os.environ["ADMIN_BASE_URL"]
     app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
     admin = Admin(
         app=app,
         engine=engine,
         title="LOSboard Admin",
-        base_url="/admin",
+        base_url=admin_base_url,
         authentication_backend=AdminAuth(secret_key=secret_key),
     )
     admin.add_view(UserAdmin)
