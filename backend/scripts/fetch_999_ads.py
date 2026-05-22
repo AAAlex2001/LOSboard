@@ -1226,9 +1226,6 @@ def main(argv: list[str]) -> int:
         raise ValueError("--max-categories must be positive")
 
     if args.search_all_categories:
-        if args.phone_mode == "full":
-            print("Batch category mode uses --phone-mode redacted to avoid writing phone numbers.", file=sys.stderr)
-            args.phone_mode = "redacted"
         result = fetch_all_category_ads(args)
     elif args.search or args.search_count:
         result = fetch_search_ads(args)
