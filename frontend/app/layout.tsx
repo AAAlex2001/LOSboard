@@ -5,6 +5,8 @@ import { AuthProvider } from "@/src/shared/auth/auth-provider";
 import { NotificationProvider } from "@/src/shared/ui/Notifications";
 import { UnreadProvider } from "@/src/entities/chat";
 import { MeProvider } from "@/src/entities/user";
+import { ViewportModeToggle } from "@/src/shared/ui/ViewportModeToggle";
+import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -72,10 +74,41 @@ export default function RootLayout({
       style={{ height: "100%" }}
     >
       <body>
+        <Script
+          id="viewport-mode"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+(function () {
+  var storageKey = "losboard.viewport-mode";
+  var mobileViewport = "width=device-width, initial-scale=1, viewport-fit=cover";
+  var desktopViewport = "width=1440, initial-scale=1, viewport-fit=cover";
+  var savedMode = null;
+  try {
+    savedMode = window.localStorage.getItem(storageKey);
+  } catch (error) {}
+  var mode = savedMode === "mobile" || savedMode === "desktop"
+    ? savedMode
+    : (window.screen.width < 850 ? "desktop" : "mobile");
+  var meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "viewport";
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", mode === "desktop" ? desktopViewport : mobileViewport);
+  document.documentElement.dataset.viewportMode = mode;
+})();
+            `.trim(),
+          }}
+        />
         <NotificationProvider>
           <AuthProvider>
             <MeProvider>
-              <UnreadProvider>{children}</UnreadProvider>
+              <UnreadProvider>
+                {children}
+                <ViewportModeToggle />
+              </UnreadProvider>
             </MeProvider>
           </AuthProvider>
         </NotificationProvider>
