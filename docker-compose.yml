@@ -1,5 +1,38 @@
 name: losboard
 
+x-backend-common: &backend-common
+  build:
+    context: ./backend
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    JWT_ALGORITHM: ${JWT_ALGORITHM}
+    ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+    REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
+    CORS_ORIGINS: ${CORS_ORIGINS}
+    ECHO_SQL: ${ECHO_SQL}
+    DB_POOL_SIZE: ${DB_POOL_SIZE}
+    DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW}
+    DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT}
+    DB_POOL_RECYCLE: ${DB_POOL_RECYCLE}
+    DB_COMMAND_TIMEOUT: ${DB_COMMAND_TIMEOUT}
+    ADMIN_BASE_URL: ${ADMIN_BASE_URL}
+  volumes:
+    - backend_uploads:/app/uploads
+  healthcheck:
+    test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ >/dev/null"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 20s
+  networks:
+    - app
+    - db
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -10,6 +43,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -17,34 +52,10 @@ services:
       retries: 10
 
   backend:
-    build:
-      context: ./backend
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      JWT_ALGORITHM: ${JWT_ALGORITHM}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
-      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
-      CORS_ORIGINS: ${CORS_ORIGINS}
-      ECHO_SQL: ${ECHO_SQL}
-      DB_POOL_SIZE: ${DB_POOL_SIZE}
-      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW}
-      DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT}
-      DB_POOL_RECYCLE: ${DB_POOL_RECYCLE}
-      DB_COMMAND_TIMEOUT: ${DB_COMMAND_TIMEOUT}
-      ADMIN_BASE_URL: ${ADMIN_BASE_URL}
-    volumes:
-      - backend_uploads:/app/uploads
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/ >/dev/null"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+    <<: *backend-common
+
+  backend-replica:
+    <<: *backend-common
 
   frontend:
     build:
@@ -53,13 +64,20 @@ services:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+      backend-replica:
+        condition: service_healthy
+    networks:
+      - app
 
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
     depends_on:
       backend:
+        condition: service_healthy
+      backend-replica:
         condition: service_healthy
       frontend:
         condition: service_started
@@ -71,6 +89,8 @@ services:
       - ./nginx/certbot/www:/var/www/certbot:ro
       - ./nginx/certbot/conf:/etc/letsencrypt:ro
       - backend_uploads:/var/www/uploads:ro
+    networks:
+      - app
 
   certbot:
     image: certbot/certbot:latest
@@ -79,7 +99,14 @@ services:
       - ./nginx/certbot/www:/var/www/certbot
       - ./nginx/certbot/conf:/etc/letsencrypt
     entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot; sleep 12h & wait $${!}; done;'
+    networks:
+      - app
 
 volumes:
   postgres_data:
   backend_uploads:
+
+networks:
+  app:
+  db:
+    internal: true
