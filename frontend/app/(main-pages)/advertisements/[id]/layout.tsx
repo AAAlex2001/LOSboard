@@ -14,34 +14,42 @@ interface AdSummary {
   price: number;
   location: string;
   photo_urls: string[];
+  category_id: number;
+  subcategory_id: number;
   created_at?: string | null;
   is_active?: boolean;
 }
 
-function getApiBase(): string {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (!url) return "http://localhost:8000/";
-  return url.endsWith("/") ? url : `${url}/`;
+interface SubcategoryDto {
+  id: number;
+  name: string;
+  slug: string;
 }
 
-function getSiteOrigin(): string {
-  try {
-    return new URL(getApiBase()).origin;
-  } catch {
-    return "http://localhost:3000";
-  }
+interface CategoryDto {
+  id: number;
+  name: string;
+  slug: string;
+  subcategories: SubcategoryDto[];
 }
+
+const API_BASE = process.env.INTERNAL_API_BASE_URL!;
+const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 async function fetchAd(id: number): Promise<AdSummary | null> {
-  try {
-    const res = await fetch(`${getApiBase()}advertisements/${id}`, {
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as AdSummary;
-  } catch {
-    return null;
-  }
+  const res = await fetch(`${API_BASE}advertisements/${id}`, {
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) return null;
+  return (await res.json()) as AdSummary;
+}
+
+async function fetchCategories(): Promise<CategoryDto[]> {
+  const res = await fetch(`${API_BASE}categories/`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return [];
+  return (await res.json()) as CategoryDto[];
 }
 
 function buildDescription(ad: AdSummary): string {
@@ -53,16 +61,20 @@ function buildDescription(ad: AdSummary): string {
   return `${price}${location}. ${body}`;
 }
 
-function buildCanonical(origin: string, ad: AdSummary): string {
+function buildCanonical(ad: AdSummary): string {
   const slug = slugify(ad.title);
   const suffix = slug ? `${ad.id}-${slug}` : `${ad.id}`;
-  return `${origin}/advertisements/${suffix}`;
+  return `${SITE_ORIGIN}/advertisements/${suffix}`;
+}
+
+function parseId(idParam: string): number {
+  const match = idParam.match(/^(\d+)/);
+  return match ? Number(match[1]) : NaN;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id: idParam } = await params;
-  const match = idParam.match(/^(\d+)/);
-  const id = match ? Number(match[1]) : NaN;
+  const id = parseId(idParam);
 
   if (!Number.isFinite(id)) {
     return {
@@ -80,12 +92,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const description = buildDescription(ad);
-  const origin = getSiteOrigin();
-  const canonical = buildCanonical(origin, ad);
+  const canonical = buildCanonical(ad);
   const ogImage =
     ad.photo_urls && ad.photo_urls.length > 0
-      ? `${origin}${ad.photo_urls[0]}`
-      : `${origin}/los.jpg`;
+      ? `${SITE_ORIGIN}${ad.photo_urls[0]}`
+      : `${SITE_ORIGIN}/los.jpg`;
 
   return {
     title: ad.title,
@@ -107,29 +118,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function AdvertisementLayout({
-  params,
-  children,
-}: Props) {
+export default async function AdvertisementLayout({ params, children }: Props) {
   const { id: idParam } = await params;
-  const match = idParam.match(/^(\d+)/);
-  const id = match ? Number(match[1]) : NaN;
+  const id = parseId(idParam);
   if (!Number.isFinite(id)) return children;
 
-  const ad = await fetchAd(id);
+  const [ad, categories] = await Promise.all([fetchAd(id), fetchCategories()]);
   if (!ad) return children;
 
-  const origin = getSiteOrigin();
-  const canonical = buildCanonical(origin, ad);
-  const images = (ad.photo_urls ?? []).map((p) => `${origin}${p}`);
+  const canonical = buildCanonical(ad);
+  const images = (ad.photo_urls ?? []).map((p) => `${SITE_ORIGIN}${p}`);
+
+  const category = categories.find((c) => c.id === ad.category_id) ?? null;
+  const subcategory =
+    category?.subcategories.find((s) => s.id === ad.subcategory_id) ?? null;
 
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: ad.title,
     description: ad.description ?? buildDescription(ad),
-    image: images.length > 0 ? images : [`${origin}/los.jpg`],
+    image: images.length > 0 ? images : [`${SITE_ORIGIN}/los.jpg`],
     url: canonical,
+    category: subcategory?.name ?? category?.name,
     offers: {
       "@type": "Offer",
       price: ad.price,
@@ -143,23 +154,42 @@ export default async function AdvertisementLayout({
     },
   };
 
+  const breadcrumbItems = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Главная",
+      item: SITE_ORIGIN,
+    },
+  ];
+  let position = 2;
+  if (category) {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: position++,
+      name: category.name,
+      item: `${SITE_ORIGIN}/category/${category.slug}`,
+    });
+  }
+  if (category && subcategory) {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: position++,
+      name: subcategory.name,
+      item: `${SITE_ORIGIN}/category/${category.slug}/${subcategory.slug}`,
+    });
+  }
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: position++,
+    name: ad.title,
+    item: canonical,
+  });
+
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Главная",
-        item: origin,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: ad.title,
-        item: canonical,
-      },
-    ],
+    itemListElement: breadcrumbItems,
   };
 
   return (

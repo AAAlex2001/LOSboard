@@ -65,6 +65,9 @@ services:
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     restart: unless-stopped
+    environment:
+      INTERNAL_API_BASE_URL: http://backend:8000/
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     depends_on:
       backend:
         condition: service_healthy

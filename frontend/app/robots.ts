@@ -1,19 +1,8 @@
 import type { MetadataRoute } from "next";
 
-function getSiteUrl(): string {
-  const api = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (api) {
-    try {
-      return new URL(api).origin;
-    } catch {
-      return "http://localhost:3000";
-    }
-  }
-  return "http://localhost:3000";
-}
+const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 export default function robots(): MetadataRoute.Robots {
-  const base = getSiteUrl();
   return {
     rules: [
       {
@@ -35,7 +24,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${base}/sitemap.xml`,
-    host: base,
+    sitemap: `${SITE_ORIGIN}/sitemap.xml`,
+    host: SITE_ORIGIN,
   };
 }

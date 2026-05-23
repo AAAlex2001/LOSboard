@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CatalogPage } from "@/src/widgets/advertisement/catalog-page";
 
 interface PageProps {
@@ -6,5 +7,9 @@ interface PageProps {
 
 export default async function SubcategoryPage({ params }: PageProps) {
   const { slug, sub } = await params;
-  return <CatalogPage initialCategorySlug={slug} initialSubcategorySlug={sub} />;
+  return (
+    <Suspense>
+      <CatalogPage initialCategorySlug={slug} initialSubcategorySlug={sub} />
+    </Suspense>
+  );
 }

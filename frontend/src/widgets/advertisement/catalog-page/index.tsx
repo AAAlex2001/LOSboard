@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { CatalogTopBar } from "@/src/widgets/advertisement/catalog-topbar";
@@ -27,6 +27,8 @@ export const CatalogPage = ({
   initialSubcategorySlug,
 }: CatalogPageProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urgentParam = searchParams.get("urgent") === "1";
   const { categories } = useCategories();
   const { state, setCategory, setSubcategory, reset, patchItem } =
     useAdvertisementList();
@@ -42,6 +44,10 @@ export const CatalogPage = ({
       : null;
 
   useEffect(() => {
+    if (urgentParam && !initialCategorySlug) {
+      setCategory(URGENT_CATEGORY);
+      return;
+    }
     if (!initialCategorySlug) {
       reset();
       return;
@@ -52,7 +58,12 @@ export const CatalogPage = ({
     } else {
       setCategory(activeCategory);
     }
-  }, [activeCategory?.id, activeSubcategory?.id, initialCategorySlug]);
+  }, [
+    urgentParam,
+    activeCategory?.id,
+    activeSubcategory?.id,
+    initialCategorySlug,
+  ]);
 
   const handleSelectCategory = (cat: Category | null) => {
     if (!cat) {

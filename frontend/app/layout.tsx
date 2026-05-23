@@ -15,21 +15,10 @@ const inter = Inter({
 const SITE_NAME = "LOSboard";
 const SITE_DESCRIPTION =
   "Доска объявлений Республики Абхазия. Купить, продать, обменять — быстро и без посредников.";
-
-function getSiteUrl(): string {
-  const api = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (api) {
-    try {
-      return new URL(api).origin;
-    } catch {
-      return "http://localhost:3000";
-    }
-  }
-  return "http://localhost:3000";
-}
+const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: `${SITE_NAME} — Доска объявлений Республики Абхазия`,
     template: `%s | ${SITE_NAME}`,
@@ -61,20 +50,18 @@ export const metadata: Metadata = {
   },
 };
 
-const siteUrl = getSiteUrl();
-
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: SITE_NAME,
-  url: siteUrl,
+  url: SITE_ORIGIN,
   description: SITE_DESCRIPTION,
   inLanguage: "ru",
   potentialAction: {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: `${siteUrl}/?q={search_term_string}`,
+      urlTemplate: `${SITE_ORIGIN}/?q={search_term_string}`,
     },
     "query-input": "required name=search_term_string",
   },
@@ -84,8 +71,8 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: SITE_NAME,
-  url: siteUrl,
-  logo: `${siteUrl}/los.jpg`,
+  url: SITE_ORIGIN,
+  logo: `${SITE_ORIGIN}/los.jpg`,
 };
 
 export default function RootLayout({

@@ -87,9 +87,11 @@ export default function AdvertisementPage() {
                   items={[
                     { label: "Главная", href: "/" },
                     ...(category
-                      ? [{ label: category.name, href: "/" }]
+                      ? [{ label: category.name, href: `/category/${category.slug}` }]
                       : []),
-                    ...(subcategory ? [{ label: subcategory.name }] : []),
+                    ...(category && subcategory
+                      ? [{ label: subcategory.name, href: `/category/${category.slug}/${subcategory.slug}` }]
+                      : []),
                     { label: ad.title },
                   ]}
                 />

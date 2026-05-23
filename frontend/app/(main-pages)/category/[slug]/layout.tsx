@@ -13,30 +13,15 @@ interface Props {
   children: React.ReactNode;
 }
 
-function getApiBase(): string {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (!url) return "http://localhost:8000/";
-  return url.endsWith("/") ? url : `${url}/`;
-}
-
-function getSiteOrigin(): string {
-  try {
-    return new URL(getApiBase()).origin;
-  } catch {
-    return "http://localhost:3000";
-  }
-}
+const API_BASE = process.env.INTERNAL_API_BASE_URL!;
+const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 async function fetchCategories(): Promise<CategoryDto[]> {
-  try {
-    const res = await fetch(`${getApiBase()}categories/`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    return (await res.json()) as CategoryDto[];
-  } catch {
-    return [];
-  }
+  const res = await fetch(`${API_BASE}categories/`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return [];
+  return (await res.json()) as CategoryDto[];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -50,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
   const description = `Объявления в категории «${cat.name}» — LOSboard, доска объявлений Республики Абхазия.`;
-  const canonical = `${getSiteOrigin()}/category/${cat.slug}`;
+  const canonical = `${SITE_ORIGIN}/category/${cat.slug}`;
   return {
     title: cat.name,
     description,
@@ -63,17 +48,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CategoryLayout({
-  params,
-  children,
-}: Props) {
+export default async function CategoryLayout({ params, children }: Props) {
   const { slug } = await params;
   const categories = await fetchCategories();
   const cat = categories.find((c) => c.slug === slug);
   if (!cat) return children;
 
-  const origin = getSiteOrigin();
-  const canonical = `${origin}/category/${cat.slug}`;
+  const canonical = `${SITE_ORIGIN}/category/${cat.slug}`;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -83,7 +64,7 @@ export default async function CategoryLayout({
         "@type": "ListItem",
         position: 1,
         name: "Главная",
-        item: origin,
+        item: SITE_ORIGIN,
       },
       {
         "@type": "ListItem",
