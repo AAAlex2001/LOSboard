@@ -38,6 +38,14 @@ class AdvertisementResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AdvertisementSitemapItem(BaseModel):
+    id: int
+    title: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class AdvertisementUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=1000)

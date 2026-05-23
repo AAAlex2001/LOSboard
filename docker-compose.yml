@@ -21,6 +21,8 @@ x-backend-common: &backend-common
     DB_POOL_RECYCLE: ${DB_POOL_RECYCLE}
     DB_COMMAND_TIMEOUT: ${DB_COMMAND_TIMEOUT}
     ADMIN_BASE_URL: ${ADMIN_BASE_URL}
+    SITE_URL: ${SITE_URL}
+    INDEXNOW_KEY: ${INDEXNOW_KEY}
   volumes:
     - backend_uploads:/app/uploads
   healthcheck:

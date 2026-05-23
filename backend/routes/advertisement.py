@@ -14,11 +14,13 @@ from services.advertisement.use_cases.delete_advertisement import DeleteAdvertis
 from services.advertisement.use_cases.like_advertisement import LikeAdvertisementUseCase
 from services.advertisement.use_cases.view_advertisement import ViewAdvertisementUseCase
 from services.advertisement.use_cases.search_advertisements import SearchAdvertisementsUseCase
+from services.advertisement.use_cases.get_sitemap_ads import GetSitemapAdsUseCase
 
 from models.user import User
 from schemas.advertisement import (
     AdvertisementCreate,
     AdvertisementResponse,
+    AdvertisementSitemapItem,
     AdvertisementUpdate,
 )
 
@@ -41,6 +43,14 @@ async def create_advertisement(
     )
 
     return new_advertisement
+
+
+@router.get("/sitemap", response_model=list[AdvertisementSitemapItem])
+async def get_sitemap_advertisements(
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = GetSitemapAdsUseCase()
+    return await use_case.list_ids(db=db)
 
 
 @router.get("/search", response_model=list[AdvertisementResponse])

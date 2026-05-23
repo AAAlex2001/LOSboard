@@ -70,7 +70,7 @@ export const AdvertisementSearch = ({
                   key={ad.id}
                   type="button"
                   className={style.suggestion}
-                  onClick={() => goToAdvertisement(ad.id)}
+                  onClick={() => goToAdvertisement(ad.id, ad.title)}
                 >
                   <span className={style.thumb}>
                     {photo ? (

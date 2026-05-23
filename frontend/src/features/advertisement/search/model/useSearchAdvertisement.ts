@@ -3,6 +3,7 @@
 import { useEffect, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { searchAdvertisements } from "@/src/entities/advertisement";
+import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import {
   initialSearchState,
   searchAdvertisementReducer,
@@ -58,9 +59,9 @@ export function useSearchAdvertisement() {
   const open = () => dispatch({ type: "OPEN" });
   const reset = () => dispatch({ type: "RESET" });
 
-  const goToAdvertisement = (id: number) => {
+  const goToAdvertisement = (id: number, title: string) => {
     close();
-    router.push(`/advertisements/${id}`);
+    router.push(buildAdvertisementUrl(id, title));
   };
 
   const submit = () => {

@@ -15,12 +15,13 @@ import { useCategories } from "@/src/entities/category";
 import { useMeContext } from "@/src/entities/user";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
+import { parseAdvertisementIdFromParam } from "@/src/shared/lib/slug";
 import style from "./page.module.scss";
 
 export default function AdvertisementPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const adId = Number(params?.id);
+  const adId = parseAdvertisementIdFromParam(params?.id);
 
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [loading, setLoading] = useState(true);

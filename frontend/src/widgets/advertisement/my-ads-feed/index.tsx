@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Loader } from "@/src/shared/ui/Loader";
 import { AdCard, type Advertisement } from "@/src/entities/advertisement";
 import { useMyAdvertisements } from "@/src/features/advertisement";
+import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import style from "./style.module.scss";
 
 export const MyAdsFeed = () => {
@@ -15,7 +16,7 @@ export const MyAdsFeed = () => {
   };
 
   const handleCardClick = (ad: Advertisement) => {
-    router.push(`/advertisements/${ad.id}`);
+    router.push(buildAdvertisementUrl(ad.id, ad.title));
   };
 
   if (loading) {

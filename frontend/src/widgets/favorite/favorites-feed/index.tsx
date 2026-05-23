@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Loader } from "@/src/shared/ui/Loader";
 import { AdCard, type Advertisement } from "@/src/entities/advertisement";
 import { useFavorite, useFavorites } from "@/src/features/favorite";
+import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import style from "./style.module.scss";
 
 export const FavoritesFeed = () => {
@@ -12,7 +13,7 @@ export const FavoritesFeed = () => {
   const { toggle, pendingIds } = useFavorite();
 
   const handleCardClick = (ad: Advertisement) => {
-    router.push(`/advertisements/${ad.id}`);
+    router.push(buildAdvertisementUrl(ad.id, ad.title));
   };
 
   const handleFavorite = async (ad: Advertisement) => {

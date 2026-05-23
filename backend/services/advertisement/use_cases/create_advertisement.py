@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category, Subcategory
 from sqlalchemy import select
 
+from services.seo.indexnow import submit_advertisement
+
 
 class CreateAdvertisementUseCase:
 
@@ -61,4 +63,7 @@ class CreateAdvertisementUseCase:
         db.add(new_advertisement)
         await db.flush()
         await db.refresh(new_advertisement)
+
+        submit_advertisement(new_advertisement.id, new_advertisement.title)
+
         return new_advertisement

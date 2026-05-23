@@ -6,7 +6,7 @@ function getSiteUrl(): string {
     try {
       return new URL(api).origin;
     } catch {
-      // fallthrough
+      return "http://localhost:3000";
     }
   }
   return "http://localhost:3000";
@@ -30,6 +30,8 @@ export default function robots(): MetadataRoute.Robots {
           "/my-ads/",
           "/favorites",
           "/place-ad",
+          "/*?urgent=",
+          "/*?q=",
         ],
       },
     ],

@@ -5,8 +5,7 @@ import { AuthProvider } from "@/src/shared/auth/auth-provider";
 import { NotificationProvider } from "@/src/shared/ui/Notifications";
 import { UnreadProvider } from "@/src/entities/chat";
 import { MeProvider } from "@/src/entities/user";
-import { ViewportModeToggle } from "@/src/shared/ui/ViewportModeToggle";
-import Script from "next/script";
+import { JsonLd } from "@/src/shared/ui/JsonLd";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,7 +22,7 @@ function getSiteUrl(): string {
     try {
       return new URL(api).origin;
     } catch {
-      // fallthrough
+      return "http://localhost:3000";
     }
   }
   return "http://localhost:3000";
@@ -62,6 +61,33 @@ export const metadata: Metadata = {
   },
 };
 
+const siteUrl = getSiteUrl();
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: siteUrl,
+  description: SITE_DESCRIPTION,
+  inLanguage: "ru",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: siteUrl,
+  logo: `${siteUrl}/los.jpg`,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -69,46 +95,17 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ru"
       className={inter.variable}
       style={{ height: "100%" }}
     >
       <body>
-        <Script
-          id="viewport-mode"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-(function () {
-  var storageKey = "losboard.viewport-mode";
-  var mobileViewport = "width=device-width, initial-scale=1, viewport-fit=cover";
-  var desktopViewport = "width=1440, initial-scale=1, viewport-fit=cover";
-  var savedMode = null;
-  try {
-    savedMode = window.localStorage.getItem(storageKey);
-  } catch (error) {}
-  var mode = savedMode === "mobile" || savedMode === "desktop"
-    ? savedMode
-    : (window.screen.width < 850 ? "desktop" : "mobile");
-  var meta = document.querySelector('meta[name="viewport"]');
-  if (!meta) {
-    meta = document.createElement("meta");
-    meta.name = "viewport";
-    document.head.appendChild(meta);
-  }
-  meta.setAttribute("content", mode === "desktop" ? desktopViewport : mobileViewport);
-  document.documentElement.dataset.viewportMode = mode;
-})();
-            `.trim(),
-          }}
-        />
+        <JsonLd data={websiteJsonLd} />
+        <JsonLd data={organizationJsonLd} />
         <NotificationProvider>
           <AuthProvider>
             <MeProvider>
-              <UnreadProvider>
-                {children}
-                <ViewportModeToggle />
-              </UnreadProvider>
+              <UnreadProvider>{children}</UnreadProvider>
             </MeProvider>
           </AuthProvider>
         </NotificationProvider>

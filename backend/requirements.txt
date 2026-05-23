@@ -13,3 +13,4 @@ aiofiles
 Pillow
 sqladmin
 itsdangerous
+httpx

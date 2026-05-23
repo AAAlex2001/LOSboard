@@ -5,6 +5,7 @@ import { Loader } from "@/src/shared/ui/Loader";
 import { AdCard, type Advertisement } from "@/src/entities/advertisement";
 import type { AdvertisementListState } from "@/src/features/advertisement";
 import { useFavorite } from "@/src/features/favorite";
+import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import style from "./style.module.scss";
 
 interface CatalogFeedProps {
@@ -17,7 +18,7 @@ export const CatalogFeed = ({ state, onItemPatch }: CatalogFeedProps) => {
   const { toggle, pendingIds } = useFavorite();
 
   const handleAdClick = (ad: Advertisement) => {
-    router.push(`/advertisements/${ad.id}`);
+    router.push(buildAdvertisementUrl(ad.id, ad.title));
   };
 
   const handleFavorite = async (ad: Advertisement) => {

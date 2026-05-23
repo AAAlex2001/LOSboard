@@ -49,7 +49,11 @@ export const PhotoGallery = ({
           <div key={`${src}-${i}`} className={`keen-slider__slide ${style.slide}`}>
             <img
               src={src}
-              alt={alt}
+              alt={
+                photos.length > 1
+                  ? `${alt} — фото ${i + 1} из ${photos.length}`
+                  : alt
+              }
               className={style.image}
               draggable={false}
               loading={i === 0 ? "eager" : "lazy"}

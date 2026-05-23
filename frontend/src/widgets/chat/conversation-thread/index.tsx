@@ -13,6 +13,7 @@ import { useMeContext } from "@/src/entities/user";
 import { useConversationThread } from "@/src/features/chat";
 import { ChatComposer } from "@/src/features/chat/composer";
 import { useUnreadTotal } from "@/src/entities/chat";
+import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import style from "./style.module.scss";
 
 interface ConversationThreadProps {
@@ -63,7 +64,12 @@ export const ConversationThread = ({
         advertisement={conversation.advertisement}
         price={conversation.advertisement.price}
         onAdClick={() =>
-          router.push(`/advertisements/${conversation.advertisement.id}`)
+          router.push(
+            buildAdvertisementUrl(
+              conversation.advertisement.id,
+              conversation.advertisement.title
+            )
+          )
         }
         onClose={onClose}
       />

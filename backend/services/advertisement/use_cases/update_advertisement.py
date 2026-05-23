@@ -5,6 +5,8 @@ from models.user import User
 from fastapi import HTTPException
 from schemas.advertisement import AdvertisementUpdate
 
+from services.seo.indexnow import submit_advertisement
+
 
 class UpdateAdvertisementUseCase:
 
@@ -38,5 +40,7 @@ class UpdateAdvertisementUseCase:
 
         await db.flush()
         await db.refresh(advertisement)
+
+        submit_advertisement(advertisement.id, advertisement.title)
 
         return advertisement
