@@ -606,7 +606,14 @@ def make_search_payload(args: argparse.Namespace, skip: int, limit: int) -> dict
     }
 
 
-def request_graphql(endpoint: str, payload: dict[str, Any], timeout: float) -> dict[str, Any]:
+def request_graphql(
+    endpoint: str,
+    payload: dict[str, Any],
+    timeout: float,
+    *,
+    retries: int,
+    retry_delay: float,
+) -> dict[str, Any]:
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     request = Request(
         endpoint,
@@ -621,14 +628,36 @@ def request_graphql(endpoint: str, payload: dict[str, Any], timeout: float) -> d
         },
     )
 
-    try:
-        with urlopen(request, timeout=timeout) as response:
-            response_body = response.read().decode("utf-8")
-    except HTTPError as exc:
-        error_body = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"999.md returned HTTP {exc.code}: {error_body}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"Failed to connect to 999.md: {exc}") from exc
+    for attempt in range(retries + 1):
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                response_body = response.read().decode("utf-8")
+            break
+        except HTTPError as exc:
+            error_body = exc.read().decode("utf-8", errors="replace")
+            if exc.code in {403, 429, 500, 502, 503, 504} and attempt < retries:
+                wait_seconds = retry_delay * (attempt + 1)
+                print(
+                    f"999.md returned HTTP {exc.code}; retrying in {wait_seconds:.1f}s "
+                    f"({attempt + 1}/{retries})",
+                    file=sys.stderr,
+                )
+                time.sleep(wait_seconds)
+                continue
+            raise RuntimeError(f"999.md returned HTTP {exc.code}: {error_body}") from exc
+        except (URLError, TimeoutError) as exc:
+            if attempt < retries:
+                wait_seconds = retry_delay * (attempt + 1)
+                print(
+                    f"Failed to connect to 999.md; retrying in {wait_seconds:.1f}s "
+                    f"({attempt + 1}/{retries}): {exc}",
+                    file=sys.stderr,
+                )
+                time.sleep(wait_seconds)
+                continue
+            raise RuntimeError(f"Failed to connect to 999.md: {exc}") from exc
+    else:
+        raise RuntimeError("Failed to connect to 999.md")
 
     data = json.loads(response_body)
     if data.get("errors"):
@@ -1009,6 +1038,7 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
         }
 
     output_files: list[dict[str, Any]] = []
+    errors: list[dict[str, Any]] = []
     total_ads = 0
     batch_started_at = datetime.now(timezone.utc).isoformat()
 
@@ -1057,16 +1087,46 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
 
     if args.batch_workers == 1:
         for locale, index, target in tasks:
-            output_file = fetch_target(locale, index, target)
+            try:
+                output_file = fetch_target(locale, index, target)
+            except Exception as exc:
+                print(f"[{locale} {index}/{len(targets)}] failed: {exc}", file=sys.stderr)
+                errors.append(
+                    {
+                        "locale": locale,
+                        "search_subcategory_id": target.get("search_subcategory_id"),
+                        "node_id": target.get("node_id"),
+                        "node_type": target.get("node_type"),
+                        "error": str(exc),
+                    }
+                )
+                continue
             if output_file is None:
                 continue
             output_files.append(output_file)
             total_ads += output_file["count"]
     else:
         with ThreadPoolExecutor(max_workers=args.batch_workers) as executor:
-            futures = [executor.submit(fetch_target, locale, index, target) for locale, index, target in tasks]
+            futures = {
+                executor.submit(fetch_target, locale, index, target): (locale, index, target)
+                for locale, index, target in tasks
+            }
             for future in as_completed(futures):
-                output_file = future.result()
+                locale, index, target = futures[future]
+                try:
+                    output_file = future.result()
+                except Exception as exc:
+                    print(f"[{locale} {index}/{len(targets)}] failed: {exc}", file=sys.stderr)
+                    errors.append(
+                        {
+                            "locale": locale,
+                            "search_subcategory_id": target.get("search_subcategory_id"),
+                            "node_id": target.get("node_id"),
+                            "node_type": target.get("node_type"),
+                            "error": str(exc),
+                        }
+                    )
+                    continue
                 if output_file is None:
                     continue
                 output_files.append(output_file)
@@ -1082,7 +1142,9 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
         "locales": args.batch_locales,
         "summary": target_summary,
         "total_ads": total_ads,
+        "error_count": len(errors),
         "files": output_files,
+        "errors": errors,
         "request": {
             "only_with_phone": args.only_with_phone,
             "phone_mode": args.phone_mode,
@@ -1093,6 +1155,8 @@ def fetch_all_category_ads(args: argparse.Namespace) -> dict[str, Any]:
             "include_symlink_targets": args.include_symlink_targets,
             "batch_workers": args.batch_workers,
             "delay": args.delay,
+            "retries": args.retries,
+            "retry_delay": args.retry_delay,
             "download_images": args.download_images,
         },
     }
@@ -1166,6 +1230,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--target-count", type=int, help="Stop after collecting this many unique ads.")
     parser.add_argument("--delay", type=float, default=0.2)
     parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument("--retries", type=int, default=5, help="Retry count for temporary 999.md errors.")
+    parser.add_argument("--retry-delay", type=float, default=10.0, help="Base retry delay in seconds.")
     parser.add_argument("--with-body", action="store_true")
     parser.add_argument("--include-raw-ad", action="store_true")
     parser.add_argument("--download-images", action="store_true", help="Download ad images next to each JSON file.")
@@ -1200,7 +1266,13 @@ def fetch_booster_ads(args: argparse.Namespace) -> dict[str, Any]:
     for index in range(request_limit):
         request_filter = merge_exclude_ids(base_filter, seen_ids)
         payload = make_payload(args, request_filter)
-        response = request_graphql(args.endpoint, payload, args.timeout)
+        response = request_graphql(
+            args.endpoint,
+            payload,
+            args.timeout,
+            retries=args.retries,
+            retry_delay=args.retry_delay,
+        )
         extracted_ads = extract_ads(response)
         added_count = 0
 
@@ -1286,7 +1358,13 @@ def fetch_search_ads(args: argparse.Namespace) -> dict[str, Any]:
     index = 0
     while request_limit is None or index < request_limit:
         payload = make_search_payload(args, skip, limit)
-        response = request_graphql(args.endpoint, payload, args.timeout)
+        response = request_graphql(
+            args.endpoint,
+            payload,
+            args.timeout,
+            retries=args.retries,
+            retry_delay=args.retry_delay,
+        )
         extracted_ads, response_count, response_reseted = extract_search_ads(response)
         added_count = 0
 
@@ -1388,6 +1466,10 @@ def main(argv: list[str]) -> int:
         raise ValueError("--max-categories must be positive")
     if args.batch_workers < 1:
         raise ValueError("--batch-workers must be positive")
+    if args.retries < 0:
+        raise ValueError("--retries must be zero or positive")
+    if args.retry_delay < 0:
+        raise ValueError("--retry-delay must be zero or positive")
     if args.download_images and not args.search_all_categories and not args.output:
         raise ValueError("--download-images requires --output outside --search-all-categories mode")
 
