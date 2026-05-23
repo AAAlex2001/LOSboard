@@ -23,7 +23,7 @@ interface AdSitemapDto {
 }
 
 async function fetchCategories(): Promise<CategoryDto[]> {
-  const res = await fetch(`${API_BASE}categories/`, {
+  const res = await fetch(`${API_BASE}categories/list`, {
     next: { revalidate: 3600 },
   });
   if (!res.ok) return [];

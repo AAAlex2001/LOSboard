@@ -17,7 +17,7 @@ const API_BASE = process.env.INTERNAL_API_BASE_URL!;
 const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 async function fetchCategories(): Promise<CategoryDto[]> {
-  const res = await fetch(`${API_BASE}categories/`, {
+  const res = await fetch(`${API_BASE}categories/list`, {
     next: { revalidate: 3600 },
   });
   if (!res.ok) return [];
