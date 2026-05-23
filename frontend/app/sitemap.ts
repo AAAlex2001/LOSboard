@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { slugify } from "@/src/shared/lib/slug";
 
+export const dynamic = "force-dynamic";
+
 const DOC_SLUGS = ["placement-rules", "privacy", "agreement", "prohibited"];
 const SITEMAP_MAX_URLS = 50000;
 
