@@ -8,7 +8,9 @@ import {
 } from "@/src/entities/advertisement";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 import { Modal } from "@/src/shared/ui/Modal";
+import { Dropdown } from "@/src/shared/ui/Dropdown";
 import { Button } from "@/src/shared/ui/Button";
+import { Textarea } from "@/src/shared/ui/Textarea";
 import style from "./style.module.scss";
 
 interface ReportAdButtonProps {
@@ -42,11 +44,11 @@ export const ReportAdButton = ({
       router.push("/register");
       return;
     }
-    setOpen(true);
-    setError(null);
-    setDone(false);
     setReason("spam");
     setComment("");
+    setError(null);
+    setDone(false);
+    setOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -76,11 +78,11 @@ export const ReportAdButton = ({
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div className={style.modal}>
+        <div className={style.card}>
           {done ? (
             <>
-              <h3 className={style.title}>Жалоба отправлена</h3>
-              <p className={style.text}>
+              <h2 className={style.title}>Жалоба отправлена</h2>
+              <p className={style.subtitle}>
                 Спасибо. Модераторы проверят объявление в ближайшее время.
               </p>
               <Button
@@ -95,44 +97,34 @@ export const ReportAdButton = ({
             </>
           ) : (
             <>
-              <h3 className={style.title}>Пожаловаться на объявление</h3>
+              <h2 className={style.title}>Пожаловаться на объявление</h2>
+              <p className={style.subtitle}>
+                Выберите причину — модераторы проверят объявление
+              </p>
 
-              <label className={style.label}>Причина</label>
-              <div className={style.reasons}>
-                {REASONS.map((r) => (
-                  <label key={r.value} className={style.reasonItem}>
-                    <input
-                      type="radio"
-                      name="complaint-reason"
-                      value={r.value}
-                      checked={reason === r.value}
-                      onChange={() => setReason(r.value)}
-                    />
-                    <span>{r.label}</span>
-                  </label>
-                ))}
-              </div>
+              <Dropdown
+                options={REASONS}
+                value={reason}
+                onChange={(v) => setReason(v as ComplaintReason)}
+              />
 
-              <label className={style.label} htmlFor="complaint-comment">
-                Комментарий (необязательно)
-              </label>
-              <textarea
-                id="complaint-comment"
-                className={style.textarea}
+              <Textarea
+                variant="filled"
                 rows={4}
                 maxLength={1000}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Опишите проблему"
+                placeholder="Комментарий (необязательно)"
               />
 
               {error && <div className={style.error}>{error}</div>}
 
-              <div className={style.actions}>
+              <div className={style.buttons}>
                 <Button
                   type="button"
                   variant="outlined"
-                  color="blue"
+                  color="gray"
+                  fullWidth
                   onClick={() => setOpen(false)}
                   disabled={submitting}
                 >
@@ -142,6 +134,7 @@ export const ReportAdButton = ({
                   type="button"
                   variant="filled"
                   color="blue"
+                  fullWidth
                   onClick={handleSubmit}
                   disabled={submitting}
                 >

@@ -83,6 +83,37 @@
   text-transform: uppercase;
 }
 
+.moderationBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.moderationPending {
+  background: #FFB300;
+  color: #1E1E1E;
+}
+
+.moderationApproved {
+  background: #2E7D32;
+}
+
+.moderationRejected {
+  background: #C62828;
+}
+
 .placeholderText {
   font-family: Inter;
   font-weight: 500;

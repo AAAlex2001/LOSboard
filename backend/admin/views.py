@@ -5,6 +5,7 @@ from sqladmin import ModelView, action
 from sqlalchemy import delete, select, update
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
+from wtforms import SelectField
 
 from models.advertisement import (
     Advertisement,
@@ -22,7 +23,7 @@ from models.complaint import (
     COMPLAINT_RESOLVED,
     Complaint,
 )
-from models.user import ALLOWED_ROLES, User
+from models.user import ADMIN_ROLE, MODERATOR_ROLE, USER_ROLE, User
 
 
 PERMANENT_BAN_UNTIL = datetime(9999, 12, 31)
@@ -49,10 +50,25 @@ COMPLAINT_CHOICES = [
     (COMPLAINT_DISMISSED, "Отклонена"),
 ]
 
-ROLE_CHOICES = [(r, r) for r in ALLOWED_ROLES]
+COMPLAINT_REASON_CHOICES = [
+    ("spam", "Спам"),
+    ("wrong_category", "Неверная категория"),
+    ("forbidden", "Запрещённый товар"),
+    ("fraud", "Мошенничество"),
+    ("offensive", "Оскорбительный контент"),
+    ("other", "Другое"),
+]
+
+ROLE_CHOICES = [
+    (USER_ROLE, "Пользователь"),
+    (MODERATOR_ROLE, "Модератор"),
+    (ADMIN_ROLE, "Администратор"),
+]
 
 MODERATION_LABEL = dict(MODERATION_CHOICES)
 COMPLAINT_LABEL = dict(COMPLAINT_CHOICES)
+COMPLAINT_REASON_LABEL = dict(COMPLAINT_REASON_CHOICES)
+ROLE_LABEL = dict(ROLE_CHOICES)
 
 
 def img_thumb(url: str, *, size: int = 60) -> str:
@@ -111,10 +127,15 @@ def role_badge(role: str) -> Markup:
         "user": ("#90A4AE", "#FFFFFF"),
     }
     bg, fg = colors.get(role, ("#666", "#FFFFFF"))
+    label = ROLE_LABEL.get(role, role or "—")
     return Markup(
         f'<span style="background:{bg}; color:{fg}; padding:2px 8px; '
-        f'border-radius:10px; font-size:12px; white-space:nowrap;">{escape(role or "—")}</span>'
+        f'border-radius:10px; font-size:12px; white-space:nowrap;">{escape(label)}</span>'
     )
+
+
+def complaint_reason_label(reason: str) -> str:
+    return COMPLAINT_REASON_LABEL.get(reason, reason or "—")
 
 
 def avatar_thumb(url, *, size: int = 40) -> Markup:
@@ -181,7 +202,8 @@ class UserAdmin(ModelView, model=User):
         User.liked_advertisements,
         User.viewed_advertisements,
     ]
-    form_choices = {"role": ROLE_CHOICES}
+    form_overrides = {"role": SelectField}
+    form_args = {"role": {"choices": ROLE_CHOICES}}
 
     async def apply_ban(
         self,
@@ -381,7 +403,9 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.liked_by_users,
         Advertisement.viewed_by_users,
     ]
-    form_choices = {"moderation_status": MODERATION_CHOICES}
+    form_overrides = {"moderation_status": SelectField}
+    form_args = {"moderation_status": {"choices": MODERATION_CHOICES}}
+    column_default_sort = [("created_at", True)]
 
     async def apply_moderation(
         self,
@@ -502,11 +526,21 @@ class ComplaintAdmin(ModelView, model=Complaint):
     }
     column_formatters = {
         Complaint.status: lambda m, _a: complaint_badge(m.status),
+        Complaint.reason: lambda m, _a: complaint_reason_label(m.reason),
     }
     column_formatters_detail = {
         Complaint.status: lambda m, _a: complaint_badge(m.status),
+        Complaint.reason: lambda m, _a: complaint_reason_label(m.reason),
     }
-    form_choices = {"status": COMPLAINT_CHOICES}
+    form_overrides = {
+        "status": SelectField,
+        "reason": SelectField,
+    }
+    form_args = {
+        "status": {"choices": COMPLAINT_CHOICES},
+        "reason": {"choices": COMPLAINT_REASON_CHOICES},
+    }
+    column_default_sort = [("created_at", True)]
 
     async def apply_resolution(
         self, request: Request, status: str

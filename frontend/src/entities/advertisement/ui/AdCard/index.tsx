@@ -22,8 +22,26 @@ export const AdCard = ({
   onEdit,
   favoritePending,
 }: AdCardProps) => {
-  const { title, price, photo_urls, is_liked, is_urgent } = advertisement;
+  const {
+    title,
+    price,
+    photo_urls,
+    is_liked,
+    is_urgent,
+    moderation_status,
+    moderation_reason,
+  } = advertisement;
   const photoSrc = resolveAssetUrl(photo_urls?.[0] ?? null);
+
+  const moderationLabel =
+    moderation_status === "pending"
+      ? "На модерации"
+      : moderation_status === "rejected"
+      ? "Отклонено"
+      : moderation_status === "approved"
+      ? "Опубликовано"
+      : null;
+  const showModeration = Boolean(onEdit) && moderationLabel !== null;
 
   const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -59,6 +77,21 @@ export const AdCard = ({
         </div>
 
         {is_urgent && <span className={style.urgentBadge}>Срочно</span>}
+
+        {showModeration && (
+          <span
+            className={`${style.moderationBadge} ${
+              moderation_status === "pending"
+                ? style.moderationPending
+                : moderation_status === "rejected"
+                ? style.moderationRejected
+                : style.moderationApproved
+            }`}
+            title={moderation_reason ?? undefined}
+          >
+            {moderationLabel}
+          </span>
+        )}
 
         {onEdit ? (
           <>

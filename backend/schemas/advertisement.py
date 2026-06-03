@@ -34,6 +34,8 @@ class AdvertisementResponse(BaseModel):
     likes_count: int = 0
     views_count: int = 0
     created_at: Optional[datetime] = None
+    moderation_status: str = "approved"
+    moderation_reason: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

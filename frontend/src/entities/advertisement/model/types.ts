@@ -17,6 +17,8 @@ export interface Advertisement {
   likes_count?: number;
   views_count?: number;
   created_at?: string | null;
+  moderation_status?: "pending" | "approved" | "rejected";
+  moderation_reason?: string | null;
 }
 
 export interface CreateAdvertisementPayload {
