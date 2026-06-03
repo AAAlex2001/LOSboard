@@ -40,3 +40,6 @@ class Complaint(Base):
     __table_args__ = (
         Index("ix_complaints_status_created", "status", "created_at"),
     )
+
+    def __str__(self) -> str:
+        return f"Жалоба #{self.id} (ad {self.advertisement_id}) — {self.reason}"

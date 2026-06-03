@@ -53,3 +53,6 @@ class User(Base):
         if self.banned_until is None:
             return False
         return self.banned_until > datetime.utcnow()
+
+    def __str__(self) -> str:
+        return f"#{self.id} {self.name} ({self.email})"

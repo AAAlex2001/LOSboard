@@ -49,6 +49,9 @@ class Conversation(Base):
         Index("ix_conversations_seller_last", "seller_id", "last_message_at"),
     )
 
+    def __str__(self) -> str:
+        return f"Диалог #{self.id} (ad {self.advertisement_id})"
+
 
 class Message(Base):
     __tablename__ = "messages"
@@ -73,6 +76,12 @@ class Message(Base):
         Index("ix_messages_conversation_created", "conversation_id", "created_at"),
     )
 
+    def __str__(self) -> str:
+        preview = (self.text or "").strip()
+        if len(preview) > 40:
+            preview = preview[:40] + "…"
+        return f"Сообщение #{self.id}: {preview or '[вложение]'}"
+
 
 class MessageAttachment(Base):
     __tablename__ = "message_attachments"
@@ -92,3 +101,6 @@ class MessageAttachment(Base):
     __table_args__ = (
         Index("ix_message_attachments_message", "message_id"),
     )
+
+    def __str__(self) -> str:
+        return f"{self.filename} ({self.kind})"

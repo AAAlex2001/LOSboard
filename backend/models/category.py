@@ -16,6 +16,9 @@ class Category(Base):
     subcategories = relationship("Subcategory", back_populates="category")
     advertisements = relationship("Advertisement", back_populates="category")
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
 
 class Subcategory(Base):
     __tablename__ = "subcategories"
@@ -30,3 +33,6 @@ class Subcategory(Base):
 
     category = relationship("Category", back_populates="subcategories")
     advertisements = relationship("Advertisement", back_populates="subcategory")
+
+    def __str__(self) -> str:
+        return f"{self.name}"

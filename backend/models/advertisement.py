@@ -71,6 +71,9 @@ class Advertisement(Base):
         cascade="all, delete-orphan",
     )
 
+    def __str__(self) -> str:
+        return f"#{self.id} {self.title}"
+
 
 class LikedAdvertisement(Base):
     __tablename__ = "liked_advertisements"
@@ -85,6 +88,9 @@ class LikedAdvertisement(Base):
 
     user = relationship("User", back_populates="liked_advertisements")
     advertisement = relationship("Advertisement", back_populates="liked_by_users")
+
+    def __str__(self) -> str:
+        return f"Лайк #{self.id} (user {self.user_id} → ad {self.advertisement_id})"
 
 
 class ViewedAdvertisement(Base):
@@ -103,3 +109,6 @@ class ViewedAdvertisement(Base):
 
     user = relationship("User", back_populates="viewed_advertisements")
     advertisement = relationship("Advertisement", back_populates="viewed_by_users")
+
+    def __str__(self) -> str:
+        return f"Просмотр #{self.id} (user {self.user_id} → ad {self.advertisement_id})"
