@@ -18,8 +18,8 @@ class DashboardView(BaseView):
     name = "Дашборд"
     icon = "fa-solid fa-chart-line"
 
-    @expose("/dashboard", methods=["GET"])
-    async def index(self, request: Request):
+    @expose("/dashboard", methods=["GET"], identity="dashboard")
+    async def dashboard(self, request: Request):
         now = datetime.utcnow()
         day_ago = now - timedelta(days=1)
         week_ago = now - timedelta(days=7)
