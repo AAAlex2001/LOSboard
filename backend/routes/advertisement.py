@@ -15,6 +15,7 @@ from services.advertisement.use_cases.like_advertisement import LikeAdvertisemen
 from services.advertisement.use_cases.view_advertisement import ViewAdvertisementUseCase
 from services.advertisement.use_cases.search_advertisements import SearchAdvertisementsUseCase
 from services.advertisement.use_cases.get_sitemap_ads import GetSitemapAdsUseCase
+from services.complaint.use_cases.create_complaint import CreateComplaintUseCase
 
 from models.user import User
 from schemas.advertisement import (
@@ -23,6 +24,7 @@ from schemas.advertisement import (
     AdvertisementSitemapItem,
     AdvertisementUpdate,
 )
+from schemas.complaint import ComplaintCreate, ComplaintResponse
 
 
 router = APIRouter(prefix="/advertisements", tags=["advertisements"])
@@ -193,6 +195,26 @@ async def view_advertisement(
     use_case = ViewAdvertisementUseCase()
     return await use_case.view(
         advertisement_id=advertisement_id,
+        db=db,
+        current_user=current_user,
+    )
+
+
+@router.post(
+    "/{advertisement_id}/complaints",
+    response_model=ComplaintResponse,
+    status_code=201,
+)
+async def create_complaint(
+    advertisement_id: int,
+    request: ComplaintCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    use_case = CreateComplaintUseCase()
+    return await use_case.create(
+        advertisement_id=advertisement_id,
+        request=request,
         db=db,
         current_user=current_user,
     )

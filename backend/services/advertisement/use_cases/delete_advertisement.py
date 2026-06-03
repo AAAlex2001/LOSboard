@@ -15,7 +15,7 @@ class DeleteAdvertisementUseCase:
     ) -> None:
 
         if not current_user:
-            raise HTTPException(status_code=401, detail="Not authenticated")
+            raise HTTPException(status_code=401, detail="Требуется авторизация")
 
         result = await db.execute(
             select(Advertisement).where(Advertisement.id == advertisement_id)
@@ -24,10 +24,10 @@ class DeleteAdvertisementUseCase:
         advertisement = result.scalar_one_or_none()
 
         if advertisement is None:
-            raise HTTPException(status_code=404, detail="Advertisement not found")
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         if advertisement.owner_id != current_user.id:
-            raise HTTPException(status_code=403, detail="Forbidden: You do not have permission to delete this advertisement")
+            raise HTTPException(status_code=403, detail="Нельзя удалить чужое объявление")
 
         await db.delete(advertisement)
         await db.flush()

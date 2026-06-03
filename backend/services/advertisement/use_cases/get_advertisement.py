@@ -30,13 +30,13 @@ class GetAdvertisementUseCase:
         advertisement = result.scalar_one_or_none()
 
         if advertisement is None:
-            raise HTTPException(status_code=404, detail="Advertisement not found")
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         if advertisement.moderation_status != MODERATION_APPROVED:
             is_owner = current_user is not None and current_user.id == advertisement.owner_id
             is_staff = current_user is not None and current_user.is_staff
             if not (is_owner or is_staff):
-                raise HTTPException(status_code=404, detail="Advertisement not found")
+                raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         if current_user:
             liked = await db.execute(

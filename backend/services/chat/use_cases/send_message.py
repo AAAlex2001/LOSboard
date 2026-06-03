@@ -31,15 +31,15 @@ class SendMessageUseCase:
         )
         conversation = result.scalar_one_or_none()
         if not conversation:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+            raise HTTPException(status_code=404, detail="Диалог не найден")
 
         if current_user.id not in (conversation.buyer_id, conversation.seller_id):
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Нет доступа к диалогу")
 
         normalized_text = text.strip() if text else ""
         if not normalized_text and not attachments:
             raise HTTPException(
-                status_code=400, detail="Message must have text or attachments"
+                status_code=400, detail="Сообщение должно содержать текст или вложения"
             )
 
         if len(attachments) > MAX_ATTACHMENTS:
@@ -53,19 +53,19 @@ class SendMessageUseCase:
         for a in attachments:
             if not a.url.startswith(expected_prefix):
                 raise HTTPException(
-                    status_code=400, detail="Attachment does not belong to conversation"
+                    status_code=400, detail="Вложение не относится к этому диалогу"
                 )
             stored_name = a.url[len(expected_prefix):]
             if "/" in stored_name or "\\" in stored_name or stored_name.startswith("."):
-                raise HTTPException(status_code=400, detail="Invalid attachment url")
+                raise HTTPException(status_code=400, detail="Некорректная ссылка вложения")
 
             disk_path = CHAT_UPLOAD_DIR / str(conversation_id) / stored_name
             if not disk_path.exists() or not disk_path.is_file():
-                raise HTTPException(status_code=400, detail="Attachment not found")
+                raise HTTPException(status_code=400, detail="Вложение не найдено")
 
             ext = disk_path.suffix.lower()
             if ext not in EXT_TO_META:
-                raise HTTPException(status_code=400, detail="Unsupported attachment type")
+                raise HTTPException(status_code=400, detail="Неподдерживаемый тип вложения")
 
             mime, kind = EXT_TO_META[ext]
             size = disk_path.stat().st_size

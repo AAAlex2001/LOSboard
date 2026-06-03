@@ -9,10 +9,13 @@ export {
   uploadAdvertisementImage,
   viewAdvertisement,
   searchAdvertisements,
+  createComplaint,
   resolveAssetUrl,
   type GetAdvertisementsParams,
   type GetMyAdvertisementsParams,
   type UpdateAdvertisementPayload,
   type SearchAdvertisementsParams,
+  type ComplaintReason,
+  type CreateComplaintPayload,
 } from "./api/advertisement.api";
 export { AdCard } from "./ui/AdCard";

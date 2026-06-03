@@ -96,7 +96,7 @@ class JWTService:
                 or token_type is None
                 or token_version is None
             ):
-                raise HTTPException(status_code=401, detail="Invalid token")
+                raise HTTPException(status_code=401, detail="Невалидный токен")
 
             return TokenPayloadDTO(
                 user_id=int(user_id),
@@ -106,16 +106,16 @@ class JWTService:
             )
 
         except JWTError:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
+            raise HTTPException(status_code=401, detail="Невалидный или просроченный токен")
 
     def verify_access_token(self, token: str) -> TokenPayloadDTO:
         payload = self.verify_token(token)
         if payload.token_type != "access":
-            raise HTTPException(status_code=401, detail="Invalid token type")
+            raise HTTPException(status_code=401, detail="Неверный тип токена")
         return payload
 
     def verify_refresh_token(self, token: str) -> TokenPayloadDTO:
         payload = self.verify_token(token)
         if payload.token_type != "refresh":
-            raise HTTPException(status_code=401, detail="Invalid token type")
+            raise HTTPException(status_code=401, detail="Неверный тип токена")
         return payload

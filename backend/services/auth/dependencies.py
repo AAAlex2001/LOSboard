@@ -28,11 +28,11 @@ async def get_current_user(
     result = await db.execute(select(User).where(User.id == token_payload.user_id))
     user = result.scalars().first()
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
     if user.token_version != token_payload.token_version:
-        raise HTTPException(status_code=401, detail="Token has been revoked")
+        raise HTTPException(status_code=401, detail="Токен отозван")
     if user.is_banned:
-        raise HTTPException(status_code=403, detail="Account is banned")
+        raise HTTPException(status_code=403, detail="Аккаунт заблокирован")
     return user
 
 
@@ -60,13 +60,13 @@ async def get_current_user_or_query_token(
 ) -> User:
     token = credentials.credentials if credentials else access_token
     if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Требуется авторизация")
 
     payload = jwt_service.verify_access_token(token)
     result = await db.execute(select(User).where(User.id == payload.user_id))
     user = result.scalars().first()
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
     if user.token_version != payload.token_version:
-        raise HTTPException(status_code=401, detail="Token has been revoked")
+        raise HTTPException(status_code=401, detail="Токен отозван")
     return user

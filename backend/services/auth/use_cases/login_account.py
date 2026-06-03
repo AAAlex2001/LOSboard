@@ -27,7 +27,7 @@ class LoginAccountUseCase:
         password_ok = self.password_context.verify(request.password, password_to_check)
 
         if not user or not password_ok:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            raise HTTPException(status_code=401, detail="Неверный email или пароль")
 
         access_token = self.jwt_service.create_access_token(
             user.id, user.email, user.token_version
@@ -37,7 +37,7 @@ class LoginAccountUseCase:
         )
 
         return LoginResponse(
-            message="Login successful",
+            message="Вход выполнен",
             email=user.email,
             name=user.name,
             access_token=access_token,

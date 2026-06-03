@@ -53,7 +53,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 export function useNotifications() {
   const ctx = useContext(Ctx);
   if (!ctx) {
-    throw new Error("useNotifications must be used within NotificationProvider");
+    throw new Error("useNotifications должен использоваться внутри NotificationProvider");
   }
   return ctx;
 }

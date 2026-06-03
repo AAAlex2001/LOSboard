@@ -11,6 +11,7 @@ import {
 import { useFavorite } from "@/src/features/favorite";
 import { useViewAdvertisement } from "@/src/features/advertisement";
 import { useStartChat } from "@/src/features/chat";
+import { ReportAdButton } from "@/src/features/report-ad";
 import { formatPostedAt } from "@/src/shared/lib/date";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
@@ -185,9 +186,7 @@ export const AdvertisementDetail = ({
           />
         </div>
 
-        <button type="button" className={style.reportBtn}>
-          Пожаловаться
-        </button>
+        <ReportAdButton advertisementId={item.id} className={style.reportBtn} />
       </section>
     </div>
   );

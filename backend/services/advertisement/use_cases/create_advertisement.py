@@ -19,7 +19,7 @@ class CreateAdvertisementUseCase:
     ) -> Advertisement:
 
         if not current_user:
-            raise HTTPException(status_code=401, detail="Not authenticated")
+            raise HTTPException(status_code=401, detail="Требуется авторизация")
         
         category_result = await db.execute(
             select(Category).where(Category.id == request.category_id),
@@ -29,7 +29,7 @@ class CreateAdvertisementUseCase:
         category = category_result.scalar_one_or_none()
 
         if not category:
-            raise HTTPException(status_code=400, detail="Category not found or inactive")
+            raise HTTPException(status_code=400, detail="Категория не найдена или неактивна")
 
         subcategory_result = await db.execute(
             select(Subcategory).where(
@@ -42,10 +42,10 @@ class CreateAdvertisementUseCase:
         subcategory = subcategory_result.scalar_one_or_none()
 
         if not subcategory:
-            raise HTTPException(status_code=400, detail="Subcategory not found or inactive")
+            raise HTTPException(status_code=400, detail="Подкатегория не найдена или неактивна")
 
         if subcategory.category_id != category.id:
-            raise HTTPException(status_code=400, detail="Subcategory does not belong to the specified category")
+            raise HTTPException(status_code=400, detail="Подкатегория не относится к выбранной категории")
 
         new_advertisement = Advertisement(
             title=request.title,

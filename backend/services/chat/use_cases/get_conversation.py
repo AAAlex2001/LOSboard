@@ -38,10 +38,10 @@ class GetConversationUseCase:
         )
         conversation = result.scalar_one_or_none()
         if not conversation:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+            raise HTTPException(status_code=404, detail="Диалог не найден")
 
         if current_user.id not in (conversation.buyer_id, conversation.seller_id):
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Нет доступа к диалогу")
 
         # Помечаем входящие как прочитанные
         await db.execute(

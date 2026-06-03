@@ -26,7 +26,7 @@ class LikeAdvertisementUseCase:
         )
         advertisement = ad_result.scalar_one_or_none()
         if not advertisement:
-            raise HTTPException(status_code=404, detail="Advertisement not found")
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         # Пытаемся поставить лайк (атомарно).
         insert_stmt = (

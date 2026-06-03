@@ -1,5 +1,10 @@
+from datetime import datetime, timedelta
+
 from markupsafe import Markup, escape
-from sqladmin import ModelView
+from sqladmin import ModelView, action
+from sqlalchemy import delete, select, update
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
 from models.advertisement import (
     Advertisement,
@@ -20,6 +25,18 @@ from models.complaint import (
 from models.user import ALLOWED_ROLES, User
 
 
+PERMANENT_BAN_UNTIL = datetime(9999, 12, 31)
+
+
+def selected_pks(request: Request) -> list[int]:
+    raw = request.query_params.get("pks", "")
+    return [int(x) for x in raw.split(",") if x.strip().isdigit()]
+
+
+def redirect_to_list(request: Request, identity: str) -> RedirectResponse:
+    return RedirectResponse(request.url_for("admin:list", identity=identity))
+
+
 MODERATION_CHOICES = [
     (MODERATION_PENDING, "Ожидает модерации"),
     (MODERATION_APPROVED, "Одобрено"),
@@ -38,7 +55,7 @@ MODERATION_LABEL = dict(MODERATION_CHOICES)
 COMPLAINT_LABEL = dict(COMPLAINT_CHOICES)
 
 
-def _img_thumb(url: str, *, size: int = 60) -> str:
+def img_thumb(url: str, *, size: int = 60) -> str:
     safe_url = escape(url)
     return (
         f'<a href="{safe_url}" target="_blank" rel="noreferrer">'
@@ -49,17 +66,17 @@ def _img_thumb(url: str, *, size: int = 60) -> str:
     )
 
 
-def _photo_urls_thumbnails(urls, size: int) -> Markup:
+def photo_thumbs(urls, size: int) -> Markup:
     if not urls:
         return Markup('<span style="color:#999">—</span>')
     return Markup(
         '<div style="display:flex; flex-wrap:wrap; gap:4px; max-width:520px;">'
-        + "".join(_img_thumb(u, size=size) for u in urls)
+        + "".join(img_thumb(u, size=size) for u in urls)
         + "</div>"
     )
 
 
-def _moderation_badge(status: str) -> Markup:
+def moderation_badge(status: str) -> Markup:
     colors = {
         MODERATION_PENDING: ("#FFB300", "#FFFFFF"),
         MODERATION_APPROVED: ("#2E7D32", "#FFFFFF"),
@@ -73,7 +90,7 @@ def _moderation_badge(status: str) -> Markup:
     )
 
 
-def _complaint_badge(status: str) -> Markup:
+def complaint_badge(status: str) -> Markup:
     colors = {
         COMPLAINT_OPEN: ("#FB8C00", "#FFFFFF"),
         COMPLAINT_RESOLVED: ("#2E7D32", "#FFFFFF"),
@@ -87,7 +104,7 @@ def _complaint_badge(status: str) -> Markup:
     )
 
 
-def _role_badge(role: str) -> Markup:
+def role_badge(role: str) -> Markup:
     colors = {
         "admin": ("#1565C0", "#FFFFFF"),
         "moderator": ("#6A1B9A", "#FFFFFF"),
@@ -100,7 +117,7 @@ def _role_badge(role: str) -> Markup:
     )
 
 
-def _avatar_thumb(url, *, size: int = 40) -> Markup:
+def avatar_thumb(url, *, size: int = 40) -> Markup:
     if not url:
         return Markup('<span style="color:#999">—</span>')
     safe_url = escape(url)
@@ -151,12 +168,12 @@ class UserAdmin(ModelView, model=User):
         User.token_version: "Версия токена",
     }
     column_formatters = {
-        User.avatar_url: lambda m, _a: _avatar_thumb(m.avatar_url),
-        User.role: lambda m, _a: _role_badge(m.role),
+        User.avatar_url: lambda m, _a: avatar_thumb(m.avatar_url),
+        User.role: lambda m, _a: role_badge(m.role),
     }
     column_formatters_detail = {
-        User.avatar_url: lambda m, _a: _avatar_thumb(m.avatar_url, size=120),
-        User.role: lambda m, _a: _role_badge(m.role),
+        User.avatar_url: lambda m, _a: avatar_thumb(m.avatar_url, size=120),
+        User.role: lambda m, _a: role_badge(m.role),
     }
     form_excluded_columns = [
         User.password,
@@ -165,6 +182,72 @@ class UserAdmin(ModelView, model=User):
         User.viewed_advertisements,
     ]
     form_choices = {"role": ROLE_CHOICES}
+
+    async def apply_ban(
+        self,
+        request: Request,
+        until: datetime | None,
+    ) -> RedirectResponse:
+        pks = selected_pks(request)
+        if pks:
+            current_admin = request.session.get("admin_user_id")
+            safe_pks = [p for p in pks if p != current_admin]
+            if safe_pks:
+                async with self.session_maker() as session:
+                    await session.execute(
+                        update(User)
+                        .where(User.id.in_(safe_pks))
+                        .values(banned_until=until)
+                    )
+                    await session.commit()
+        return redirect_to_list(request, self.identity)
+
+    @action(
+        name="ban_7d",
+        label="Забанить на 7 дней",
+        confirmation_message="Забанить выбранных пользователей на 7 дней?",
+    )
+    async def ban_7d_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_ban(request, datetime.utcnow() + timedelta(days=7))
+
+    @action(
+        name="ban_30d",
+        label="Забанить на 30 дней",
+        confirmation_message="Забанить выбранных пользователей на 30 дней?",
+    )
+    async def ban_30d_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_ban(request, datetime.utcnow() + timedelta(days=30))
+
+    @action(
+        name="ban_forever",
+        label="Забанить навсегда",
+        confirmation_message="Забанить выбранных пользователей навсегда?",
+    )
+    async def ban_forever_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_ban(request, PERMANENT_BAN_UNTIL)
+
+    @action(
+        name="unban",
+        label="Снять бан",
+        confirmation_message="Снять бан с выбранных пользователей?",
+    )
+    async def unban_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_ban(request, None)
+
+    @action(
+        name="delete_ads",
+        label="Удалить все объявления юзера",
+        confirmation_message="Удалить ВСЕ объявления выбранных пользователей? Действие необратимо.",
+    )
+    async def delete_ads_action(self, request: Request) -> RedirectResponse:
+        pks = selected_pks(request)
+        if pks:
+            async with self.session_maker() as session:
+                await session.execute(
+                    delete(Advertisement).where(Advertisement.owner_id.in_(pks))
+                )
+                await session.commit()
+        return redirect_to_list(request, self.identity)
 
 
 class CategoryAdmin(ModelView, model=Category):
@@ -275,18 +358,18 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.viewed_by_users: "Просмотры (пользователи)",
     }
     column_formatters = {
-        Advertisement.photo_urls: lambda m, _a: _photo_urls_thumbnails(
+        Advertisement.photo_urls: lambda m, _a: photo_thumbs(
             m.photo_urls or [], size=60
         ),
-        Advertisement.moderation_status: lambda m, _a: _moderation_badge(
+        Advertisement.moderation_status: lambda m, _a: moderation_badge(
             m.moderation_status
         ),
     }
     column_formatters_detail = {
-        Advertisement.photo_urls: lambda m, _a: _photo_urls_thumbnails(
+        Advertisement.photo_urls: lambda m, _a: photo_thumbs(
             m.photo_urls or [], size=180
         ),
-        Advertisement.moderation_status: lambda m, _a: _moderation_badge(
+        Advertisement.moderation_status: lambda m, _a: moderation_badge(
             m.moderation_status
         ),
     }
@@ -299,6 +382,94 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.viewed_by_users,
     ]
     form_choices = {"moderation_status": MODERATION_CHOICES}
+
+    async def apply_moderation(
+        self,
+        request: Request,
+        status: str,
+        reason: str | None,
+    ) -> RedirectResponse:
+        pks = selected_pks(request)
+        if pks:
+            async with self.session_maker() as session:
+                await session.execute(
+                    update(Advertisement)
+                    .where(Advertisement.id.in_(pks))
+                    .values(
+                        moderation_status=status,
+                        moderation_reason=reason,
+                        moderated_at=datetime.utcnow(),
+                        moderated_by_id=request.session.get("admin_user_id"),
+                    )
+                )
+                await session.commit()
+        return redirect_to_list(request, self.identity)
+
+    @action(
+        name="approve",
+        label="Одобрить",
+        confirmation_message="Одобрить выбранные объявления?",
+        add_in_detail=True,
+        add_in_list=True,
+    )
+    async def approve_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_moderation(request, MODERATION_APPROVED, None)
+
+    @action(
+        name="reject_spam",
+        label="Отклонить — спам",
+        confirmation_message="Отклонить как спам?",
+    )
+    async def reject_spam_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_moderation(request, MODERATION_REJECTED, "Спам")
+
+    @action(
+        name="reject_wrong_category",
+        label="Отклонить — неверная категория",
+        confirmation_message="Отклонить из-за неверной категории?",
+    )
+    async def reject_wrong_category_action(
+        self, request: Request
+    ) -> RedirectResponse:
+        return await self.apply_moderation(
+            request, MODERATION_REJECTED, "Неверная категория"
+        )
+
+    @action(
+        name="reject_forbidden",
+        label="Отклонить — запрещённый товар",
+        confirmation_message="Отклонить как запрещённый товар?",
+    )
+    async def reject_forbidden_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_moderation(
+            request, MODERATION_REJECTED, "Запрещённый товар"
+        )
+
+    @action(
+        name="reject_other",
+        label="Отклонить — прочее",
+        confirmation_message="Отклонить (общая причина)?",
+    )
+    async def reject_other_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_moderation(
+            request, MODERATION_REJECTED, "Нарушение правил площадки"
+        )
+
+
+class ModerationQueueAdmin(AdvertisementAdmin, model=Advertisement):
+    name = "элемент очереди"
+    name_plural = "Очередь модерации"
+    identity = "moderation-queue"
+    icon = "fa-solid fa-hourglass-half"
+    can_create = False
+    can_delete = False
+
+    def list_query(self, request: Request):
+        return (
+            select(Advertisement)
+            .where(Advertisement.moderation_status == MODERATION_PENDING)
+            .order_by(Advertisement.created_at.asc())
+        )
 
 
 class ComplaintAdmin(ModelView, model=Complaint):
@@ -330,12 +501,46 @@ class ComplaintAdmin(ModelView, model=Complaint):
         Complaint.resolved_by: "Закрыл",
     }
     column_formatters = {
-        Complaint.status: lambda m, _a: _complaint_badge(m.status),
+        Complaint.status: lambda m, _a: complaint_badge(m.status),
     }
     column_formatters_detail = {
-        Complaint.status: lambda m, _a: _complaint_badge(m.status),
+        Complaint.status: lambda m, _a: complaint_badge(m.status),
     }
     form_choices = {"status": COMPLAINT_CHOICES}
+
+    async def apply_resolution(
+        self, request: Request, status: str
+    ) -> RedirectResponse:
+        pks = selected_pks(request)
+        if pks:
+            async with self.session_maker() as session:
+                await session.execute(
+                    update(Complaint)
+                    .where(Complaint.id.in_(pks))
+                    .values(
+                        status=status,
+                        resolved_at=datetime.utcnow(),
+                        resolved_by_id=request.session.get("admin_user_id"),
+                    )
+                )
+                await session.commit()
+        return redirect_to_list(request, self.identity)
+
+    @action(
+        name="resolve",
+        label="Закрыть (нарушение подтверждено)",
+        confirmation_message="Закрыть жалобы как подтверждённые?",
+    )
+    async def resolve_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_resolution(request, COMPLAINT_RESOLVED)
+
+    @action(
+        name="dismiss",
+        label="Отклонить жалобу",
+        confirmation_message="Отклонить выбранные жалобы?",
+    )
+    async def dismiss_action(self, request: Request) -> RedirectResponse:
+        return await self.apply_resolution(request, COMPLAINT_DISMISSED)
 
 
 class LikedAdvertisementAdmin(ModelView, model=LikedAdvertisement):

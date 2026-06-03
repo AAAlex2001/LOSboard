@@ -22,13 +22,13 @@ class GetChatAttachmentUseCase:
         current_user: User,
     ) -> FileResponse:
         if "/" in filename or "\\" in filename or filename.startswith("."):
-            raise HTTPException(status_code=400, detail="Invalid filename")
+            raise HTTPException(status_code=400, detail="Некорректное имя файла")
 
         conversation = await db.get(Conversation, conversation_id)
         if conversation is None:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+            raise HTTPException(status_code=404, detail="Диалог не найден")
         if current_user.id not in (conversation.buyer_id, conversation.seller_id):
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Нет доступа к диалогу")
 
         expected_url = f"/conversations/{conversation_id}/attachments/{filename}"
         att_result = await db.execute(
@@ -38,7 +38,7 @@ class GetChatAttachmentUseCase:
 
         path = CHAT_UPLOAD_DIR / str(conversation_id) / filename
         if not path.exists() or not path.is_file():
-            raise HTTPException(status_code=404, detail="File not found")
+            raise HTTPException(status_code=404, detail="Файл не найден")
 
         mime = attachment.mime_type if attachment else None
         download_name = attachment.filename if attachment else filename

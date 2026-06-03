@@ -192,6 +192,36 @@ export async function viewAdvertisement(id: number): Promise<Advertisement> {
   return response.json();
 }
 
+export type ComplaintReason =
+  | "spam"
+  | "wrong_category"
+  | "forbidden"
+  | "fraud"
+  | "offensive"
+  | "other";
+
+export interface CreateComplaintPayload {
+  reason: ComplaintReason;
+  comment?: string;
+}
+
+export async function createComplaint(
+  advertisementId: number,
+  payload: CreateComplaintPayload
+): Promise<void> {
+  const response = await apiFetch(
+    `advertisements/${advertisementId}/complaints`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, "Не удалось отправить жалобу"));
+  }
+}
+
 export interface SearchAdvertisementsParams {
   q: string;
   limit?: number;

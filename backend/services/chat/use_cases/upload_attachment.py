@@ -27,9 +27,9 @@ class UploadChatAttachmentUseCase:
     ) -> AttachmentMeta:
         conversation = await db.get(Conversation, conversation_id)
         if conversation is None:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+            raise HTTPException(status_code=404, detail="Диалог не найден")
         if current_user.id not in (conversation.buyer_id, conversation.seller_id):
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Нет доступа к диалогу")
 
         if file.content_type not in ALLOWED_MIME:
             raise HTTPException(status_code=400, detail="Недопустимый формат файла")

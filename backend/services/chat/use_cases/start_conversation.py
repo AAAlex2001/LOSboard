@@ -30,12 +30,12 @@ class StartConversationUseCase:
         )
         advertisement = ad_result.scalar_one_or_none()
         if not advertisement:
-            raise HTTPException(status_code=404, detail="Advertisement not found")
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         if advertisement.owner_id == current_user.id:
             raise HTTPException(
                 status_code=400,
-                detail="Cannot start a conversation with your own advertisement",
+                detail="Нельзя написать самому себе",
             )
 
         # Атомарно создаём диалог; если уже есть — берём существующий.

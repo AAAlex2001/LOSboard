@@ -22,7 +22,7 @@ class CreateAccountUseCase:
         existing_user = result.scalar_one_or_none()
 
         if existing_user:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
 
         new_user = User(
             name=request.name,
@@ -34,7 +34,7 @@ class CreateAccountUseCase:
         await db.flush()
 
         return CreateAccountResponse(
-            message="Account created successfully",
+            message="Аккаунт создан",
             email=new_user.email,
             id=new_user.id,
         )

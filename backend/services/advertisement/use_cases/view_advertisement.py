@@ -26,7 +26,7 @@ class ViewAdvertisementUseCase:
         )
         advertisement = ad_result.scalar_one_or_none()
         if not advertisement:
-            raise HTTPException(status_code=404, detail="Advertisement not found")
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
 
         # Атомарный INSERT с дедупликацией по (user_id, advertisement_id).
         # Если конфликт (уже смотрел) — returning отдаёт пустой результат.
