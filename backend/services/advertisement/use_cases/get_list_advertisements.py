@@ -2,7 +2,11 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from models.advertisement import Advertisement, LikedAdvertisement
+from models.advertisement import (
+    Advertisement,
+    LikedAdvertisement,
+    MODERATION_APPROVED,
+)
 from models.user import User
 
 
@@ -18,7 +22,10 @@ class GetListAdvertisementsUseCase:
         urgent_only: bool = False,
     ) -> list[Advertisement]:
 
-        stmt = select(Advertisement).where(Advertisement.is_active == True)
+        stmt = select(Advertisement).where(
+            Advertisement.is_active == True,
+            Advertisement.moderation_status == MODERATION_APPROVED,
+        )
         if urgent_only:
             stmt = stmt.where(Advertisement.is_urgent == True)
         if category_id is not None:

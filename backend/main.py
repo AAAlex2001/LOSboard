@@ -10,6 +10,7 @@ import models.user  # noqa: F401
 import models.advertisement  # noqa: F401
 import models.category  # noqa: F401
 import models.chat  # noqa: F401
+import models.complaint  # noqa: F401
 
 from routes.auth import router as auth_router
 from routes.advertisement import router as advertisement_router

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.advertisement import Advertisement
+from models.advertisement import Advertisement, MODERATION_APPROVED
 
 
 class SearchAdvertisementsUseCase:
@@ -21,6 +21,7 @@ class SearchAdvertisementsUseCase:
         stmt = (
             select(Advertisement)
             .where(Advertisement.is_active == True)  # noqa: E712
+            .where(Advertisement.moderation_status == MODERATION_APPROVED)
             .where(Advertisement.title.ilike(pattern))
             .order_by(Advertisement.id.desc())
             .limit(limit)

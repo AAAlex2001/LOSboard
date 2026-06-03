@@ -8,6 +8,7 @@ from admin.auth import AdminAuth
 from admin.views import (
     AdvertisementAdmin,
     CategoryAdmin,
+    ComplaintAdmin,
     ConversationAdmin,
     LikedAdvertisementAdmin,
     MessageAdmin,
@@ -36,6 +37,7 @@ def setup_admin(app: FastAPI) -> None:
     admin.add_view(CategoryAdmin)
     admin.add_view(SubcategoryAdmin)
     admin.add_view(AdvertisementAdmin)
+    admin.add_view(ComplaintAdmin)
     admin.add_view(LikedAdvertisementAdmin)
     admin.add_view(ViewedAdvertisementAdmin)
     admin.add_view(ConversationAdmin)

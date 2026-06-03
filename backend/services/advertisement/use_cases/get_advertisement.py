@@ -5,7 +5,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from models.advertisement import Advertisement, LikedAdvertisement, ViewedAdvertisement
+from models.advertisement import (
+    Advertisement,
+    LikedAdvertisement,
+    MODERATION_APPROVED,
+    ViewedAdvertisement,
+)
 from models.user import User
 
 
@@ -27,8 +32,12 @@ class GetAdvertisementUseCase:
         if advertisement is None:
             raise HTTPException(status_code=404, detail="Advertisement not found")
 
-        # likes_count и views_count хранятся в самой таблице — отдаём как есть.
-        # is_liked и is_viewed — только для авторизованного юзера.
+        if advertisement.moderation_status != MODERATION_APPROVED:
+            is_owner = current_user is not None and current_user.id == advertisement.owner_id
+            is_staff = current_user is not None and current_user.is_staff
+            if not (is_owner or is_staff):
+                raise HTTPException(status_code=404, detail="Advertisement not found")
+
         if current_user:
             liked = await db.execute(
                 select(LikedAdvertisement.id).where(

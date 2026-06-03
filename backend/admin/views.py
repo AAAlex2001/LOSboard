@@ -3,7 +3,8 @@ from sqladmin import ModelView
 from models.advertisement import Advertisement, LikedAdvertisement, ViewedAdvertisement
 from models.category import Category, Subcategory
 from models.chat import Conversation, Message, MessageAttachment
-from models.user import User
+from models.complaint import Complaint
+from models.user import ALLOWED_ROLES, User
 
 
 class UserAdmin(ModelView, model=User):
@@ -16,10 +17,12 @@ class UserAdmin(ModelView, model=User):
         User.email,
         User.phone_number,
         User.is_active,
-        User.is_admin,
+        User.role,
+        User.banned_until,
+        User.created_at,
     ]
     column_searchable_list = [User.name, User.email, User.phone_number]
-    column_sortable_list = [User.id, User.name, User.email]
+    column_sortable_list = [User.id, User.name, User.email, User.role, User.created_at]
     column_labels = {
         User.id: "ID",
         User.name: "Имя",
@@ -27,7 +30,9 @@ class UserAdmin(ModelView, model=User):
         User.phone_number: "Телефон",
         User.avatar_url: "Аватар",
         User.is_active: "Активен",
-        User.is_admin: "Админ",
+        User.role: "Роль",
+        User.banned_until: "Бан до",
+        User.created_at: "Зарегистрирован",
         User.token_version: "Версия токена",
     }
     form_excluded_columns = [
@@ -36,6 +41,7 @@ class UserAdmin(ModelView, model=User):
         User.liked_advertisements,
         User.viewed_advertisements,
     ]
+    form_choices = {"role": [(r, r) for r in ALLOWED_ROLES]}
 
 
 class CategoryAdmin(ModelView, model=Category):
@@ -96,7 +102,7 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.id,
         Advertisement.title,
         Advertisement.price,
-        Advertisement.location,
+        Advertisement.moderation_status,
         Advertisement.is_active,
         Advertisement.is_urgent,
         Advertisement.owner_id,
@@ -111,6 +117,7 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.created_at,
         Advertisement.likes_count,
         Advertisement.views_count,
+        Advertisement.moderation_status,
     ]
     column_labels = {
         Advertisement.id: "ID",
@@ -124,12 +131,43 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.created_at: "Создано",
         Advertisement.likes_count: "Лайки",
         Advertisement.views_count: "Просмотры",
+        Advertisement.moderation_status: "Статус модерации",
+        Advertisement.moderation_reason: "Причина",
+        Advertisement.moderated_at: "Промодерировано",
+        Advertisement.moderated_by_id: "Кем",
         Advertisement.owner_id: "ID владельца",
         Advertisement.category_id: "ID категории",
         Advertisement.subcategory_id: "ID подкатегории",
         Advertisement.owner: "Владелец",
         Advertisement.category: "Категория",
         Advertisement.subcategory: "Подкатегория",
+    }
+
+
+class ComplaintAdmin(ModelView, model=Complaint):
+    name = "жалобу"
+    name_plural = "Жалобы"
+    icon = "fa-solid fa-flag"
+    column_list = [
+        Complaint.id,
+        Complaint.advertisement_id,
+        Complaint.reporter_id,
+        Complaint.reason,
+        Complaint.status,
+        Complaint.created_at,
+    ]
+    column_sortable_list = [Complaint.id, Complaint.created_at, Complaint.status]
+    column_searchable_list = [Complaint.reason, Complaint.comment]
+    column_labels = {
+        Complaint.id: "ID",
+        Complaint.advertisement_id: "ID объявления",
+        Complaint.reporter_id: "ID жалующегося",
+        Complaint.reason: "Причина",
+        Complaint.comment: "Комментарий",
+        Complaint.status: "Статус",
+        Complaint.created_at: "Создано",
+        Complaint.resolved_at: "Закрыто",
+        Complaint.resolved_by_id: "Кем",
     }
 
 
@@ -185,7 +223,11 @@ class ConversationAdmin(ModelView, model=Conversation):
         Conversation.created_at,
         Conversation.last_message_at,
     ]
-    column_sortable_list = [Conversation.id, Conversation.created_at, Conversation.last_message_at]
+    column_sortable_list = [
+        Conversation.id,
+        Conversation.created_at,
+        Conversation.last_message_at,
+    ]
     column_labels = {
         Conversation.id: "ID",
         Conversation.advertisement_id: "ID объявления",

@@ -31,6 +31,8 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     if user.token_version != token_payload.token_version:
         raise HTTPException(status_code=401, detail="Token has been revoked")
+    if user.is_banned:
+        raise HTTPException(status_code=403, detail="Account is banned")
     return user
 
 
