@@ -131,7 +131,7 @@ export const ReportAdButton = ({
               <div className={style.actions}>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="outlined"
                   color="blue"
                   onClick={() => setOpen(false)}
                   disabled={submitting}
