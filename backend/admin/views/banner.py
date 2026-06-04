@@ -61,8 +61,8 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.link_url: "Куда ведёт клик по баннеру (опционально)",
         Banner.sort_order: "Порядок (меньше — выше)",
         Banner.is_active: "Показывать на сайте",
-        Banner.starts_at: "Старт показа (опционально)",
-        Banner.ends_at: "Конец показа (опционально)",
+        Banner.starts_at: "Старт показа (для заметки)",
+        Banner.ends_at: "Конец показа (для заметки)",
         Banner.created_at: "Создан",
     }
     column_formatters = {Banner.image_url: fmt_banner_thumb_small}
@@ -72,6 +72,16 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
     form_args = {
         "image_url": {
             "description": "Выберите файл с компьютера. JPG, PNG или WebP, до 10 МБ.",
+        },
+        "is_active": {
+            "description": "Главный переключатель: выключите — баннер исчезнет с сайта мгновенно.",
+        },
+        "starts_at": {
+            "description": "Информационное поле — пока не используется для автоматического показа. "
+            "Показом управляет тогл «Показывать на сайте».",
+        },
+        "ends_at": {
+            "description": "Информационное поле — пока не используется для автоматического показа.",
         },
     }
     form_excluded_columns = [Banner.created_at]

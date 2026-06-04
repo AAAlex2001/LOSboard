@@ -5,7 +5,7 @@ from typing import Any
 
 from markupsafe import Markup
 from sqladmin import ModelView, action
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from wtforms import SelectField
@@ -173,7 +173,6 @@ class ModerationQueueAdmin(AdvertisementAdmin, model=Advertisement):
 
     name = "элемент очереди"
     name_plural = "Очередь модерации"
-    identity = "moderation-queue"
     icon = "fa-solid fa-hourglass-half"
     can_create = False
     can_delete = False
@@ -187,13 +186,17 @@ class ModerationQueueAdmin(AdvertisementAdmin, model=Advertisement):
             Advertisement.created_at,
         )
 
+    def count_query(self, request: Request):
+        return select(func.count(Advertisement.id)).where(
+            Advertisement.moderation_status == MODERATION_PENDING
+        )
+
 
 class ActiveAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
     """Одобренные и активные объявления — то, что видят пользователи на сайте."""
 
     name = "активное объявление"
     name_plural = "Активные"
-    identity = "ads-active"
     icon = "fa-solid fa-circle-check"
     can_create = False
 
@@ -209,13 +212,18 @@ class ActiveAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
             Advertisement.created_at,
         )
 
+    def count_query(self, request: Request):
+        return select(func.count(Advertisement.id)).where(
+            Advertisement.moderation_status == MODERATION_APPROVED,
+            Advertisement.is_active.is_(True),
+        )
+
 
 class ArchivedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
     """Снятые с публикации владельцем (`is_active=False`), но не отклонённые."""
 
     name = "архивное объявление"
     name_plural = "В архиве"
-    identity = "ads-archived"
     icon = "fa-solid fa-box-archive"
     can_create = False
 
@@ -228,13 +236,17 @@ class ArchivedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
             Advertisement.created_at,
         )
 
+    def count_query(self, request: Request):
+        return select(func.count(Advertisement.id)).where(
+            Advertisement.is_active.is_(False)
+        )
+
 
 class RejectedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
     """Отклонённые модератором объявления — с причиной отклонения."""
 
     name = "отклонённое объявление"
     name_plural = "Заблокированные"
-    identity = "ads-rejected"
     icon = "fa-solid fa-ban"
     can_create = False
 
@@ -246,3 +258,19 @@ class RejectedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
             request,
             Advertisement.moderated_at,
         )
+
+    def count_query(self, request: Request):
+        return select(func.count(Advertisement.id)).where(
+            Advertisement.moderation_status == MODERATION_REJECTED
+        )
+
+
+# Метакласс SQLAdmin при `model=Advertisement` затирает `identity` именем модели
+# («advertisement»), поэтому все 4 пресет-вью получали один и тот же URL и
+# роутились в первый зарегистрированный AdvertisementAdmin. Выставляем уникальный
+# identity после определения класса — это единственное место, где это можно сделать,
+# чтобы метакласс библиотеки нас не перебил.
+ModerationQueueAdmin.identity = "moderation-queue"
+ActiveAdvertisementsAdmin.identity = "ads-active"
+ArchivedAdvertisementsAdmin.identity = "ads-archived"
+RejectedAdvertisementsAdmin.identity = "ads-rejected"

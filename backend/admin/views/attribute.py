@@ -1,10 +1,56 @@
 """Динамические доп. поля объявлений по категориям."""
 
+from typing import Any
+
 from sqladmin import ModelView
-from wtforms import SelectField
+from wtforms.fields import Field, SelectField
+from wtforms.widgets import TextArea
 
 from admin.views.common import ATTRIBUTE_KIND_CHOICES, AdminOnly
 from models.attribute import AdvertisementAttributeValue, Attribute
+
+
+def fmt_options_inline(model: Any, _attr: Any) -> str:
+    """Список вариантов в одну строку через запятую — для колонки в списке."""
+    if not model.options:
+        return "—"
+    return ", ".join(str(item) for item in model.options)
+
+
+class OptionsField(Field):
+    """Textarea, которая показывает список как строки, а сохраняет обратно как list.
+
+    Наследуемся напрямую от `Field` и переобъявляем `data: Any`, чтобы спокойно
+    держать в нём и строку (при рендере), и `list[str] | None` (после парса формы).
+    """
+
+    widget = TextArea()
+    data: Any
+
+    def process_data(self, value: Any) -> None:
+        if isinstance(value, list):
+            self.data = "\n".join(str(item) for item in value)
+        elif value is None:
+            self.data = ""
+        else:
+            self.data = str(value)
+
+    def process_formdata(self, valuelist: list[str]) -> None:
+        if not valuelist:
+            self.data = None
+            return
+        raw = valuelist[0] or ""
+        lines = [line.strip() for line in raw.replace(",", "\n").splitlines()]
+        cleaned = [line for line in lines if line]
+        self.data = cleaned or None
+
+    def _value(self) -> str:
+        """Возвращает строковое значение для отрисовки виджетом TextArea."""
+        if isinstance(self.data, str):
+            return self.data
+        if isinstance(self.data, list):
+            return "\n".join(str(item) for item in self.data)
+        return ""
 
 
 class AttributeAdmin(AdminOnly, ModelView, model=Attribute):
@@ -56,7 +102,8 @@ class AttributeAdmin(AdminOnly, ModelView, model=Attribute):
         Attribute.subcategory_id: "ID подкатегории",
         Attribute.created_at: "Создано",
     }
-    form_overrides = {"kind": SelectField}
+    form_overrides = {"kind": SelectField, "options": OptionsField}
+    form_widget_args = {"options": {"rows": 6}}
     form_args = {
         "name": {
             "description": "Как поле подписано в форме объявления, например «Марка авто».",
@@ -71,8 +118,8 @@ class AttributeAdmin(AdminOnly, ModelView, model=Attribute):
             "Выбор из списка — селект с вариантами ниже. Да/Нет — тогл.",
         },
         "options": {
-            "description": "Только для «Выбор из списка»: JSON-массив строк, например "
-            '["BMW","Mercedes","Audi"].',
+            "description": "Только для «Выбор из списка»: впишите по одному варианту в строку. "
+            "Например, для «Марка авто»: BMW, потом Enter, Mercedes, Enter, Audi.",
         },
         "category": {
             "description": "Если выбрано — поле появится для всей категории. "
@@ -86,6 +133,7 @@ class AttributeAdmin(AdminOnly, ModelView, model=Attribute):
         },
     }
     column_default_sort = [("sort_order", False)]
+    column_formatters = {Attribute.options: fmt_options_inline}
 
 
 class AdvertisementAttributeValueAdmin(

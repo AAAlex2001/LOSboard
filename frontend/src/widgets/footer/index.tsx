@@ -75,27 +75,37 @@ export const Footer = () => {
             </div>
           )}
 
-          {settings && (settings.telegram_url || settings.instagram_url || settings.facebook_url) && (
+          {settings?.socials_title && (
             <div className={style.contacts}>
-              {settings.socials_title && (
-                <span className={style.linkBold}>{settings.socials_title}</span>
-              )}
+              <span className={style.linkBold}>{settings.socials_title}</span>
               <div className={style.socials}>
-                {settings.telegram_url && (
-                  <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className={style.social}>
-                    <TelegramIcon />
-                  </a>
-                )}
-                {settings.instagram_url && (
-                  <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className={style.social}>
-                    <InstagramIcon />
-                  </a>
-                )}
-                {settings.facebook_url && (
-                  <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className={style.social}>
-                    <FacebookIcon />
-                  </a>
-                )}
+                <a
+                  href={settings.telegram_url || "#"}
+                  target={settings.telegram_url ? "_blank" : undefined}
+                  rel={settings.telegram_url ? "noopener noreferrer" : undefined}
+                  className={style.social}
+                  aria-label="Telegram"
+                >
+                  <TelegramIcon />
+                </a>
+                <a
+                  href={settings.instagram_url || "#"}
+                  target={settings.instagram_url ? "_blank" : undefined}
+                  rel={settings.instagram_url ? "noopener noreferrer" : undefined}
+                  className={style.social}
+                  aria-label="Instagram"
+                >
+                  <InstagramIcon />
+                </a>
+                <a
+                  href={settings.facebook_url || "#"}
+                  target={settings.facebook_url ? "_blank" : undefined}
+                  rel={settings.facebook_url ? "noopener noreferrer" : undefined}
+                  className={style.social}
+                  aria-label="Facebook"
+                >
+                  <FacebookIcon />
+                </a>
               </div>
             </div>
           )}

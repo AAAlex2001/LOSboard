@@ -1,9 +1,49 @@
 """Диалоги, сообщения, вложения. Только просмотр (для админа)."""
 
+import re
+from typing import Any
+
+from markupsafe import Markup, escape
 from sqladmin import ModelView
 
-from admin.views.common import AdminOnly
+from admin.views.common import AdminOnly, img_thumb
 from models.chat import Conversation, Message, MessageAttachment
+
+
+CHAT_URL_PATTERN = re.compile(r"^/conversations/(\d+)/attachments/(.+)$")
+
+
+def attachment_public_url(stored_url: str | None) -> str | None:
+    """Парсит `/conversations/X/attachments/Y` → `/static/uploads/chat/X/Y`.
+
+    Это публично смонтированный путь (`UPLOADS_DIR` в main.py), поэтому
+    превью открывается прямо из админки в новой вкладке без отдельного auth-обхода.
+    """
+    if not stored_url:
+        return None
+    match = CHAT_URL_PATTERN.match(stored_url)
+    if not match:
+        return stored_url
+    conv_id, filename = match.group(1), match.group(2)
+    return f"/static/uploads/chat/{conv_id}/{filename}"
+
+
+def attachment_preview(model: Any, _attr: Any) -> Markup:
+    """Картинка → миниатюра-ссылка. Видео/документ → иконка + кликабельное имя."""
+    url = attachment_public_url(model.url)
+    if not url:
+        return Markup('<span style="color:#999">—</span>')
+
+    if model.kind == "image":
+        return Markup(img_thumb(url, size=80))
+
+    icon = {"video": "🎬", "document": "📄"}.get(model.kind, "📎")
+    return Markup(
+        f'<a href="{escape(url)}" target="_blank" rel="noreferrer" '
+        f'style="color:#1565C0; text-decoration:none;">'
+        f"{icon} {escape(model.filename or 'файл')}"
+        f"</a>"
+    )
 
 
 class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
@@ -64,8 +104,21 @@ class MessageAdmin(AdminOnly, ModelView, model=Message):
         Message.sender: "Отправитель",
         Message.attachments: "Вложения",
     }
-    column_details_exclude_list = [Message.attachments]
     form_excluded_columns = [Message.attachments]
+    column_formatters_detail = {Message.attachments: lambda m, _a: message_attachments_block(m)}
+
+
+def message_attachments_block(model: Any) -> Markup:
+    """Список вложений сообщения с превью для админ-детали."""
+    items = list(model.attachments or [])
+    if not items:
+        return Markup('<span style="color:#999">Без вложений</span>')
+    parts = [attachment_preview(att, None) for att in items]
+    return Markup(
+        '<div style="display:flex; flex-wrap:wrap; gap:8px;">'
+        + "".join(str(p) for p in parts)
+        + "</div>"
+    )
 
 
 class MessageAttachmentAdmin(AdminOnly, ModelView, model=MessageAttachment):
@@ -74,6 +127,7 @@ class MessageAttachmentAdmin(AdminOnly, ModelView, model=MessageAttachment):
     icon = "fa-solid fa-paperclip"
     column_list = [
         MessageAttachment.id,
+        MessageAttachment.url,
         MessageAttachment.message,
         MessageAttachment.filename,
         MessageAttachment.kind,
@@ -85,10 +139,12 @@ class MessageAttachmentAdmin(AdminOnly, ModelView, model=MessageAttachment):
     column_labels = {
         MessageAttachment.id: "ID",
         MessageAttachment.message_id: "ID сообщения",
-        MessageAttachment.url: "URL",
+        MessageAttachment.url: "Файл (клик — открыть)",
         MessageAttachment.filename: "Имя файла",
         MessageAttachment.kind: "Тип",
         MessageAttachment.mime_type: "MIME-тип",
         MessageAttachment.size_bytes: "Размер, байт",
         MessageAttachment.message: "Сообщение",
     }
+    column_formatters = {MessageAttachment.url: attachment_preview}
+    column_formatters_detail = {MessageAttachment.url: attachment_preview}

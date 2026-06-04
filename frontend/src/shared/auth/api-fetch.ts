@@ -61,7 +61,8 @@ export async function apiFetch(
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
+      return response;
     }
-    return response;
+    throw err;
   }
 }

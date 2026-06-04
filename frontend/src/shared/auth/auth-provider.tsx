@@ -46,15 +46,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await apiFetch("auth/me");
 
-      if (!response.ok) {
-        throw new Error("Не удалось получить пользователя");
+      if (response.ok) {
+        const data: User = await response.json();
+        setUser(data);
+      } else if (response.status === 401 || response.status === 403) {
+        logout();
+        setUser(null);
+      } else {
+        setUser(null);
       }
-
-      const data: User = await response.json();
-
-      setUser(data);
     } catch {
-      logout();
       setUser(null);
     } finally {
       setIsLoading(false);
