@@ -69,6 +69,15 @@ class SiteSettings(Base):
     instagram_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     facebook_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     copyright_line: Mapped[str] = mapped_column(String, nullable=False, default="")
+    ad_age_label: Mapped[str] = mapped_column(
+        String, nullable=False, default="Реклама 0+"
+    )
+    ad_site_label: Mapped[str] = mapped_column(
+        String, nullable=False, default="Ваш сайт"
+    )
+    ad_placeholder_text: Mapped[str] = mapped_column(
+        String, nullable=False, default="Рекламный баннер сдается"
+    )
 
     def __str__(self) -> str:
         return "Настройки сайта"

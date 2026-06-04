@@ -123,9 +123,21 @@ class SiteSettingsAdmin(AdminOnly, ModelView, model=SiteSettings):
         SiteSettings.instagram_url: "Ссылка на Instagram",
         SiteSettings.facebook_url: "Ссылка на Facebook",
         SiteSettings.copyright_line: "Копирайт внизу страницы",
+        SiteSettings.ad_age_label: "Метка на баннере (по умолчанию «Реклама 0+»)",
+        SiteSettings.ad_site_label: "Подпись на баннере (по умолчанию «Ваш сайт»)",
+        SiteSettings.ad_placeholder_text: "Текст пустого слота («Рекламный баннер сдается»)",
     }
     form_args = {
         "telegram_url": {"description": "Пусто = иконка скрыта"},
         "instagram_url": {"description": "Пусто = иконка скрыта"},
         "facebook_url": {"description": "Пусто = иконка скрыта"},
+        "ad_age_label": {
+            "description": "Маленький бэйдж в углу всех рекламных баннеров.",
+        },
+        "ad_site_label": {
+            "description": "Подпись с названием рекламодателя в нижнем углу баннера.",
+        },
+        "ad_placeholder_text": {
+            "description": "Показывается на свободных слотах, где ещё нет баннера.",
+        },
     }

@@ -32,6 +32,9 @@ export interface SiteSettings {
   instagram_url: string | null;
   facebook_url: string | null;
   copyright_line: string;
+  ad_age_label: string;
+  ad_site_label: string;
+  ad_placeholder_text: string;
 }
 
 async function readErrorDetail(

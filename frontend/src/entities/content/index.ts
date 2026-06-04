@@ -9,3 +9,4 @@ export {
   type FooterResponse,
   type SiteSettings,
 } from "./api/content.api";
+export { useSiteSettings } from "./model/useSiteSettings";

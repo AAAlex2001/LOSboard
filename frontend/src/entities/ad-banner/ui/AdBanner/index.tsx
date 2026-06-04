@@ -1,21 +1,23 @@
+"use client";
+
+import { resolveAssetUrl } from "@/src/entities/advertisement";
+import type { Banner } from "@/src/entities/banner";
 import style from "./style.module.scss";
 
 export type AdBannerVariant = "rectangle" | "leaderboard" | "wide" | "promo";
 
 interface AdBannerProps {
-  imageUrl?: string;
-  href?: string;
-  siteLabel?: string;
+  banner?: Banner | null;
   ageLabel?: string;
+  siteLabel?: string;
   placeholderText?: string;
   variant?: AdBannerVariant;
 }
 
 export const AdBanner = ({
-  imageUrl,
-  href,
-  siteLabel = "Ваш сайт",
+  banner,
   ageLabel = "Реклама 0+",
+  siteLabel = "Ваш сайт",
   placeholderText = "Рекламный баннер сдается",
   variant = "rectangle",
 }: AdBannerProps) => {
@@ -28,6 +30,11 @@ export const AdBanner = ({
       ? style.bannerPromo
       : style.bannerRectangle;
 
+  const imageUrl = banner ? resolveAssetUrl(banner.image_url) : null;
+  const href = banner?.link_url || undefined;
+  const title = banner?.title;
+  const description = banner?.description ?? null;
+
   const content = (
     <>
       <div className={style.adTag}>{ageLabel}</div>
@@ -35,13 +42,22 @@ export const AdBanner = ({
       {imageUrl ? (
         <img
           src={imageUrl}
-          alt=""
+          alt={title || ""}
           className={style.image}
           loading="lazy"
           decoding="async"
         />
       ) : (
         <span className={style.placeholder}>{placeholderText}</span>
+      )}
+
+      {(title || description) && imageUrl && (
+        <div className={style.overlay}>
+          {title && <span className={style.overlayTitle}>{title}</span>}
+          {description && (
+            <span className={style.overlayDescription}>{description}</span>
+          )}
+        </div>
       )}
 
       <div className={style.siteLabel}>{siteLabel}</div>

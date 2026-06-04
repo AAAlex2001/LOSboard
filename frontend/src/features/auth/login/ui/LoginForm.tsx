@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { useLogin } from "../model/useLogin";
@@ -62,6 +63,16 @@ export function LoginForm() {
               Зарегистрироваться
             </Button>
           </div>
+          <p className={style.docs}>
+            Продолжая, вы принимаете{" "}
+            <Link href="/docs/agreement" className={style.docsLink}>
+              Пользовательское соглашение
+            </Link>{" "}
+            и{" "}
+            <Link href="/docs/privacy" className={style.docsLink}>
+              Политику конфиденциальности
+            </Link>
+          </p>
         </div>
       </div>
     </form>

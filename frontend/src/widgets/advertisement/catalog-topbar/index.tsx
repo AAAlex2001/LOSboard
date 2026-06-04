@@ -11,6 +11,8 @@ import {
 } from "@/src/entities/category";
 import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
 import { AdBanner } from "@/src/entities/ad-banner";
+import { useBanners } from "@/src/entities/banner";
+import { useSiteSettings } from "@/src/entities/content";
 import style from "./style.module.scss";
 
 interface CatalogTopBarProps {
@@ -29,6 +31,11 @@ export const CatalogTopBar = ({
   onReset,
 }: CatalogTopBarProps) => {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const banners = useBanners();
+  const settings = useSiteSettings();
+  const ageLabel = settings?.ad_age_label;
+  const siteLabel = settings?.ad_site_label;
+  const placeholderText = settings?.ad_placeholder_text;
 
   const handlePickCategory = (cat: Category) => {
     onSelectCategory(cat);
@@ -77,13 +84,37 @@ export const CatalogTopBar = ({
       </div>
 
       <div className={style.promoTablet}>
-        <AdBanner variant="wide" />
+        <AdBanner
+          variant="wide"
+          banner={banners[0]}
+          ageLabel={ageLabel}
+          siteLabel={siteLabel}
+          placeholderText={placeholderText}
+        />
       </div>
 
       <div className={style.promoDesktop}>
-        <AdBanner variant="promo" />
-        <AdBanner variant="promo" />
-        <AdBanner variant="promo" />
+        <AdBanner
+          variant="promo"
+          banner={banners[0]}
+          ageLabel={ageLabel}
+          siteLabel={siteLabel}
+          placeholderText={placeholderText}
+        />
+        <AdBanner
+          variant="promo"
+          banner={banners[1]}
+          ageLabel={ageLabel}
+          siteLabel={siteLabel}
+          placeholderText={placeholderText}
+        />
+        <AdBanner
+          variant="promo"
+          banner={banners[2]}
+          ageLabel={ageLabel}
+          siteLabel={siteLabel}
+          placeholderText={placeholderText}
+        />
       </div>
 
       <Modal open={pickerOpen} onClose={() => setPickerOpen(false)}>

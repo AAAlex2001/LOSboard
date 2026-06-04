@@ -90,11 +90,11 @@ export function RegisterForm() {
 
         <p className={style.docs}>
           Регистрируясь, вы принимаете{" "}
-          <Link href="/terms" className={style.docsLink}>
+          <Link href="/docs/agreement" className={style.docsLink}>
             Пользовательское соглашение
           </Link>{" "}
           и{" "}
-          <Link href="/privacy" className={style.docsLink}>
+          <Link href="/docs/privacy" className={style.docsLink}>
             Политику конфиденциальности
           </Link>
         </p>

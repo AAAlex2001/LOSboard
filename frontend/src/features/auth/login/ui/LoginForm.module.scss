@@ -58,3 +58,23 @@
     font-weight: 500;
     color: #1129BD;
 }
+
+.docs {
+    margin: 0;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+    color: #B8BBC2;
+}
+
+.docsLink {
+    color: #1129BD;
+    text-decoration: none;
+    transition: text-decoration-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

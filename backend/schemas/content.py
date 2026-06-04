@@ -44,3 +44,6 @@ class SiteSettingsResponse(BaseModel):
     instagram_url: Optional[str] = None
     facebook_url: Optional[str] = None
     copyright_line: str
+    ad_age_label: str
+    ad_site_label: str
+    ad_placeholder_text: str
