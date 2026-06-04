@@ -17,7 +17,7 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-def render(sections: list[dict]) -> str:
+def render(sections: list[dict[str, object]]) -> str:
     parts: list[str] = []
     for s in sections:
         heading = s.get("heading")

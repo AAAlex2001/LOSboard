@@ -94,6 +94,30 @@
                 </div>
                 {% endif %}
               </div>
+
+              {% if model_view.show_date_filter %}
+              <form method="GET" class="row align-items-end g-2 mt-1">
+                {% if request.query_params.get('search') %}
+                <input type="hidden" name="search" value="{{ request.query_params.get('search') }}">
+                {% endif %}
+                <div class="col-auto">
+                  <label class="form-label text-muted mb-1">Дата с</label>
+                  <input type="date" name="date_from" class="form-control"
+                    value="{{ request.query_params.get('date_from', '') }}">
+                </div>
+                <div class="col-auto">
+                  <label class="form-label text-muted mb-1">по</label>
+                  <input type="date" name="date_to" class="form-control"
+                    value="{{ request.query_params.get('date_to', '') }}">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">Применить</button>
+                  {% if request.query_params.get('date_from') or request.query_params.get('date_to') %}
+                  <a href="?{% if request.query_params.get('search') %}search={{ request.query_params.get('search') }}{% endif %}" class="btn">Сбросить</a>
+                  {% endif %}
+                </div>
+              </form>
+              {% endif %}
             </div>
             {% block model_list_table %}
             <div class="table-responsive">

@@ -2,7 +2,6 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from models.advertisement import Advertisement
 from models.chat import Conversation, Message
 from models.user import User
 from schemas.chat import (
@@ -78,7 +77,9 @@ class ListConversationsUseCase:
             )
             .group_by(Message.conversation_id)
         )
-        unread = dict(unread_result.all())
+        unread: dict[int, int] = {
+            row[0]: int(row[1]) for row in unread_result.all()
+        }
 
         items: list[ConversationListItem] = []
         for conv in conversations:

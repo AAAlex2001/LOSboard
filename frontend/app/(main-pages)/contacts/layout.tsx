@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
+import { getContentPage } from "@/src/entities/content";
 
-export const metadata: Metadata = {
-  title: "Связаться с нами",
-  description:
-    "Контактные данные LOSboard: телефон колл-центра, чат-бот в Telegram, электронная почта, график работы офиса.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getContentPage("contacts").catch(() => null);
+  const title = page?.title ?? "Связаться с нами";
+  const description =
+    "Контактные данные службы поддержки и график работы LOSboard.";
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary", title, description },
+  };
+}
 
 export default function ContactsLayout({
   children,

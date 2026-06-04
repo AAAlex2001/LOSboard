@@ -1,55 +1,16 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/src/shared/ui/JsonLd";
 import { slugify } from "@/src/shared/lib/slug";
+import {
+  fetchAdvertisement,
+  fetchCategoryTree,
+  siteOrigin,
+  type AdSummary,
+} from "@/src/shared/lib/server-api";
 
 interface Props {
   params: Promise<{ id: string }>;
   children: React.ReactNode;
-}
-
-interface AdSummary {
-  id: number;
-  title: string;
-  description: string | null;
-  price: number;
-  location: string;
-  photo_urls: string[];
-  category_id: number;
-  subcategory_id: number;
-  created_at?: string | null;
-  is_active?: boolean;
-}
-
-interface SubcategoryDto {
-  id: number;
-  name: string;
-  slug: string;
-}
-
-interface CategoryDto {
-  id: number;
-  name: string;
-  slug: string;
-  subcategories: SubcategoryDto[];
-}
-
-const API_BASE = process.env.INTERNAL_API_BASE_URL!;
-const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
-
-async function fetchAd(id: number): Promise<AdSummary | null> {
-  const res = await fetch(`${API_BASE}advertisements/${id}`, {
-    next: { revalidate: 300 },
-  });
-  if (!res.ok) return null;
-  return (await res.json()) as AdSummary;
-}
-
-async function fetchCategories(): Promise<CategoryDto[]> {
-  const res = await fetch(`${API_BASE}categories/list`, {
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) return [];
-  return (await res.json()) as CategoryDto[];
 }
 
 function buildDescription(ad: AdSummary): string {
@@ -64,7 +25,7 @@ function buildDescription(ad: AdSummary): string {
 function buildCanonical(ad: AdSummary): string {
   const slug = slugify(ad.title);
   const suffix = slug ? `${ad.id}-${slug}` : `${ad.id}`;
-  return `${SITE_ORIGIN}/advertisements/${suffix}`;
+  return `${siteOrigin()}/advertisements/${suffix}`;
 }
 
 function parseId(idParam: string): number {
@@ -83,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const ad = await fetchAd(id);
+  const ad = await fetchAdvertisement(id);
   if (!ad) {
     return {
       title: "Объявление не найдено",
@@ -93,10 +54,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const description = buildDescription(ad);
   const canonical = buildCanonical(ad);
+  const origin = siteOrigin();
   const ogImage =
     ad.photo_urls && ad.photo_urls.length > 0
-      ? `${SITE_ORIGIN}${ad.photo_urls[0]}`
-      : `${SITE_ORIGIN}/los.jpg`;
+      ? `${origin}${ad.photo_urls[0]}`
+      : `${origin}/los.jpg`;
 
   return {
     title: ad.title,
@@ -123,11 +85,15 @@ export default async function AdvertisementLayout({ params, children }: Props) {
   const id = parseId(idParam);
   if (!Number.isFinite(id)) return children;
 
-  const [ad, categories] = await Promise.all([fetchAd(id), fetchCategories()]);
+  const [ad, categories] = await Promise.all([
+    fetchAdvertisement(id),
+    fetchCategoryTree(),
+  ]);
   if (!ad) return children;
 
+  const origin = siteOrigin();
   const canonical = buildCanonical(ad);
-  const images = (ad.photo_urls ?? []).map((p) => `${SITE_ORIGIN}${p}`);
+  const images = (ad.photo_urls ?? []).map((p) => `${origin}${p}`);
 
   const category = categories.find((c) => c.id === ad.category_id) ?? null;
   const subcategory =
@@ -138,7 +104,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
     "@type": "Product",
     name: ad.title,
     description: ad.description ?? buildDescription(ad),
-    image: images.length > 0 ? images : [`${SITE_ORIGIN}/los.jpg`],
+    image: images.length > 0 ? images : [`${origin}/los.jpg`],
     url: canonical,
     category: subcategory?.name ?? category?.name,
     offers: {
@@ -154,13 +120,13 @@ export default async function AdvertisementLayout({ params, children }: Props) {
     },
   };
 
-  const breadcrumbItems = [
-    {
-      "@type": "ListItem",
-      position: 1,
-      name: "Главная",
-      item: SITE_ORIGIN,
-    },
+  const breadcrumbItems: {
+    "@type": "ListItem";
+    position: number;
+    name: string;
+    item: string;
+  }[] = [
+    { "@type": "ListItem", position: 1, name: "Главная", item: origin },
   ];
   let position = 2;
   if (category) {
@@ -168,7 +134,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
       "@type": "ListItem",
       position: position++,
       name: category.name,
-      item: `${SITE_ORIGIN}/category/${category.slug}`,
+      item: `${origin}/category/${category.slug}`,
     });
   }
   if (category && subcategory) {
@@ -176,7 +142,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
       "@type": "ListItem",
       position: position++,
       name: subcategory.name,
-      item: `${SITE_ORIGIN}/category/${category.slug}/${subcategory.slug}`,
+      item: `${origin}/category/${category.slug}/${subcategory.slug}`,
     });
   }
   breadcrumbItems.push({

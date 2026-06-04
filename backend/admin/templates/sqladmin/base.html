@@ -13,6 +13,12 @@
   <link rel="stylesheet" href="{{ url_for('admin:statics', path='css/select2.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin:statics', path='css/flatpickr.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('admin:statics', path='css/main.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css">
+  <style>
+    .rich-editor-host { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; }
+    .rich-editor-host .ql-editor { min-height: 320px; font-size: 15px; }
+    textarea.rich-editor { display: none; }
+  </style>
   {% endblock %}
   {% if admin.favicon_url %}
   <link rel="icon" href="{{ admin.favicon_url }}">
@@ -36,6 +42,37 @@
   <script type="text/javascript" src="{{ url_for('admin:statics', path='js/select2.full.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('admin:statics', path='js/flatpickr.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('admin:statics', path='js/main.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+  <script>
+    (function () {
+      var textareas = document.querySelectorAll('textarea.rich-editor');
+      if (textareas.length === 0 || typeof Quill === 'undefined') return;
+      textareas.forEach(function (textarea) {
+        var host = document.createElement('div');
+        host.className = 'rich-editor-host';
+        host.innerHTML = textarea.value || '';
+        textarea.parentNode.insertBefore(host, textarea);
+        var quill = new Quill(host, {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ header: [2, 3, false] }],
+              ['bold', 'italic', 'underline', 'link'],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['blockquote'],
+              ['clean'],
+            ],
+          },
+        });
+        var form = textarea.closest('form');
+        if (form) {
+          form.addEventListener('submit', function () {
+            textarea.value = quill.root.innerHTML;
+          });
+        }
+      });
+    })();
+  </script>
   {% endblock %}
   {% block tail %}{% endblock %}
 </body>

@@ -6,9 +6,12 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from admin.auth import AdminAuth
 from admin.dashboard import DashboardView
+from admin.reject_view import RejectAdvertisementsView
 from admin.views import (
+    ActiveAdvertisementsAdmin,
     AdvertisementAdmin,
     AdvertisementAttributeValueAdmin,
+    ArchivedAdvertisementsAdmin,
     AttributeAdmin,
     BannerAdmin,
     CategoryAdmin,
@@ -20,6 +23,8 @@ from admin.views import (
     MessageAdmin,
     MessageAttachmentAdmin,
     ModerationQueueAdmin,
+    RejectedAdvertisementsAdmin,
+    SiteSettingsAdmin,
     SubcategoryAdmin,
     UserAdmin,
     ViewedAdvertisementAdmin,
@@ -41,8 +46,12 @@ def setup_admin(app: FastAPI) -> None:
         authentication_backend=AdminAuth(secret_key=secret_key),
     )
     admin.add_base_view(DashboardView)
+    admin.add_base_view(RejectAdvertisementsView)
     admin.add_view(AdvertisementAdmin)
     admin.add_view(ModerationQueueAdmin)
+    admin.add_view(ActiveAdvertisementsAdmin)
+    admin.add_view(ArchivedAdvertisementsAdmin)
+    admin.add_view(RejectedAdvertisementsAdmin)
     admin.add_view(ComplaintAdmin)
     admin.add_view(UserAdmin)
     admin.add_view(CategoryAdmin)
@@ -52,6 +61,7 @@ def setup_admin(app: FastAPI) -> None:
     admin.add_view(BannerAdmin)
     admin.add_view(ContentPageAdmin)
     admin.add_view(FooterLinkAdmin)
+    admin.add_view(SiteSettingsAdmin)
     admin.add_view(LikedAdvertisementAdmin)
     admin.add_view(ViewedAdvertisementAdmin)
     admin.add_view(ConversationAdmin)

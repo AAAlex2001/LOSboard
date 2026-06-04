@@ -1,69 +1,43 @@
-"use client";
+export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
-import { Loader } from "@/src/shared/ui/Loader";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
-import {
-  getAdvertisement,
-  type Advertisement,
-} from "@/src/entities/advertisement";
-import { useCategories } from "@/src/entities/category";
-import { useMeContext } from "@/src/entities/user";
+import { BackButton } from "@/src/shared/ui/BackButton";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import { parseAdvertisementIdFromParam } from "@/src/shared/lib/slug";
+import {
+  fetchAdvertisement,
+  fetchCategoryTree,
+} from "@/src/shared/lib/server-api";
+import type { Advertisement } from "@/src/entities/advertisement";
 import style from "./page.module.scss";
 
-export default function AdvertisementPage() {
-  const router = useRouter();
-  const params = useParams<{ id: string }>();
-  const adId = parseAdvertisementIdFromParam(params?.id);
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const [ad, setAd] = useState<Advertisement | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { categories } = useCategories();
-  const { user } = useMeContext();
+export default async function AdvertisementPage({ params }: PageProps) {
+  const { id: idParam } = await params;
+  const adId = parseAdvertisementIdFromParam(idParam);
+  if (!Number.isFinite(adId)) {
+    notFound();
+  }
 
-  useEffect(() => {
-    if (!Number.isFinite(adId)) {
-      setError("Некорректный идентификатор объявления");
-      setLoading(false);
-      return;
-    }
+  const [ad, categories] = await Promise.all([
+    fetchAdvertisement(adId),
+    fetchCategoryTree(),
+  ]);
 
-    const controller = new AbortController();
-    setLoading(true);
-    setError(null);
+  if (!ad) {
+    notFound();
+  }
 
-    getAdvertisement(adId, { signal: controller.signal })
-      .then((data) => {
-        if (controller.signal.aborted) return;
-        setAd(data);
-      })
-      .catch((err: unknown) => {
-        if (controller.signal.aborted) return;
-        setError(err instanceof Error ? err.message : String(err));
-      })
-      .finally(() => {
-        if (controller.signal.aborted) return;
-        setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, [adId]);
-
-  const category = ad
-    ? categories.find((c) => c.id === ad.category_id) ?? null
-    : null;
+  const category = categories.find((c) => c.id === ad.category_id) ?? null;
   const subcategory =
-    ad && category
-      ? category.subcategories.find((s) => s.id === ad.subcategory_id) ?? null
-      : null;
+    category?.subcategories.find((s) => s.id === ad.subcategory_id) ?? null;
 
   const headingTitle = category
     ? `Категория объявлений: «${category.name}»`
@@ -74,62 +48,48 @@ export default function AdvertisementPage() {
       <Header />
       <div className={style.content}>
         <div className={style.container}>
-          {loading ? (
-            <div className={style.loadingArea}>
-              <Loader />
+          <div className={style.breadcrumbs}>
+            <Breadcrumbs
+              items={[
+                { label: "Главная", href: "/" },
+                ...(category
+                  ? [{ label: category.name, href: `/category/${category.slug}` }]
+                  : []),
+                ...(category && subcategory
+                  ? [
+                      {
+                        label: subcategory.name,
+                        href: `/category/${category.slug}/${subcategory.slug}`,
+                      },
+                    ]
+                  : []),
+                { label: ad.title },
+              ]}
+            />
+          </div>
+
+          <div className={style.card}>
+            <div className={style.detailBlock}>
+              <div className={style.feedHeading}>
+                <BackButton className={style.backBtn} fallbackHref="/" />
+                <h1 className={style.title}>{headingTitle}</h1>
+              </div>
+
+              <AdvertisementDetail
+                advertisement={ad as Advertisement}
+                categoryName={category?.name}
+                subcategoryName={subcategory?.name}
+              />
             </div>
-          ) : error || !ad ? (
-            <p className={style.error}>{error ?? "Объявление не найдено"}</p>
-          ) : (
-            <>
-              <div className={style.breadcrumbs}>
-                <Breadcrumbs
-                  items={[
-                    { label: "Главная", href: "/" },
-                    ...(category
-                      ? [{ label: category.name, href: `/category/${category.slug}` }]
-                      : []),
-                    ...(category && subcategory
-                      ? [{ label: subcategory.name, href: `/category/${category.slug}/${subcategory.slug}` }]
-                      : []),
-                    { label: ad.title },
-                  ]}
-                />
-              </div>
 
-              <div className={style.card}>
-                <div className={style.detailBlock}>
-                  <div className={style.feedHeading}>
-                    <button
-                      type="button"
-                      className={style.backBtn}
-                      onClick={() => router.back()}
-                      aria-label="Назад"
-                    >
-                      <ArrowLeftIcon />
-                    </button>
-                    <h1 className={style.title}>{headingTitle}</h1>
-                  </div>
-
-                  <AdvertisementDetail
-                    advertisement={ad}
-                    categoryName={category?.name}
-                    subcategoryName={subcategory?.name}
-                    canMessageSeller={user == null || user.id !== ad.owner_id}
-                  />
-                </div>
-
-                <div className={style.sidebarSlot}>
-                  <AdvertisementSidebar
-                    advertisementId={ad.id}
-                    price={ad.price}
-                    sellerPhone={ad.seller_phone}
-                    canMessageSeller={user == null || user.id !== ad.owner_id}
-                  />
-                </div>
-              </div>
-            </>
-          )}
+            <div className={style.sidebarSlot}>
+              <AdvertisementSidebar
+                advertisementId={ad.id}
+                price={ad.price}
+                sellerPhone={ad.seller_phone}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

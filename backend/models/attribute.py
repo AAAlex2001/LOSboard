@@ -1,8 +1,8 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, Optional
 
 from sqlalchemy import (
     Boolean,
-    Column,
     DateTime,
     ForeignKey,
     Index,
@@ -11,9 +11,13 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.advertisement import Advertisement
+    from models.category import Category, Subcategory
 
 
 ATTRIBUTE_KIND_TEXT = "text"
@@ -31,25 +35,29 @@ ATTRIBUTE_KINDS = (
 class Attribute(Base):
     __tablename__ = "attributes"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    key = Column(String, nullable=False)
-    kind = Column(String, nullable=False, default=ATTRIBUTE_KIND_TEXT)
-    options = Column(JSON, nullable=True)
-    is_required = Column(Boolean, nullable=False, default=False)
-    sort_order = Column(Integer, nullable=False, default=0)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    key: Mapped[str] = mapped_column(String, nullable=False)
+    kind: Mapped[str] = mapped_column(
+        String, nullable=False, default=ATTRIBUTE_KIND_TEXT
+    )
+    options: Mapped[Optional[list[Any]]] = mapped_column(JSON, nullable=True)
+    is_required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
-    category_id = Column(
+    category_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=True
     )
-    subcategory_id = Column(
+    subcategory_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("subcategories.id", ondelete="CASCADE"), nullable=True
     )
 
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
 
-    category = relationship("Category")
-    subcategory = relationship("Subcategory")
+    category: Mapped[Optional["Category"]] = relationship("Category")
+    subcategory: Mapped[Optional["Subcategory"]] = relationship("Subcategory")
 
     __table_args__ = (
         UniqueConstraint(
@@ -74,21 +82,23 @@ class Attribute(Base):
 class AdvertisementAttributeValue(Base):
     __tablename__ = "advertisement_attribute_values"
 
-    id = Column(Integer, primary_key=True, index=True)
-    advertisement_id = Column(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    advertisement_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("advertisements.id", ondelete="CASCADE"),
         nullable=False,
     )
-    attribute_id = Column(
+    attribute_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("attributes.id", ondelete="CASCADE"),
         nullable=False,
     )
-    value = Column(String, nullable=False)
+    value: Mapped[str] = mapped_column(String, nullable=False)
 
-    advertisement = relationship("Advertisement", back_populates="attributes")
-    attribute = relationship("Attribute")
+    advertisement: Mapped["Advertisement"] = relationship(
+        "Advertisement", back_populates="attributes"
+    )
+    attribute: Mapped["Attribute"] = relationship("Attribute")
 
     __table_args__ = (
         UniqueConstraint(

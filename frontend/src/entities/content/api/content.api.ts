@@ -22,6 +22,18 @@ export interface FooterResponse {
   links: FooterLink[];
 }
 
+export interface SiteSettings {
+  brand_title: string;
+  brand_subtitle: string;
+  about_title: string;
+  about_text: string;
+  socials_title: string;
+  telegram_url: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  copyright_line: string;
+}
+
 async function readErrorDetail(
   response: Response,
   fallback: string
@@ -68,6 +80,22 @@ export async function getFooter(
   });
   if (!response.ok) {
     throw new Error(await readErrorDetail(response, "Не удалось загрузить футер"));
+  }
+  return response.json();
+}
+
+export async function getSiteSettings(
+  options: { signal?: AbortSignal } = {}
+): Promise<SiteSettings | null> {
+  const response = await fetch(`${config.API_BASE_URL}/content/site-settings`, {
+    method: "GET",
+    signal: options.signal,
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(
+      await readErrorDetail(response, "Не удалось загрузить настройки сайта")
+    );
   }
   return response.json();
 }

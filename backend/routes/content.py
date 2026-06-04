@@ -3,12 +3,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from models.content import ContentPage, FooterLink
+from models.content import ContentPage, FooterLink, SiteSettings
 from schemas.content import (
     ContentPageListItem,
     ContentPageResponse,
     FooterLinkResponse,
     FooterResponse,
+    SiteSettingsResponse,
 )
 
 
@@ -37,6 +38,15 @@ async def get_content_page(slug: str, db: AsyncSession = Depends(get_db)):
     if not page:
         raise HTTPException(status_code=404, detail="Страница не найдена")
     return page
+
+
+@router.get("/site-settings", response_model=SiteSettingsResponse)
+async def get_site_settings(db: AsyncSession = Depends(get_db)) -> SiteSettings:
+    result = await db.execute(select(SiteSettings).limit(1))
+    settings = result.scalar_one_or_none()
+    if not settings:
+        raise HTTPException(status_code=404, detail="Настройки сайта не заданы")
+    return settings
 
 
 @router.get("/footer", response_model=FooterResponse)

@@ -1,4 +1,4 @@
-from typing import List, Sequence
+from typing import Any, List, Sequence
 
 from fastapi import HTTPException
 from sqlalchemy import or_, select
@@ -47,7 +47,7 @@ def validate_attribute_value(attr: Attribute, value: str) -> str:
                 detail=f"Поле «{attr.name}» должно быть числом",
             )
     elif attr.kind == ATTRIBUTE_KIND_SELECT:
-        options = attr.options or []
+        options: list[Any] = list(attr.options or [])
         if value not in options:
             raise HTTPException(
                 status_code=400,
@@ -83,7 +83,7 @@ async def replace_attribute_values(
     payload: Sequence[AdvertisementAttributeValuePayload],
 ) -> None:
     attrs = await get_scope_attributes(db, category_id, subcategory_id)
-    by_id = {a.id: a for a in attrs}
+    by_id: dict[int, Attribute] = {int(a.id): a for a in attrs}
 
     validate_required_attrs(attrs, payload)
 

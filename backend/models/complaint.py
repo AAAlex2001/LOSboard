@@ -1,9 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.advertisement import Advertisement
+    from models.user import User
 
 
 COMPLAINT_OPEN = "open"
@@ -15,27 +20,35 @@ COMPLAINT_STATUSES = (COMPLAINT_OPEN, COMPLAINT_RESOLVED, COMPLAINT_DISMISSED)
 class Complaint(Base):
     __tablename__ = "complaints"
 
-    id = Column(Integer, primary_key=True, index=True)
-    advertisement_id = Column(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    advertisement_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("advertisements.id", ondelete="CASCADE"), nullable=False
     )
-    reporter_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    reason = Column(String, nullable=False)
-    comment = Column(String, nullable=True)
-    status = Column(
+    reporter_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
+    reason: Mapped[str] = mapped_column(String, nullable=False)
+    comment: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    status: Mapped[str] = mapped_column(
         String,
         nullable=False,
         server_default=COMPLAINT_OPEN,
         default=COMPLAINT_OPEN,
         index=True,
     )
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    resolved_at = Column(DateTime, nullable=True)
-    resolved_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    resolved_by_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=True
+    )
 
-    advertisement = relationship("Advertisement")
-    reporter = relationship("User", foreign_keys=[reporter_id])
-    resolved_by = relationship("User", foreign_keys=[resolved_by_id])
+    advertisement: Mapped["Advertisement"] = relationship("Advertisement")
+    reporter: Mapped["User"] = relationship("User", foreign_keys=[reporter_id])
+    resolved_by: Mapped[Optional["User"]] = relationship(
+        "User", foreign_keys=[resolved_by_id]
+    )
 
     __table_args__ = (
         Index("ix_complaints_status_created", "status", "created_at"),

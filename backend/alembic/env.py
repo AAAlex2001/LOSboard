@@ -9,7 +9,6 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from models import User
-from database import Base
 
 
 load_dotenv(find_dotenv())

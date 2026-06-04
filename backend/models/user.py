@@ -1,9 +1,17 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.advertisement import (
+        Advertisement,
+        LikedAdvertisement,
+        ViewedAdvertisement,
+    )
 
 
 USER_ROLE = "user"
@@ -16,27 +24,33 @@ STAFF_ROLES = (MODERATOR_ROLE, ADMIN_ROLE)
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String, nullable=False)
-    phone_number = Column(String, nullable=True)
-    avatar_url = Column(String, nullable=True)
-    is_active = Column(Boolean, default=True)
-    role = Column(String, nullable=False, server_default=USER_ROLE, default=USER_ROLE)
-    banned_until = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    token_version = Column(Integer, nullable=False, server_default="0", default=0)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, nullable=False)
+    phone_number: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    avatar_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    role: Mapped[str] = mapped_column(
+        String, nullable=False, server_default=USER_ROLE, default=USER_ROLE
+    )
+    banned_until: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+    token_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0", default=0
+    )
 
-    advertisements = relationship(
+    advertisements: Mapped[list["Advertisement"]] = relationship(
         "Advertisement",
         back_populates="owner",
         foreign_keys="Advertisement.owner_id",
     )
-    liked_advertisements = relationship(
+    liked_advertisements: Mapped[list["LikedAdvertisement"]] = relationship(
         "LikedAdvertisement", back_populates="user", cascade="all, delete-orphan"
     )
-    viewed_advertisements = relationship(
+    viewed_advertisements: Mapped[list["ViewedAdvertisement"]] = relationship(
         "ViewedAdvertisement", back_populates="user", cascade="all, delete-orphan"
     )
 

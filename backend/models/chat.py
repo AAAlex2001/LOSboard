@@ -1,18 +1,22 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
-    Column,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     UniqueConstraint,
-    Index,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.advertisement import Advertisement
+    from models.user import User
 
 
 class Conversation(Base):
@@ -25,18 +29,28 @@ class Conversation(Base):
 
     __tablename__ = "conversations"
 
-    id = Column(Integer, primary_key=True, index=True)
-    advertisement_id = Column(Integer, ForeignKey("advertisements.id"), nullable=False)
-    buyer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    seller_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    advertisement_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("advertisements.id"), nullable=False
+    )
+    buyer_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
+    seller_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
 
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    last_message_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    last_message_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
 
-    advertisement = relationship("Advertisement")
-    buyer = relationship("User", foreign_keys=[buyer_id])
-    seller = relationship("User", foreign_keys=[seller_id])
-    messages = relationship(
+    advertisement: Mapped["Advertisement"] = relationship("Advertisement")
+    buyer: Mapped["User"] = relationship("User", foreign_keys=[buyer_id])
+    seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id])
+    messages: Mapped[list["Message"]] = relationship(
         "Message",
         back_populates="conversation",
         cascade="all, delete-orphan",
@@ -56,16 +70,24 @@ class Conversation(Base):
 class Message(Base):
     __tablename__ = "messages"
 
-    id = Column(Integer, primary_key=True, index=True)
-    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False)
-    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    text = Column(String, nullable=False, server_default="")
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    is_read = Column(Boolean, default=False, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    conversation_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("conversations.id"), nullable=False
+    )
+    sender_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
+    text: Mapped[str] = mapped_column(String, nullable=False, server_default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    conversation = relationship("Conversation", back_populates="messages")
-    sender = relationship("User")
-    attachments = relationship(
+    conversation: Mapped["Conversation"] = relationship(
+        "Conversation", back_populates="messages"
+    )
+    sender: Mapped["User"] = relationship("User")
+    attachments: Mapped[list["MessageAttachment"]] = relationship(
         "MessageAttachment",
         back_populates="message",
         cascade="all, delete-orphan",
@@ -86,17 +108,17 @@ class Message(Base):
 class MessageAttachment(Base):
     __tablename__ = "message_attachments"
 
-    id = Column(Integer, primary_key=True, index=True)
-    message_id = Column(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    message_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("messages.id", ondelete="CASCADE"), nullable=False
     )
-    url = Column(String, nullable=False)
-    filename = Column(String, nullable=False)
-    kind = Column(String, nullable=False)
-    mime_type = Column(String, nullable=False)
-    size_bytes = Column(Integer, nullable=False)
+    url: Mapped[str] = mapped_column(String, nullable=False)
+    filename: Mapped[str] = mapped_column(String, nullable=False)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    mime_type: Mapped[str] = mapped_column(String, nullable=False)
+    size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    message = relationship("Message", back_populates="attachments")
+    message: Mapped["Message"] = relationship("Message", back_populates="attachments")
 
     __table_args__ = (
         Index("ix_message_attachments_message", "message_id"),

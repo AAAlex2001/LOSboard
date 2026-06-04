@@ -1,28 +1,38 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.user import User
 
 
 class ContentPage(Base):
     __tablename__ = "content_pages"
 
-    id = Column(Integer, primary_key=True, index=True)
-    slug = Column(String, nullable=False, unique=True, index=True)
-    title = Column(String, nullable=False)
-    body = Column(Text, nullable=False, default="")
-    is_published = Column(Boolean, nullable=False, default=True)
-    updated_at = Column(
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    slug: Mapped[str] = mapped_column(
+        String, nullable=False, unique=True, index=True
+    )
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    is_published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
-    updated_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_by_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=True
+    )
 
-    updated_by = relationship("User", foreign_keys=[updated_by_id])
+    updated_by: Mapped[Optional["User"]] = relationship(
+        "User", foreign_keys=[updated_by_id]
+    )
 
     def __str__(self) -> str:
         return f"{self.title} (/{self.slug})"
@@ -31,11 +41,34 @@ class ContentPage(Base):
 class FooterLink(Base):
     __tablename__ = "footer_links"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    url = Column(String, nullable=False)
-    sort_order = Column(Integer, nullable=False, default=0)
-    is_active = Column(Boolean, nullable=False, default=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    url: Mapped[str] = mapped_column(String, nullable=False)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     def __str__(self) -> str:
         return f"{self.title} → {self.url}"
+
+
+class SiteSettings(Base):
+    """Глобальные настройки сайта: бренд, описание сервиса, соцсети.
+
+    Хранится в виде одной строки (id=1), редактируется из админки.
+    """
+
+    __tablename__ = "site_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    brand_title: Mapped[str] = mapped_column(String, nullable=False, default="")
+    brand_subtitle: Mapped[str] = mapped_column(String, nullable=False, default="")
+    about_title: Mapped[str] = mapped_column(String, nullable=False, default="")
+    about_text: Mapped[str] = mapped_column(String, nullable=False, default="")
+    socials_title: Mapped[str] = mapped_column(String, nullable=False, default="")
+    telegram_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    instagram_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    facebook_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    copyright_line: Mapped[str] = mapped_column(String, nullable=False, default="")
+
+    def __str__(self) -> str:
+        return "Настройки сайта"

@@ -1,15 +1,19 @@
-"use client";
+export const dynamic = "force-dynamic";
 
-import { useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import { ContactsInfo } from "@/src/widgets/contacts/contacts-info";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
+import { BackButton } from "@/src/shared/ui/BackButton";
+import { CmsContent } from "@/src/widgets/docs/cms-content";
+import { getContentPage } from "@/src/entities/content";
 import style from "./page.module.scss";
 
-export default function ContactsPage() {
-  const router = useRouter();
+export default async function ContactsPage() {
+  const page = await getContentPage("contacts").catch(() => null);
+  if (!page) {
+    notFound();
+  }
 
   return (
     <main className={style.page}>
@@ -20,24 +24,17 @@ export default function ContactsPage() {
             <Breadcrumbs
               items={[
                 { label: "Главная", href: "/" },
-                { label: "Связаться с нами" },
+                { label: page.title },
               ]}
             />
           </div>
 
           <div className={style.headingRow}>
-            <button
-              type="button"
-              className={style.backBtn}
-              onClick={() => router.back()}
-              aria-label="Назад"
-            >
-              <ArrowLeftIcon />
-            </button>
-            <h1 className={style.title}>Связаться с нами</h1>
+            <BackButton className={style.backBtn} fallbackHref="/" />
+            <h1 className={style.title}>{page.title}</h1>
           </div>
 
-          <ContactsInfo />
+          <CmsContent body={page.body} />
         </div>
       </div>
       <Footer />

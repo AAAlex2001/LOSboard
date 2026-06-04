@@ -1,13 +1,10 @@
 import type { MetadataRoute } from "next";
 import { slugify } from "@/src/shared/lib/slug";
+import { siteOrigin } from "@/src/shared/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-const DOC_SLUGS = ["placement-rules", "privacy", "agreement", "prohibited"];
 const SITEMAP_MAX_URLS = 50000;
-
-const API_BASE = process.env.INTERNAL_API_BASE_URL!;
-const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
 
 interface CategoryDto {
   id: number;
@@ -22,24 +19,34 @@ interface AdSitemapDto {
   created_at: string;
 }
 
-async function fetchCategories(): Promise<CategoryDto[]> {
-  const res = await fetch(`${API_BASE}categories/list`, {
-    next: { revalidate: 3600 },
-  });
-  if (!res.ok) return [];
-  return (await res.json()) as CategoryDto[];
+interface ContentPageDto {
+  slug: string;
+  title: string;
 }
 
-async function fetchSitemapAds(): Promise<AdSitemapDto[]> {
-  const res = await fetch(`${API_BASE}advertisements/sitemap`, {
-    next: { revalidate: 600 },
-  });
-  if (!res.ok) return [];
-  return (await res.json()) as AdSitemapDto[];
+const apiBase = (): string => {
+  const value = process.env.INTERNAL_API_BASE_URL;
+  if (!value) {
+    throw new Error("Не задана переменная окружения INTERNAL_API_BASE_URL");
+  }
+  return value.endsWith("/") ? value : `${value}/`;
+};
+
+async function fetchJson<T>(path: string, revalidate: number, fallback: T): Promise<T> {
+  const res = await fetch(`${apiBase()}${path}`, { next: { revalidate } });
+  if (!res.ok) return fallback;
+  return (await res.json()) as T;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const origin = siteOrigin();
+
+  const [categories, ads, pages] = await Promise.all([
+    fetchJson<CategoryDto[]>("categories/list", 3600, []),
+    fetchJson<AdSitemapDto[]>("advertisements/sitemap", 600, []),
+    fetchJson<ContentPageDto[]>("content/pages", 3600, []),
+  ]);
 
   const staticRoutes: {
     path: string;
@@ -52,20 +59,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/docs", priority: 0.4, changeFrequency: "monthly" },
   ];
 
-  const [categories, ads] = await Promise.all([
-    fetchCategories(),
-    fetchSitemapAds(),
-  ]);
-
   const categoryEntries = categories.flatMap((cat) => {
     const root = {
-      url: `${SITE_ORIGIN}/category/${cat.slug}`,
+      url: `${origin}/category/${cat.slug}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.8,
     };
     const subs = cat.subcategories.map((sub) => ({
-      url: `${SITE_ORIGIN}/category/${cat.slug}/${sub.slug}`,
+      url: `${origin}/category/${cat.slug}/${sub.slug}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.7,
@@ -79,26 +81,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ? `/advertisements/${ad.id}-${slug}`
       : `/advertisements/${ad.id}`;
     return {
-      url: `${SITE_ORIGIN}${path}`,
+      url: `${origin}${path}`,
       lastModified: ad.created_at ? new Date(ad.created_at) : now,
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
   });
 
+  // CMS-страницы: /docs/<slug> для всех кроме contacts/pricing (у них свои URL).
+  const docPageEntries = pages
+    .filter((p) => p.slug !== "contacts" && p.slug !== "pricing")
+    .map((p) => ({
+      url: `${origin}/docs/${p.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.3,
+    }));
+
   return [
     ...staticRoutes.map((r) => ({
-      url: `${SITE_ORIGIN}${r.path}`,
+      url: `${origin}${r.path}`,
       lastModified: now,
       changeFrequency: r.changeFrequency,
       priority: r.priority,
     })),
-    ...DOC_SLUGS.map((slug) => ({
-      url: `${SITE_ORIGIN}/docs/${slug}`,
-      lastModified: now,
-      changeFrequency: "yearly" as const,
-      priority: 0.3,
-    })),
+    ...docPageEntries,
     ...categoryEntries,
     ...adEntries,
   ];

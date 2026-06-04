@@ -1,52 +1,55 @@
 from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.advertisement import Advertisement
+from models.category import Category, Subcategory
 from models.user import User
 from schemas.advertisement import AdvertisementCreate
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.category import Category, Subcategory
-from sqlalchemy import select
-
 from services.advertisement.attribute_helpers import replace_attribute_values
 from services.seo.indexnow import submit_advertisement
 
 
 class CreateAdvertisementUseCase:
-
     async def create_advertisement(
         self,
         request: AdvertisementCreate,
         db: AsyncSession,
         current_user: User,
     ) -> Advertisement:
-
         if not current_user:
             raise HTTPException(status_code=401, detail="Требуется авторизация")
-        
+
         category_result = await db.execute(
-            select(Category).where(Category.id == request.category_id),
-            Category.is_active == True
+            select(Category).where(
+                Category.id == request.category_id,
+                Category.is_active.is_(True),
+            )
         )
-
         category = category_result.scalar_one_or_none()
-
         if not category:
-            raise HTTPException(status_code=400, detail="Категория не найдена или неактивна")
+            raise HTTPException(
+                status_code=400, detail="Категория не найдена или неактивна"
+            )
 
         subcategory_result = await db.execute(
             select(Subcategory).where(
                 Subcategory.id == request.subcategory_id,
                 Subcategory.category_id == request.category_id,
-                Subcategory.is_active == True
+                Subcategory.is_active.is_(True),
             )
-        )    
-
+        )
         subcategory = subcategory_result.scalar_one_or_none()
-
         if not subcategory:
-            raise HTTPException(status_code=400, detail="Подкатегория не найдена или неактивна")
+            raise HTTPException(
+                status_code=400, detail="Подкатегория не найдена или неактивна"
+            )
 
         if subcategory.category_id != category.id:
-            raise HTTPException(status_code=400, detail="Подкатегория не относится к выбранной категории")
+            raise HTTPException(
+                status_code=400,
+                detail="Подкатегория не относится к выбранной категории",
+            )
 
         new_advertisement = Advertisement(
             title=request.title,

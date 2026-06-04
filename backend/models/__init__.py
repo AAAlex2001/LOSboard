@@ -12,7 +12,7 @@ from models.banner import Banner
 from models.category import Category, Subcategory
 from models.chat import Conversation, Message, MessageAttachment
 from models.complaint import Complaint
-from models.content import ContentPage, FooterLink
+from models.content import ContentPage, FooterLink, SiteSettings
 from models.user import User
 
 __all__ = [
@@ -28,6 +28,7 @@ __all__ = [
     "LikedAdvertisement",
     "Message",
     "MessageAttachment",
+    "SiteSettings",
     "Subcategory",
     "User",
     "ViewedAdvertisement",

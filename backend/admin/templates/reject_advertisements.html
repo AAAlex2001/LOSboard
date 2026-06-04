@@ -1,0 +1,44 @@
+{% extends "sqladmin/layout.html" %}
+
+{% block content %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Отклонить выбранные объявления ({{ count }})</h2>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ form_action }}">
+        <input type="hidden" name="pks" value="{{ pks_csv }}" />
+
+        <div class="mb-3">
+          <label class="form-label">Причина</label>
+          <select class="form-select" name="preset" required>
+            {% for value, label in preset_choices %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Свой комментарий (опционально)</label>
+          <textarea
+            class="form-control"
+            name="comment"
+            rows="4"
+            placeholder="Подробности для пользователя — необязательно"
+            maxlength="1000"
+          ></textarea>
+          <div class="form-text">
+            Если выбрана «Свой текст», комментарий обязателен и станет причиной отклонения.
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <a href="{{ cancel_url }}" class="btn">Отмена</a>
+          <button type="submit" class="btn btn-danger">Отклонить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
