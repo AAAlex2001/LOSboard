@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Running database migrations..."
-alembic upgrade head
+if [ "${RUN_MIGRATIONS:-0}" = "1" ]; then
+    echo "Running database migrations..."
+    alembic upgrade head
+else
+    echo "Skipping migrations (RUN_MIGRATIONS != 1)."
+fi
 
 echo "Starting application..."
 exec "$@"

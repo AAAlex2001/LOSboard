@@ -55,9 +55,31 @@ services:
 
   backend:
     <<: *backend-common
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      ECHO_SQL: ${ECHO_SQL}
+      DB_POOL_SIZE: ${DB_POOL_SIZE}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW}
+      DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT}
+      DB_POOL_RECYCLE: ${DB_POOL_RECYCLE}
+      DB_COMMAND_TIMEOUT: ${DB_COMMAND_TIMEOUT}
+      ADMIN_BASE_URL: ${ADMIN_BASE_URL}
+      SITE_URL: ${SITE_URL}
+      INDEXNOW_KEY: ${INDEXNOW_KEY}
+      RUN_MIGRATIONS: "1"
 
   backend-replica:
     <<: *backend-common
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
 
   frontend:
     build:
