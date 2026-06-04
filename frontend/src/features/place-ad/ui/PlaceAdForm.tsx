@@ -27,6 +27,7 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
     isValid,
     categoryOptions,
     subcategoryOptions,
+    attributes,
     goToPreview,
     goToEdit,
     submit,
@@ -98,6 +99,75 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
           />
         </div>
       </section>
+
+      {attributes.length > 0 && (
+        <section className={style.category}>
+          <div className={style.labelRow}>
+            <span className={style.label}>Характеристики</span>
+          </div>
+          <div className={style.dropdowns}>
+            {attributes.map((attr) => {
+              const value = state.attributeValues[attr.id] ?? "";
+              const labelText = attr.is_required ? `${attr.name} *` : attr.name;
+              const setValue = (v: string) =>
+                dispatch({
+                  type: "SET_ATTRIBUTE",
+                  payload: { attributeId: attr.id, value: v },
+                });
+
+              if (attr.kind === "select") {
+                const options = (attr.options ?? []).map((o) => ({
+                  value: o,
+                  label: o,
+                }));
+                return (
+                  <div key={attr.id}>
+                    <span className={style.sublabel}>{labelText}</span>
+                    <Dropdown
+                      options={options}
+                      value={value || null}
+                      placeholder={attr.name}
+                      onChange={(v) => setValue(String(v))}
+                    />
+                  </div>
+                );
+              }
+
+              if (attr.kind === "boolean") {
+                return (
+                  <Toggle
+                    key={attr.id}
+                    checked={value === "true"}
+                    onChange={(checked) =>
+                      setValue(checked ? "true" : "false")
+                    }
+                    title={labelText}
+                  />
+                );
+              }
+
+              return (
+                <div key={attr.id}>
+                  <span className={style.sublabel}>{labelText}</span>
+                  <Input
+                    variant="form"
+                    type={attr.kind === "number" ? "text" : "text"}
+                    placeholder={attr.name}
+                    value={value}
+                    onChange={(e) =>
+                      setValue(
+                        attr.kind === "number"
+                          ? e.target.value.replace(/[^0-9.,-]/g, "")
+                          : e.target.value
+                      )
+                    }
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className={style.name}>
         <div className={style.labelRow}>

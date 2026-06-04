@@ -37,6 +37,21 @@
       <div class="row row-cards mt-4">
         <div class="col-md-6">
           <div class="card">
+            <div class="card-header"><h3 class="card-title">Новые объявления за 14 дней</h3></div>
+            <div class="card-body"><canvas id="chart-ads" height="120"></canvas></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Новые пользователи за 14 дней</h3></div>
+            <div class="card-body"><canvas id="chart-users" height="120"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row row-cards mt-4">
+        <div class="col-md-6">
+          <div class="card">
             <div class="card-header"><h3 class="card-title">Топ-5 категорий по объявлениям</h3></div>
             <div class="card-body">
               {% if top_categories %}
@@ -83,4 +98,41 @@
     </div>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const labels = {{ chart_labels|tojson }};
+  const adsData = {{ chart_ads|tojson }};
+  const usersData = {{ chart_users|tojson }};
+
+  function lineChart(ctxId, label, data, color) {
+    const ctx = document.getElementById(ctxId);
+    if (!ctx || typeof Chart === "undefined") return;
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: label,
+          data: data,
+          borderColor: color,
+          backgroundColor: color + "33",
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+      },
+    });
+  }
+
+  lineChart("chart-ads", "Объявления", adsData, "#1565C0");
+  lineChart("chart-users", "Пользователи", usersData, "#2E7D32");
+})();
+</script>
 {% endblock %}

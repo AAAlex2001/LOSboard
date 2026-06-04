@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DOCS } from "./data";
+import { getContentPage } from "@/src/entities/content";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -7,16 +7,16 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const doc = DOCS[slug];
-  if (!doc) {
+  const page = await getContentPage(slug).catch(() => null);
+  if (!page) {
     return {
       title: "Документ не найден",
       robots: { index: false, follow: false },
     };
   }
   return {
-    title: doc.title,
-    description: `${doc.title} — официальный документ LOSboard.`,
+    title: page.title,
+    description: `${page.title} — официальный документ LOSboard.`,
   };
 }
 

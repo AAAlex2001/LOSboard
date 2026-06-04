@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category, Subcategory
 from sqlalchemy import select
 
+from services.advertisement.attribute_helpers import replace_attribute_values
 from services.seo.indexnow import submit_advertisement
 
 
@@ -63,6 +64,15 @@ class CreateAdvertisementUseCase:
         db.add(new_advertisement)
         await db.flush()
         await db.refresh(new_advertisement)
+
+        await replace_attribute_values(
+            db=db,
+            advertisement_id=new_advertisement.id,
+            category_id=new_advertisement.category_id,
+            subcategory_id=new_advertisement.subcategory_id,
+            payload=request.attributes,
+        )
+        await db.flush()
 
         submit_advertisement(new_advertisement.id, new_advertisement.title)
 

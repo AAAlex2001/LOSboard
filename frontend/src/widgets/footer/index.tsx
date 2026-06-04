@@ -1,9 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
 import InstagramIcon from "@/src/shared/ui/Icons/InstagramIcon";
 import FacebookIcon from "@/src/shared/ui/Icons/FacebookIcon";
+import { getFooter, type FooterLink } from "@/src/entities/content";
 import style from "./style.module.scss";
 
 export const Footer = () => {
+  const [links, setLinks] = useState<FooterLink[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getFooter({ signal: controller.signal })
+      .then((res) => setLinks(res.links))
+      .catch(() => setLinks([]));
+    return () => controller.abort();
+  }, []);
+
+  const navLinks = links.filter((l) => l.sort_order < 100);
+  const legalLinks = links.filter((l) => l.sort_order >= 100);
+
   return (
     <footer className={style.footer}>
       <div className={style.container}>
@@ -26,18 +43,23 @@ export const Footer = () => {
         </div>
 
         <nav className={style.links}>
-          <div className={style.linksGroup}>
-            <a className={style.link} href="/advertising">Размещение рекламы на сайте</a>
-            <a
-              className={style.link}
-              href="https://www.landofsoul-apsny.ru/ru"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Тур-гид по Абхазии от LOS
-            </a>
-            <a className={style.link} href="/contacts">Связаться с нами</a>
-          </div>
+          {navLinks.length > 0 && (
+            <div className={style.linksGroup}>
+              {navLinks.map((link) => (
+                <a
+                  key={`${link.url}-${link.title}`}
+                  className={style.link}
+                  href={link.url}
+                  target={link.url.startsWith("http") ? "_blank" : undefined}
+                  rel={
+                    link.url.startsWith("http") ? "noopener noreferrer" : undefined
+                  }
+                >
+                  {link.title}
+                </a>
+              ))}
+            </div>
+          )}
 
           <div className={style.contacts}>
             <span className={style.linkBold}>Land of Soul в социальных сетях</span>
@@ -52,9 +74,15 @@ export const Footer = () => {
 
       <div className={style.legalWrapper}>
         <div className={style.legal}>
-          <a className={style.legalLink} href="/docs/privacy">Политика конфиденциальности</a>
-          <a className={style.legalLink} href="/docs/agreement">Пользовательское соглашение</a>
-          <a className={style.legalLink} href="/docs/placement-rules">Правила размещения</a>
+          {legalLinks.map((link) => (
+            <a
+              key={`${link.url}-${link.title}`}
+              className={style.legalLink}
+              href={link.url}
+            >
+              {link.title}
+            </a>
+          ))}
           <p className={style.copyright}>
             © {new Date().getFullYear()} Land of soul Abkhazia. Все права защищены. Дизайн: @Amosssik
           </p>

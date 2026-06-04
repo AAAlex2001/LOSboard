@@ -1,15 +1,13 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { BackButton } from "@/src/shared/ui/BackButton";
 import { DocsList } from "@/src/widgets/docs/docs-list";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
+import { listContentPages } from "@/src/entities/content";
 import style from "./page.module.scss";
 
-export default function DocsPage() {
-  const router = useRouter();
+export default async function DocsPage() {
+  const items = await listContentPages().catch(() => []);
 
   return (
     <main className={style.page}>
@@ -26,18 +24,11 @@ export default function DocsPage() {
           </div>
 
           <div className={style.headingRow}>
-            <button
-              type="button"
-              className={style.backBtn}
-              onClick={() => router.back()}
-              aria-label="Назад"
-            >
-              <ArrowLeftIcon />
-            </button>
+            <BackButton className={style.backBtn} fallbackHref="/" />
             <h1 className={style.title}>Документы сайта «LOS»</h1>
           </div>
 
-          <DocsList />
+          <DocsList items={items} />
         </div>
       </div>
       <Footer />

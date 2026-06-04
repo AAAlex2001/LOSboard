@@ -70,6 +70,12 @@ class Advertisement(Base):
         back_populates="advertisement",
         cascade="all, delete-orphan",
     )
+    attributes = relationship(
+        "AdvertisementAttributeValue",
+        back_populates="advertisement",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     def __str__(self) -> str:
         return f"#{self.id} {self.title}"

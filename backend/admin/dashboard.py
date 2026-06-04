@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
 from sqladmin import BaseView, expose
-from sqlalchemy import func, select
+from sqlalchemy import cast, func, select
+from sqlalchemy.types import Date
 from starlette.requests import Request
 
 from database import AsyncSessionLocal
@@ -70,6 +71,42 @@ class DashboardView(BaseView):
                 )
             ).scalars().all()
 
+            chart_from = (now - timedelta(days=13)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+
+            ads_daily_rows = (
+                await session.execute(
+                    select(
+                        cast(Advertisement.created_at, Date).label("day"),
+                        func.count(Advertisement.id).label("cnt"),
+                    )
+                    .where(Advertisement.created_at >= chart_from)
+                    .group_by(cast(Advertisement.created_at, Date))
+                    .order_by(cast(Advertisement.created_at, Date))
+                )
+            ).all()
+            users_daily_rows = (
+                await session.execute(
+                    select(
+                        cast(User.created_at, Date).label("day"),
+                        func.count(User.id).label("cnt"),
+                    )
+                    .where(User.created_at >= chart_from)
+                    .group_by(cast(User.created_at, Date))
+                    .order_by(cast(User.created_at, Date))
+                )
+            ).all()
+
+        days = [
+            (chart_from + timedelta(days=i)).date() for i in range(14)
+        ]
+        ads_by_day = {row[0]: row[1] for row in ads_daily_rows}
+        users_by_day = {row[0]: row[1] for row in users_daily_rows}
+        chart_labels = [d.strftime("%d.%m") for d in days]
+        chart_ads = [ads_by_day.get(d, 0) for d in days]
+        chart_users = [users_by_day.get(d, 0) for d in days]
+
         ads_list_url = request.url_for("admin:list", identity="advertisement")
         complaints_list_url = request.url_for("admin:list", identity="complaint")
 
@@ -131,5 +168,8 @@ class DashboardView(BaseView):
                 "cards": cards,
                 "top_categories": top_categories,
                 "recent_complaints": recent_complaints,
+                "chart_labels": chart_labels,
+                "chart_ads": chart_ads,
+                "chart_users": chart_users,
             },
         )

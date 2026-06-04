@@ -7,6 +7,7 @@ import { Footer } from "@/src/widgets/footer";
 import { CatalogTopBar } from "@/src/widgets/advertisement/catalog-topbar";
 import { CatalogFeed } from "@/src/widgets/advertisement/catalog-feed";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
+import { BannerStrip } from "@/src/widgets/banner-strip";
 import {
   URGENT_CATEGORY,
   URGENT_CATEGORY_ID,
@@ -121,6 +122,7 @@ export const CatalogPage = ({
             />
           </div>
           <div className={style.feedSlot}>
+            <BannerStrip />
             <CatalogFeed state={state} onItemPatch={patchItem} />
           </div>
           <div className={style.sidebarSlot}>

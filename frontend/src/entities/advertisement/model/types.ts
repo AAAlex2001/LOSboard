@@ -19,6 +19,12 @@ export interface Advertisement {
   created_at?: string | null;
   moderation_status?: "pending" | "approved" | "rejected";
   moderation_reason?: string | null;
+  attributes?: AdvertisementAttributeValue[];
+}
+
+export interface AdvertisementAttributeValue {
+  attribute_id: number;
+  value: string;
 }
 
 export interface CreateAdvertisementPayload {
@@ -31,4 +37,5 @@ export interface CreateAdvertisementPayload {
   photo_urls?: string[];
   is_active?: boolean;
   is_urgent?: boolean;
+  attributes?: AdvertisementAttributeValue[];
 }

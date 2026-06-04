@@ -16,6 +16,7 @@ export const initialPlaceAdState: PlaceAdState = {
   address: "",
   latitude: null,
   longitude: null,
+  attributeValues: {},
   submitting: false,
   error: null,
 };
@@ -26,9 +27,24 @@ export function placeAdReducer(
 ): PlaceAdState {
   switch (action.type) {
     case "SET_CATEGORY":
-      return { ...state, categoryId: action.payload, subcategoryId: null };
+      return {
+        ...state,
+        categoryId: action.payload,
+        subcategoryId: null,
+        attributeValues: {},
+      };
     case "SET_SUBCATEGORY":
-      return { ...state, subcategoryId: action.payload };
+      return { ...state, subcategoryId: action.payload, attributeValues: {} };
+    case "SET_ATTRIBUTE":
+      return {
+        ...state,
+        attributeValues: {
+          ...state.attributeValues,
+          [action.payload.attributeId]: action.payload.value,
+        },
+      };
+    case "CLEAR_ATTRIBUTES":
+      return { ...state, attributeValues: {} };
     case "SET_TITLE":
       return { ...state, title: action.payload.slice(0, TITLE_MAX) };
     case "SET_PRICE":
@@ -59,6 +75,7 @@ export function placeAdReducer(
         isUrgent: action.payload.isUrgent ?? false,
         address: action.payload.address,
         existingPhotoUrls: action.payload.photoUrls ?? [],
+        attributeValues: action.payload.attributeValues ?? {},
         error: null,
       };
     case "REMOVE_EXISTING_PHOTO":

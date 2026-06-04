@@ -1,20 +1,21 @@
-"use client";
-
-import { useParams, useRouter, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import { DocContent } from "@/src/widgets/docs/doc-content";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
-import { DOCS } from "./data";
+import { BackButton } from "@/src/shared/ui/BackButton";
+import { CmsContent } from "@/src/widgets/docs/cms-content";
+import { getContentPage } from "@/src/entities/content";
 import style from "./page.module.scss";
 
-export default function DocPage() {
-  const router = useRouter();
-  const params = useParams<{ slug: string }>();
-  const doc = DOCS[params?.slug ?? ""];
+interface DocPageProps {
+  params: Promise<{ slug: string }>;
+}
 
-  if (!doc) {
+export default async function DocPage({ params }: DocPageProps) {
+  const { slug } = await params;
+  const page = await getContentPage(slug).catch(() => null);
+
+  if (!page) {
     notFound();
   }
 
@@ -28,24 +29,17 @@ export default function DocPage() {
               items={[
                 { label: "Главная", href: "/" },
                 { label: "Документы сайта", href: "/docs" },
-                { label: doc.breadcrumbLabel },
+                { label: page.title },
               ]}
             />
           </div>
 
           <div className={style.headingRow}>
-            <button
-              type="button"
-              className={style.backBtn}
-              onClick={() => router.back()}
-              aria-label="Назад"
-            >
-              <ArrowLeftIcon />
-            </button>
-            <h1 className={style.title}>{doc.title}</h1>
+            <BackButton className={style.backBtn} fallbackHref="/docs" />
+            <h1 className={style.title}>{page.title}</h1>
           </div>
 
-          <DocContent sections={doc.sections} />
+          <CmsContent body={page.body} />
         </div>
       </div>
       <Footer />

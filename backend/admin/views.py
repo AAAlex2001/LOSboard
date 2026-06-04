@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 
 from markupsafe import Markup, escape
@@ -15,6 +16,8 @@ from models.advertisement import (
     MODERATION_REJECTED,
     ViewedAdvertisement,
 )
+from models.attribute import AdvertisementAttributeValue, Attribute
+from models.banner import Banner
 from models.category import Category, Subcategory
 from models.chat import Conversation, Message, MessageAttachment
 from models.complaint import (
@@ -23,6 +26,7 @@ from models.complaint import (
     COMPLAINT_RESOLVED,
     Complaint,
 )
+from models.content import ContentPage, FooterLink
 from models.user import ADMIN_ROLE, MODERATOR_ROLE, USER_ROLE, User
 
 
@@ -36,6 +40,14 @@ def selected_pks(request: Request) -> list[int]:
 
 def redirect_to_list(request: Request, identity: str) -> RedirectResponse:
     return RedirectResponse(request.url_for("admin:list", identity=identity))
+
+
+class AdminOnly:
+    def is_visible(self, request: Request) -> bool:
+        return request.session.get("admin_role") == ADMIN_ROLE
+
+    def is_accessible(self, request: Request) -> bool:
+        return request.session.get("admin_role") == ADMIN_ROLE
 
 
 MODERATION_CHOICES = [
@@ -150,7 +162,30 @@ def avatar_thumb(url, *, size: int = 40) -> Markup:
     )
 
 
-class UserAdmin(ModelView, model=User):
+def user_ads_list(ads) -> Markup:
+    if not ads:
+        return Markup('<span style="color:#999">У пользователя нет объявлений</span>')
+    base = os.environ.get("ADMIN_BASE_URL", "/admin").rstrip("/")
+    items = []
+    for ad in ads:
+        href = f"{base}/advertisement/details/{ad.id}"
+        status = MODERATION_LABEL.get(ad.moderation_status, ad.moderation_status or "—")
+        items.append(
+            f'<li style="padding:4px 0;">'
+            f'<a href="{escape(href)}" style="color:#1565C0;">'
+            f'#{ad.id} — {escape(ad.title)}'
+            f'</a> '
+            f'<span style="color:#666; font-size:12px;">'
+            f'({escape(status)}, {ad.price} ₽)</span>'
+            f'</li>'
+        )
+    return Markup(
+        f'<ul style="list-style:none; padding-left:0; margin:0; max-height:400px; overflow:auto;">'
+        f'{"".join(items)}</ul>'
+    )
+
+
+class UserAdmin(AdminOnly, ModelView, model=User):
     name = "пользователь"
     name_plural = "Пользователи"
     icon = "fa-solid fa-users"
@@ -165,12 +200,17 @@ class UserAdmin(ModelView, model=User):
         User.banned_until,
         User.created_at,
     ]
-    column_details_exclude_list = [
-        User.password,
-        User.token_version,
+    column_details_list = [
+        User.id,
+        User.avatar_url,
+        User.name,
+        User.email,
+        User.phone_number,
+        User.role,
+        User.is_active,
+        User.banned_until,
+        User.created_at,
         User.advertisements,
-        User.liked_advertisements,
-        User.viewed_advertisements,
     ]
     column_searchable_list = [User.name, User.email, User.phone_number]
     column_sortable_list = [
@@ -187,6 +227,7 @@ class UserAdmin(ModelView, model=User):
         User.banned_until: "Бан до",
         User.created_at: "Зарегистрирован",
         User.token_version: "Версия токена",
+        User.advertisements: "Объявления",
     }
     column_formatters = {
         User.avatar_url: lambda m, _a: avatar_thumb(m.avatar_url),
@@ -195,6 +236,7 @@ class UserAdmin(ModelView, model=User):
     column_formatters_detail = {
         User.avatar_url: lambda m, _a: avatar_thumb(m.avatar_url, size=120),
         User.role: lambda m, _a: role_badge(m.role),
+        User.advertisements: lambda m, _a: user_ads_list(m.advertisements),
     }
     form_excluded_columns = [
         User.password,
@@ -272,7 +314,7 @@ class UserAdmin(ModelView, model=User):
         return redirect_to_list(request, self.identity)
 
 
-class CategoryAdmin(ModelView, model=Category):
+class CategoryAdmin(AdminOnly, ModelView, model=Category):
     name = "категорию"
     name_plural = "Категории"
     icon = "fa-solid fa-layer-group"
@@ -298,7 +340,7 @@ class CategoryAdmin(ModelView, model=Category):
     form_excluded_columns = [Category.advertisements, Category.subcategories]
 
 
-class SubcategoryAdmin(ModelView, model=Subcategory):
+class SubcategoryAdmin(AdminOnly, ModelView, model=Subcategory):
     name = "подкатегорию"
     name_plural = "Подкатегории"
     icon = "fa-solid fa-list"
@@ -343,7 +385,15 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
         Advertisement.subcategory,
         Advertisement.created_at,
     ]
-    column_searchable_list = [Advertisement.title, Advertisement.location]
+    column_searchable_list = [
+        Advertisement.title,
+        Advertisement.location,
+        Advertisement.id,
+        "owner.email",
+        "owner.name",
+        "category.name",
+        "subcategory.name",
+    ]
     column_sortable_list = [
         Advertisement.id,
         Advertisement.price,
@@ -577,7 +627,7 @@ class ComplaintAdmin(ModelView, model=Complaint):
         return await self.apply_resolution(request, COMPLAINT_DISMISSED)
 
 
-class LikedAdvertisementAdmin(ModelView, model=LikedAdvertisement):
+class LikedAdvertisementAdmin(AdminOnly, ModelView, model=LikedAdvertisement):
     name = "лайк"
     name_plural = "Лайки объявлений"
     icon = "fa-solid fa-heart"
@@ -596,7 +646,7 @@ class LikedAdvertisementAdmin(ModelView, model=LikedAdvertisement):
     }
 
 
-class ViewedAdvertisementAdmin(ModelView, model=ViewedAdvertisement):
+class ViewedAdvertisementAdmin(AdminOnly, ModelView, model=ViewedAdvertisement):
     name = "просмотр"
     name_plural = "Просмотры объявлений"
     icon = "fa-solid fa-eye"
@@ -617,7 +667,7 @@ class ViewedAdvertisementAdmin(ModelView, model=ViewedAdvertisement):
     }
 
 
-class ConversationAdmin(ModelView, model=Conversation):
+class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
     name = "диалог"
     name_plural = "Диалоги"
     icon = "fa-solid fa-comments"
@@ -650,7 +700,7 @@ class ConversationAdmin(ModelView, model=Conversation):
     form_excluded_columns = [Conversation.messages]
 
 
-class MessageAdmin(ModelView, model=Message):
+class MessageAdmin(AdminOnly, ModelView, model=Message):
     name = "сообщение"
     name_plural = "Сообщения"
     icon = "fa-solid fa-message"
@@ -679,7 +729,7 @@ class MessageAdmin(ModelView, model=Message):
     form_excluded_columns = [Message.attachments]
 
 
-class MessageAttachmentAdmin(ModelView, model=MessageAttachment):
+class MessageAttachmentAdmin(AdminOnly, ModelView, model=MessageAttachment):
     name = "вложение"
     name_plural = "Вложения сообщений"
     icon = "fa-solid fa-paperclip"
@@ -702,4 +752,199 @@ class MessageAttachmentAdmin(ModelView, model=MessageAttachment):
         MessageAttachment.mime_type: "MIME-тип",
         MessageAttachment.size_bytes: "Размер, байт",
         MessageAttachment.message: "Сообщение",
+    }
+
+
+ATTRIBUTE_KIND_CHOICES = [
+    ("text", "Текст"),
+    ("number", "Число"),
+    ("select", "Выбор из списка"),
+    ("boolean", "Да/Нет"),
+]
+
+
+class ContentPageAdmin(AdminOnly, ModelView, model=ContentPage):
+    name = "страницу"
+    name_plural = "Контент-страницы"
+    icon = "fa-solid fa-file-lines"
+    column_list = [
+        ContentPage.id,
+        ContentPage.slug,
+        ContentPage.title,
+        ContentPage.is_published,
+        ContentPage.updated_at,
+        ContentPage.updated_by,
+    ]
+    column_searchable_list = [ContentPage.slug, ContentPage.title]
+    column_sortable_list = [
+        ContentPage.id,
+        ContentPage.slug,
+        ContentPage.updated_at,
+        ContentPage.is_published,
+    ]
+    column_labels = {
+        ContentPage.id: "ID",
+        ContentPage.slug: "Slug",
+        ContentPage.title: "Заголовок",
+        ContentPage.body: "Содержимое",
+        ContentPage.is_published: "Опубликована",
+        ContentPage.updated_at: "Обновлено",
+        ContentPage.updated_by: "Кто обновил",
+        ContentPage.updated_by_id: "ID редактора",
+    }
+    column_default_sort = [("updated_at", True)]
+    form_excluded_columns = [
+        ContentPage.updated_at,
+        ContentPage.updated_by,
+        ContentPage.updated_by_id,
+    ]
+
+    async def on_model_change(self, data, model, is_created, request):
+        admin_id = request.session.get("admin_user_id")
+        if admin_id:
+            data["updated_by_id"] = admin_id
+
+
+class FooterLinkAdmin(AdminOnly, ModelView, model=FooterLink):
+    name = "ссылку"
+    name_plural = "Футер"
+    icon = "fa-solid fa-link"
+    column_list = [
+        FooterLink.id,
+        FooterLink.title,
+        FooterLink.url,
+        FooterLink.sort_order,
+        FooterLink.is_active,
+    ]
+    column_searchable_list = [FooterLink.title, FooterLink.url]
+    column_sortable_list = [
+        FooterLink.id,
+        FooterLink.sort_order,
+        FooterLink.title,
+        FooterLink.is_active,
+    ]
+    column_labels = {
+        FooterLink.id: "ID",
+        FooterLink.title: "Название",
+        FooterLink.url: "Ссылка",
+        FooterLink.sort_order: "Порядок",
+        FooterLink.is_active: "Активна",
+    }
+    column_default_sort = [("sort_order", False)]
+
+
+def banner_image_thumb(model, _attr) -> Markup:
+    if not model.image_url:
+        return Markup('<span style="color:#999">—</span>')
+    return Markup(img_thumb(model.image_url, size=80))
+
+
+class BannerAdmin(AdminOnly, ModelView, model=Banner):
+    name = "баннер"
+    name_plural = "Баннеры"
+    icon = "fa-solid fa-image"
+    column_list = [
+        Banner.id,
+        Banner.image_url,
+        Banner.title,
+        Banner.link_url,
+        Banner.sort_order,
+        Banner.is_active,
+        Banner.starts_at,
+        Banner.ends_at,
+    ]
+    column_searchable_list = [Banner.title, Banner.description, Banner.link_url]
+    column_sortable_list = [
+        Banner.id,
+        Banner.sort_order,
+        Banner.is_active,
+        Banner.starts_at,
+        Banner.ends_at,
+        Banner.created_at,
+    ]
+    column_labels = {
+        Banner.id: "ID",
+        Banner.title: "Название",
+        Banner.description: "Описание",
+        Banner.image_url: "Картинка",
+        Banner.link_url: "Ссылка",
+        Banner.sort_order: "Порядок",
+        Banner.is_active: "Активен",
+        Banner.starts_at: "Старт показа",
+        Banner.ends_at: "Конец показа",
+        Banner.created_at: "Создан",
+    }
+    column_formatters = {Banner.image_url: banner_image_thumb}
+    column_formatters_detail = {
+        Banner.image_url: lambda m, _a: Markup(img_thumb(m.image_url, size=300))
+    }
+    column_default_sort = [("sort_order", False)]
+
+
+class AttributeAdmin(AdminOnly, ModelView, model=Attribute):
+    name = "атрибут"
+    name_plural = "Атрибуты категорий"
+    icon = "fa-solid fa-sliders"
+    column_list = [
+        Attribute.id,
+        Attribute.name,
+        Attribute.key,
+        Attribute.kind,
+        Attribute.is_required,
+        Attribute.category,
+        Attribute.subcategory,
+        Attribute.sort_order,
+    ]
+    column_searchable_list = [
+        Attribute.name,
+        Attribute.key,
+        "category.name",
+        "subcategory.name",
+    ]
+    column_sortable_list = [
+        Attribute.id,
+        Attribute.name,
+        Attribute.key,
+        Attribute.kind,
+        Attribute.is_required,
+        Attribute.sort_order,
+    ]
+    column_labels = {
+        Attribute.id: "ID",
+        Attribute.name: "Название",
+        Attribute.key: "Ключ (slug)",
+        Attribute.kind: "Тип",
+        Attribute.options: "Варианты (для «Выбор из списка», JSON-массив строк)",
+        Attribute.is_required: "Обязательный",
+        Attribute.sort_order: "Порядок",
+        Attribute.category: "Категория",
+        Attribute.subcategory: "Подкатегория",
+        Attribute.category_id: "ID категории",
+        Attribute.subcategory_id: "ID подкатегории",
+        Attribute.created_at: "Создан",
+    }
+    form_overrides = {"kind": SelectField}
+    form_args = {"kind": {"choices": ATTRIBUTE_KIND_CHOICES}}
+    column_default_sort = [("sort_order", False)]
+
+
+class AdvertisementAttributeValueAdmin(
+    AdminOnly, ModelView, model=AdvertisementAttributeValue
+):
+    name = "значение атрибута"
+    name_plural = "Значения атрибутов"
+    icon = "fa-solid fa-tags"
+    column_list = [
+        AdvertisementAttributeValue.id,
+        AdvertisementAttributeValue.advertisement,
+        AdvertisementAttributeValue.attribute,
+        AdvertisementAttributeValue.value,
+    ]
+    column_labels = {
+        AdvertisementAttributeValue.id: "ID",
+        AdvertisementAttributeValue.advertisement_id: "ID объявления",
+        AdvertisementAttributeValue.attribute_id: "ID атрибута",
+        AdvertisementAttributeValue.advertisement: "Объявление",
+        AdvertisementAttributeValue.attribute: "Атрибут",
+        AdvertisementAttributeValue.value: "Значение",
     }

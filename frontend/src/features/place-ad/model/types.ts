@@ -13,6 +13,7 @@ export interface PlaceAdState {
   address: string;
   latitude: number | null;
   longitude: number | null;
+  attributeValues: Record<number, string>;
   submitting: boolean;
   error: string | null;
 }
@@ -26,6 +27,7 @@ export interface PrefillPayload {
   address: string;
   isUrgent?: boolean;
   photoUrls?: string[];
+  attributeValues?: Record<number, string>;
 }
 
 export type PlaceAdAction =
@@ -40,6 +42,8 @@ export type PlaceAdAction =
   | { type: "SET_LOCATION"; payload: { address: string; latitude: number; longitude: number } }
   | { type: "PREFILL"; payload: PrefillPayload }
   | { type: "REMOVE_EXISTING_PHOTO"; payload: string }
+  | { type: "SET_ATTRIBUTE"; payload: { attributeId: number; value: string } }
+  | { type: "CLEAR_ATTRIBUTES" }
   | { type: "GO_TO_PREVIEW" }
   | { type: "GO_TO_EDIT" }
   | { type: "SUBMIT_START" }

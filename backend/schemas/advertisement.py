@@ -2,6 +2,11 @@ from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 
+from schemas.attribute import (
+    AdvertisementAttributeValuePayload,
+    AdvertisementAttributeValueResponse,
+)
+
 
 class AdvertisementCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
@@ -13,6 +18,7 @@ class AdvertisementCreate(BaseModel):
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool = True
     is_urgent: bool = False
+    attributes: List[AdvertisementAttributeValuePayload] = Field(default_factory=list)
 
 
 class AdvertisementResponse(BaseModel):
@@ -36,6 +42,7 @@ class AdvertisementResponse(BaseModel):
     created_at: Optional[datetime] = None
     moderation_status: str = "approved"
     moderation_reason: Optional[str] = None
+    attributes: List[AdvertisementAttributeValueResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,5 +65,6 @@ class AdvertisementUpdate(BaseModel):
     photo_urls: Optional[List[str]] = None
     is_active: Optional[bool] = None
     is_urgent: Optional[bool] = None
+    attributes: Optional[List[AdvertisementAttributeValuePayload]] = None
 
     model_config = ConfigDict(from_attributes=True)

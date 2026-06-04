@@ -8,12 +8,8 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from models import User
 from database import Base
-
-import models.user  # noqa: F401
-import models.advertisement  # noqa: F401
-import models.category  # noqa: F401
-import models.chat  # noqa: F401
 
 
 load_dotenv(find_dotenv())
@@ -26,7 +22,7 @@ if config.config_file_name is not None:
 DATABASE_URL = os.environ["DATABASE_URL"]
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
-target_metadata = Base.metadata
+target_metadata = User.metadata
 
 
 def run_migrations_offline() -> None:

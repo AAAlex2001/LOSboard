@@ -150,6 +150,7 @@ export type UpdateAdvertisementPayload = Partial<{
   photo_urls: string[];
   is_active: boolean;
   is_urgent: boolean;
+  attributes: { attribute_id: number; value: string }[];
 }>;
 
 export async function updateAdvertisement(

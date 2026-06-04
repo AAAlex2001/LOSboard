@@ -1,0 +1,69 @@
+.strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  height: 160px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #DEDEDE;
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: #FFFFFF;
+
+  @media (min-width: 850px) {
+    width: 720px;
+    height: 200px;
+  }
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+.title {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.description {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  opacity: 0.95;
+}

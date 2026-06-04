@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategories } from "@/src/entities/category";
 import {
@@ -10,6 +10,7 @@ import {
   updateAdvertisement,
   uploadAdvertisementImage,
 } from "@/src/entities/advertisement";
+import { getAttributes, type Attribute } from "@/src/entities/attribute";
 import { initialPlaceAdState, placeAdReducer } from "./placeAdReducer";
 
 interface UsePlaceAdOptions {
@@ -33,6 +34,10 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     getAdvertisement(advertisementId, { signal: controller.signal })
       .then((ad) => {
         if (controller.signal.aborted) return;
+        const attributeValues: Record<number, string> = {};
+        for (const av of ad.attributes ?? []) {
+          attributeValues[av.attribute_id] = av.value;
+        }
         dispatch({
           type: "PREFILL",
           payload: {
@@ -44,6 +49,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
             isUrgent: ad.is_urgent,
             address: ad.location,
             photoUrls: ad.photo_urls,
+            attributeValues,
           },
         });
       })
@@ -69,12 +75,46 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
       ? selectedCategory.subcategories.find((s) => s.id === state.subcategoryId) ?? null
       : null;
 
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setAttributes([]);
+      return;
+    }
+    const controller = new AbortController();
+    getAttributes({
+      categoryId: selectedCategory.id,
+      subcategoryId: selectedSubcategory?.id,
+      signal: controller.signal,
+    })
+      .then((list) => {
+        if (controller.signal.aborted) return;
+        setAttributes(list);
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setAttributes([]);
+      });
+    return () => controller.abort();
+  }, [selectedCategory?.id, selectedSubcategory?.id]);
+
+  const attributesValid = useMemo(
+    () =>
+      attributes.every(
+        (a) =>
+          !a.is_required || (state.attributeValues[a.id]?.trim() ?? "").length > 0
+      ),
+    [attributes, state.attributeValues]
+  );
+
   const isValid =
     selectedCategory !== null &&
     selectedSubcategory !== null &&
     state.title.trim().length > 0 &&
     Number(state.price) > 0 &&
-    state.address.trim().length > 0;
+    state.address.trim().length > 0 &&
+    attributesValid;
 
   const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }));
 
@@ -106,6 +146,13 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           : [];
       const photoUrls = [...state.existingPhotoUrls, ...uploadedUrls];
 
+      const attributesPayload = Object.entries(state.attributeValues)
+        .filter(([, value]) => value.trim().length > 0)
+        .map(([attributeId, value]) => ({
+          attribute_id: Number(attributeId),
+          value: value.trim(),
+        }));
+
       if (isEditing && advertisementId) {
         await updateAdvertisement(advertisementId, {
           title: state.title.trim(),
@@ -116,6 +163,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           location: state.address.trim(),
           photo_urls: photoUrls,
           is_urgent: state.isUrgent,
+          attributes: attributesPayload,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
         router.push("/my-ads");
@@ -130,6 +178,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           photo_urls: photoUrls,
           is_active: true,
           is_urgent: state.isUrgent,
+          attributes: attributesPayload,
         });
         dispatch({ type: "SUBMIT_SUCCESS" });
         router.push("/my-ads");
@@ -169,6 +218,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     isValid,
     categoryOptions,
     subcategoryOptions,
+    attributes,
     goToPreview,
     goToEdit,
     submit,
