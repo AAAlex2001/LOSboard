@@ -59,10 +59,16 @@ ATTRIBUTE_KIND_CHOICES = [
     ("boolean", "Да/Нет"),
 ]
 
+BANNER_PLACEMENT_CHOICES = [
+    ("main_top", "Шапка главной страницы (3 баннера сверху)"),
+    ("sidebar", "Боковая панель сайта (2 баннера)"),
+]
+
 MODERATION_LABEL = dict(MODERATION_CHOICES)
 COMPLAINT_LABEL = dict(COMPLAINT_CHOICES)
 COMPLAINT_REASON_LABEL = dict(COMPLAINT_REASON_CHOICES)
 ROLE_LABEL = dict(ROLE_CHOICES)
+BANNER_PLACEMENT_LABEL = dict(BANNER_PLACEMENT_CHOICES)
 
 
 class AdminOnly:
@@ -180,6 +186,17 @@ def role_badge(role: str) -> Markup:
     }
     bg, fg = palette.get(role, ("#666", "#FFFFFF"))
     return make_badge(bg, fg, ROLE_LABEL.get(role, role or "—"))
+
+
+def banner_placement_badge(placement: str) -> Markup:
+    palette = {
+        "main_top": ("#1565C0", "#FFFFFF"),
+        "sidebar": ("#6A1B9A", "#FFFFFF"),
+    }
+    bg, fg = palette.get(placement, ("#666", "#FFFFFF"))
+    return make_badge(
+        bg, fg, BANNER_PLACEMENT_LABEL.get(placement, placement or "—")
+    )
 
 
 def complaint_reason_label(reason: str) -> str:

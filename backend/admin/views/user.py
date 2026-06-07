@@ -3,9 +3,10 @@
 from datetime import datetime, timedelta
 from typing import Any
 
-from markupsafe import Markup
+from markupsafe import Markup, escape
 from sqladmin import ModelView, action
-from sqlalchemy import delete, update
+from sqlalchemy import delete, select, update
+from sqlalchemy.orm import selectinload
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from wtforms import SelectField
@@ -20,8 +21,26 @@ from admin.views.common import (
     selected_pks,
     user_ads_list,
 )
+from database import AsyncSessionLocal
 from models.advertisement import Advertisement
 from models.user import User
+
+
+def user_advertisements_block(user: Any, _attr: Any = None) -> Markup:
+    """Список объявлений пользователя с кликабельными ссылками."""
+    ads = list(getattr(user, "advertisements", None) or [])
+    if not ads:
+        return Markup('<span style="color:#999">Без объявлений</span>')
+    parts = []
+    for ad in ads:
+        title = escape(ad.title or "(без названия)")
+        parts.append(
+            f'<div style="margin-bottom:4px;">'
+            f'<a href="/los-control-x9k2m-admin/advertisement/details/{ad.id}" '
+            f'style="color:#1565C0; text-decoration:none;">'
+            f"#{ad.id} {title}</a></div>"
+        )
+    return Markup("".join(parts))
 
 
 def fmt_user_avatar(model: Any, _attr: Any) -> Markup:
@@ -91,7 +110,7 @@ class UserAdmin(AdminOnly, ModelView, model=User):
     column_formatters_detail = {
         User.avatar_url: fmt_user_avatar_large,
         User.role: fmt_user_role,
-        User.advertisements: fmt_user_ads,
+        User.advertisements: user_advertisements_block,
     }
     form_excluded_columns = [
         User.password,
@@ -101,6 +120,23 @@ class UserAdmin(AdminOnly, ModelView, model=User):
     ]
     form_overrides = {"role": SelectField}
     form_args = {"role": {"choices": ROLE_CHOICES}}
+
+    async def get_object_for_details(self, request: Request) -> Any:
+        """Eager-load объявления пользователя для детальной страницы.
+
+        Без этого форматтер `user_advertisements_block` ловит DetachedInstanceError,
+        потому что sqladmin закрывает сессию до рендера шаблона, а доступ к
+        `user.advertisements` триггерит lazy-load.
+        """
+        pk = request.path_params["pk"]
+        stmt = (
+            select(User)
+            .where(User.id == int(pk))
+            .options(selectinload(User.advertisements))
+        )
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(stmt)
+            return result.unique().scalar_one_or_none()
 
     async def apply_ban(
         self,

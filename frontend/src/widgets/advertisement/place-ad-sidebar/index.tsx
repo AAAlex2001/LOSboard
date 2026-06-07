@@ -4,12 +4,12 @@ import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
 import InstagramIcon from "@/src/shared/ui/Icons/InstagramIcon";
 import FacebookIcon from "@/src/shared/ui/Icons/FacebookIcon";
 import { AdBanner } from "@/src/entities/ad-banner";
-import { useBanners } from "@/src/entities/banner";
+import { useSidebarBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import style from "./style.module.scss";
 
 export const PlaceAdSidebar = () => {
-  const banners = useBanners();
+  const banners = useSidebarBanners();
   const settings = useSiteSettings();
 
   return (
@@ -65,13 +65,13 @@ export const PlaceAdSidebar = () => {
 
       <div className={style.adsBlock}>
         <AdBanner
-          banner={banners[3]}
+          banner={banners[0]}
           ageLabel={settings?.ad_age_label}
           siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}
         />
         <AdBanner
-          banner={banners[4]}
+          banner={banners[1]}
           ageLabel={settings?.ad_age_label}
           siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}

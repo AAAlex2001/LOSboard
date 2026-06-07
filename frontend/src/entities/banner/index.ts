@@ -1,2 +1,10 @@
-export { getActiveBanners, type Banner } from "./api/banner.api";
-export { useBanners } from "./model/useBanners";
+export {
+  getActiveBanners,
+  type Banner,
+  type BannerPlacement,
+} from "./api/banner.api";
+export {
+  useBanners,
+  useMainTopBanners,
+  useSidebarBanners,
+} from "./model/useBanners";

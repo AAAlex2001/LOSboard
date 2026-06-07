@@ -112,7 +112,7 @@ export default async function AdvertisingPage() {
                 heading={ACCORDION_HEADING}
                 items={accordionItems.map((item) => ({
                   title: item.title,
-                  content: <CmsContent body={item.body} />,
+                  content: <CmsContent body={item.body} variant="stacked" />,
                 }))}
               />
             )}

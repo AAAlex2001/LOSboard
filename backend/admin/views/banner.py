@@ -7,9 +7,12 @@ from markupsafe import Markup
 from sqladmin import ModelView
 from sqladmin.fields import FileField
 from starlette.requests import Request
+from wtforms.fields import SelectField
 
 from admin.views.common import (
+    BANNER_PLACEMENT_CHOICES,
     AdminOnly,
+    banner_placement_badge,
     img_thumb,
     read_starlette_upload,
     upload_is_real,
@@ -30,6 +33,10 @@ def fmt_banner_thumb_large(model: Any, _attr: Any) -> Markup:
     return Markup(img_thumb(model.image_url, size=300))
 
 
+def fmt_banner_placement(model: Any, _attr: Any) -> Markup:
+    return banner_placement_badge(getattr(model, "placement", "") or "")
+
+
 class BannerAdmin(AdminOnly, ModelView, model=Banner):
     name = "баннер"
     name_plural = "Баннеры"
@@ -38,6 +45,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.id,
         Banner.image_url,
         Banner.title,
+        Banner.placement,
         Banner.link_url,
         Banner.sort_order,
         Banner.is_active,
@@ -47,6 +55,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
     column_searchable_list = [Banner.title, Banner.description, Banner.link_url]
     column_sortable_list = [
         Banner.id,
+        Banner.placement,
         Banner.sort_order,
         Banner.is_active,
         Banner.starts_at,
@@ -59,19 +68,31 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.description: "Краткое описание (показывается под заголовком)",
         Banner.image_url: "Картинка (JPG / PNG / WebP, до 10 МБ)",
         Banner.link_url: "Куда ведёт клик по баннеру (опционально)",
+        Banner.placement: "Размещение",
         Banner.sort_order: "Порядок (меньше — выше)",
         Banner.is_active: "Показывать на сайте",
         Banner.starts_at: "Старт показа (для заметки)",
         Banner.ends_at: "Конец показа (для заметки)",
         Banner.created_at: "Создан",
     }
-    column_formatters = {Banner.image_url: fmt_banner_thumb_small}
-    column_formatters_detail = {Banner.image_url: fmt_banner_thumb_large}
+    column_formatters = {
+        Banner.image_url: fmt_banner_thumb_small,
+        Banner.placement: fmt_banner_placement,
+    }
+    column_formatters_detail = {
+        Banner.image_url: fmt_banner_thumb_large,
+        Banner.placement: fmt_banner_placement,
+    }
     column_default_sort = [("sort_order", False)]
-    form_overrides = {"image_url": FileField}
+    form_overrides = {"image_url": FileField, "placement": SelectField}
     form_args = {
         "image_url": {
             "description": "Выберите файл с компьютера. JPG, PNG или WebP, до 10 МБ.",
+        },
+        "placement": {
+            "choices": BANNER_PLACEMENT_CHOICES,
+            "description": "Где показывать баннер. «Шапка главной» — 3 верхних баннера "
+            "на главной странице. «Боковая панель» — 2 баннера в правом сайдбаре сайта.",
         },
         "is_active": {
             "description": "Главный переключатель: выключите — баннер исчезнет с сайта мгновенно.",

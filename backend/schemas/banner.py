@@ -12,3 +12,4 @@ class BannerResponse(BaseModel):
     image_url: str
     link_url: Optional[str] = None
     sort_order: int
+    placement: str

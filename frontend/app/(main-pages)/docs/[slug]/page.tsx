@@ -15,6 +15,9 @@ interface DocPageProps {
 
 export default async function DocPage({ params }: DocPageProps) {
   const { slug } = await params;
+  if (slug.startsWith("pricing") || slug === "contacts") {
+    notFound();
+  }
   const page = await getContentPage(slug).catch(() => null);
 
   if (!page) {

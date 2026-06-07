@@ -11,7 +11,7 @@ import {
 } from "@/src/entities/category";
 import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
 import { AdBanner } from "@/src/entities/ad-banner";
-import { useBanners } from "@/src/entities/banner";
+import { useMainTopBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import style from "./style.module.scss";
 
@@ -31,7 +31,7 @@ export const CatalogTopBar = ({
   onReset,
 }: CatalogTopBarProps) => {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const banners = useBanners();
+  const banners = useMainTopBanners();
   const settings = useSiteSettings();
   const ageLabel = settings?.ad_age_label;
   const siteLabel = settings?.ad_site_label;

@@ -15,10 +15,10 @@
     margin-top: 20px;
   }
 
-  > h1 + blockquote, > h1 + div,
-  > h2 + blockquote, > h2 + div,
-  > h3 + blockquote, > h3 + div,
-  > h4 + blockquote, > h4 + div {
+  > h1 + blockquote, > h1 + div:not(:global(.mockupRow)),
+  > h2 + blockquote, > h2 + div:not(:global(.mockupRow)),
+  > h3 + blockquote, > h3 + div:not(:global(.mockupRow)),
+  > h4 + blockquote, > h4 + div:not(:global(.mockupRow)) {
     margin-top: 10px;
   }
 
@@ -32,6 +32,20 @@
     margin-top: 30px;
   }
 
+  > h2 + :global(.bannerMockup),
+  > h2 + :global(.phoneMockup),
+  > h2 + :global(.cardMockup),
+  > h3 + :global(.bannerMockup),
+  > h3 + :global(.phoneMockup),
+  > h3 + :global(.cardMockup) {
+    margin-top: 30px;
+  }
+
+  :global(.cmsParen) {
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 400;
+  }
+
   > p + p,
   > p + ul,
   > p + ol,
@@ -40,9 +54,9 @@
   > p + blockquote,
   > ul + blockquote,
   > ol + blockquote,
-  > p + div,
-  > ul + div,
-  > ol + div {
+  > p + div:not(:global(.mockupRow)),
+  > ul + div:not(:global(.mockupRow)),
+  > ol + div:not(:global(.mockupRow)) {
     margin-top: 20px;
   }
 
@@ -78,7 +92,7 @@
   }
 
   > blockquote + p,
-  > div + p {
+  > div:not(:global(.mockupRow)) + p {
     font-size: 14px;
     line-height: 17px;
     color: #000000;
@@ -106,6 +120,11 @@
     }
 
     strong {
+      font-weight: 700;
+      color: #000000;
+    }
+
+    > p:first-child > strong {
       font-weight: 500;
       color: #1129BD;
     }
@@ -125,29 +144,38 @@
     }
   }
 
+  blockquote:not(:has(strong)) {
+    background: transparent;
+    padding: 10px 20px;
+  }
+
   blockquote[data-highlighted="true"] {
-    background: #1129BD;
+    background: #1129BD80;
 
     p, strong, em, a { color: #FFFFFF; }
   }
 
-  > div {
+  blockquote[data-highlighted="true"] > p:first-child > strong {
+    color: #FFFFFF;
+  }
+
+  > div:not(:global(.mockupRow)) {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
   }
 
   @media (min-width: 850px) {
-    > div {
+    > div:not(:global(.mockupRow)) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    > div:has(> blockquote:nth-child(3)) {
+    > div:not(:global(.mockupRow)):has(> blockquote:nth-child(3)) {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
-  > div > blockquote {
+  > div:not(:global(.mockupRow)) > blockquote {
     margin: 0;
   }
 
@@ -362,9 +390,25 @@
     margin-top: 30px;
   }
 
+  > h2 + :global(.mockupRow),
+  > h3 + :global(.mockupRow),
+  > h4 + :global(.mockupRow) {
+    margin-top: 30px;
+  }
+
   > :global(.mockupRow) > :global(.bannerMockup),
   > :global(.mockupRow) > :global(.phoneMockup),
   > :global(.mockupRow) > :global(.cardMockup) {
     margin: 0;
+  }
+
+  &[data-variant="stacked"] {
+    > div:not(:global(.mockupRow)) {
+      grid-template-columns: 1fr !important;
+    }
+
+    > div:not(:global(.mockupRow)):has(> blockquote:nth-child(3)) {
+      grid-template-columns: 1fr !important;
+    }
   }
 }

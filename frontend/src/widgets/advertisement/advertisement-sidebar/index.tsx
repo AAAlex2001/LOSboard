@@ -6,7 +6,7 @@ import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
 import InstagramIcon from "@/src/shared/ui/Icons/InstagramIcon";
 import FacebookIcon from "@/src/shared/ui/Icons/FacebookIcon";
 import { AdBanner } from "@/src/entities/ad-banner";
-import { useBanners } from "@/src/entities/banner";
+import { useSidebarBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import { useStartChat } from "@/src/features/chat";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
@@ -30,7 +30,7 @@ export const AdvertisementSidebar = ({
   const router = useRouter();
   const phoneTel = sellerPhone ?? "";
   const { loading: startingChat, start } = useStartChat();
-  const banners = useBanners();
+  const banners = useSidebarBanners();
   const settings = useSiteSettings();
 
   const handleCall = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -115,13 +115,13 @@ export const AdvertisementSidebar = ({
 
       <div className={style.adsBlock}>
         <AdBanner
-          banner={banners[3]}
+          banner={banners[0]}
           ageLabel={settings?.ad_age_label}
           siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}
         />
         <AdBanner
-          banner={banners[4]}
+          banner={banners[1]}
           ageLabel={settings?.ad_age_label}
           siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}

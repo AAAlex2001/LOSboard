@@ -2,6 +2,7 @@ import style from "./style.module.scss";
 
 interface CmsContentProps {
   body: string;
+  variant?: "default" | "stacked";
 }
 
 function markHighlightedCards(html: string): string {
@@ -105,14 +106,41 @@ function wrapBlockquoteGroups(html: string): string {
   );
 }
 
-function preprocess(html: string): string {
-  return wrapBlockquoteGroups(markHighlightedCards(wrapMockupRows(transformCardMockups(transformPhoneMockups(transformBannerMockups(transformHintMarkers(transformNoteMarkers(html))))))));
+function wrapParensInHeadings(html: string): string {
+  return html.replace(
+    /(<h[1-4]\b[^>]*>)([\s\S]*?)(<\/h[1-4]>)/gi,
+    (_match, open, content, close) => {
+      const replaced = content.replace(/\s*\(([^)]+)\)/g, ' <span class="cmsParen">($1)</span>');
+      return `${open}${replaced}${close}`;
+    }
+  );
 }
 
-export const CmsContent = ({ body }: CmsContentProps) => {
+function preprocess(html: string): string {
+  return wrapBlockquoteGroups(
+    markHighlightedCards(
+      wrapMockupRows(
+        transformCardMockups(
+          transformPhoneMockups(
+            transformBannerMockups(
+              transformHintMarkers(
+                transformNoteMarkers(
+                  wrapParensInHeadings(html)
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+export const CmsContent = ({ body, variant = "default" }: CmsContentProps) => {
   return (
     <article
       className={style.content}
+      data-variant={variant}
       dangerouslySetInnerHTML={{ __html: preprocess(body) }}
     />
   );
