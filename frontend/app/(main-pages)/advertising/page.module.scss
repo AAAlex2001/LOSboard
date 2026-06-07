@@ -28,7 +28,7 @@
 }
 
 .crumbsSlot {
-  display: none;
+  display: block;
   width: 100%;
 }
 
@@ -48,22 +48,7 @@
 }
 
 .backBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #1E1E1E;
-  flex-shrink: 0;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: #1129BD;
-  }
+  display: none;
 }
 
 .title {
@@ -78,14 +63,6 @@
 }
 
 @media (min-width: 850px) {
-  .crumbsSlot {
-    display: block;
-  }
-
-  .backBtn {
-    display: none;
-  }
-
   .layout {
     max-width: 850px;
   }

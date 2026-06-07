@@ -10,7 +10,7 @@ import {
   type Subcategory,
 } from "@/src/entities/category";
 import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
-import { AdBanner } from "@/src/entities/ad-banner";
+import { PromoCarousel } from "@/src/widgets/advertisement/promo-carousel";
 import { useMainTopBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import style from "./style.module.scss";
@@ -84,9 +84,10 @@ export const CatalogTopBar = ({
       </div>
 
       <div className={style.promoTablet}>
-        <AdBanner
+        <PromoCarousel
+          banners={banners}
           variant="wide"
-          banner={banners[0]}
+          slidesPerView={1}
           ageLabel={ageLabel}
           siteLabel={siteLabel}
           placeholderText={placeholderText}
@@ -94,23 +95,10 @@ export const CatalogTopBar = ({
       </div>
 
       <div className={style.promoDesktop}>
-        <AdBanner
+        <PromoCarousel
+          banners={banners}
           variant="promo"
-          banner={banners[0]}
-          ageLabel={ageLabel}
-          siteLabel={siteLabel}
-          placeholderText={placeholderText}
-        />
-        <AdBanner
-          variant="promo"
-          banner={banners[1]}
-          ageLabel={ageLabel}
-          siteLabel={siteLabel}
-          placeholderText={placeholderText}
-        />
-        <AdBanner
-          variant="promo"
-          banner={banners[2]}
+          slidesPerView={3}
           ageLabel={ageLabel}
           siteLabel={siteLabel}
           placeholderText={placeholderText}

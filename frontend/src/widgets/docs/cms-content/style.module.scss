@@ -124,7 +124,7 @@
       color: #000000;
     }
 
-    > p:first-child > strong {
+    p > strong:only-child {
       font-weight: 500;
       color: #1129BD;
     }
@@ -155,7 +155,7 @@
     p, strong, em, a { color: #FFFFFF; }
   }
 
-  blockquote[data-highlighted="true"] > p:first-child > strong {
+  blockquote[data-highlighted="true"] p > strong {
     color: #FFFFFF;
   }
 
@@ -409,6 +409,12 @@
 
     > div:not(:global(.mockupRow)):has(> blockquote:nth-child(3)) {
       grid-template-columns: 1fr !important;
+    }
+
+    :global(.mockupRow) {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 20px !important;
     }
   }
 }

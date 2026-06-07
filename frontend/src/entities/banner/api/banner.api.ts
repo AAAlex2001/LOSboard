@@ -7,6 +7,7 @@ export interface Banner {
   title: string;
   description: string | null;
   image_url: string;
+  video_url: string | null;
   link_url: string | null;
   sort_order: number;
   placement: BannerPlacement;

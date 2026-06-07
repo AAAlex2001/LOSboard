@@ -1,0 +1,62 @@
+.carousel {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.track {
+  width: 100%;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #E5E7EE;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #1E1E1E;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: #FFFFFF;
+    color: #1129BD;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.arrowPrev {
+  left: -10px;
+}
+
+.arrowNext {
+  right: -10px;
+}
+
+@media (min-width: 850px) {
+  .arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .arrowPrev {
+    left: -22px;
+  }
+
+  .arrowNext {
+    right: -22px;
+  }
+}

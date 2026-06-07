@@ -10,6 +10,7 @@ class BannerResponse(BaseModel):
     title: str
     description: Optional[str] = None
     image_url: str
+    video_url: Optional[str] = None
     link_url: Optional[str] = None
     sort_order: int
     placement: str

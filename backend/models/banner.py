@@ -14,6 +14,7 @@ class Banner(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     image_url: Mapped[str] = mapped_column(String, nullable=False)
+    video_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     link_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     placement: Mapped[str] = mapped_column(
         String, nullable=False, server_default="main_top", index=True

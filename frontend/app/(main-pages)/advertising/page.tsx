@@ -15,11 +15,11 @@ import style from "./page.module.scss";
 const PAGE_TITLE = "Реклама в «LOS»";
 const ACCORDION_HEADING = "Технические характеристики рекламы";
 
-const ACCORDION_ITEMS: ReadonlyArray<{ title: string; slug: string }> = [
-  { title: "Реклама на сайте LOS", slug: "pricing-tech-board" },
-  { title: "Реклама в соцсетях LOS", slug: "pricing-tech-social" },
-  { title: "Реклама в мобильном приложении LOS", slug: "pricing-tech-mobile" },
-  { title: "Реклама на сайте Тур-гид LOS", slug: "pricing-tech-tour" },
+const ACCORDION_SLUGS: ReadonlyArray<string> = [
+  "pricing-tech-board",
+  "pricing-tech-social",
+  "pricing-tech-mobile",
+  "pricing-tech-tour",
 ];
 
 function stripHtmlTags(html: string): string {
@@ -64,8 +64,8 @@ export default async function AdvertisingPage() {
   const [main, promo, ...techPages] = await Promise.all([
     getContentPage("pricing").catch(() => null),
     getContentPage("pricing-promo").catch(() => null),
-    ...ACCORDION_ITEMS.map((item) =>
-      getContentPage(item.slug).catch(() => null),
+    ...ACCORDION_SLUGS.map((slug) =>
+      getContentPage(slug).catch(() => null),
     ),
   ]);
 
@@ -76,10 +76,10 @@ export default async function AdvertisingPage() {
   const [beforeHr, afterHr] = splitByHr(rest);
 
   const promoText = stripHtmlTags(promo?.body ?? "");
-  const accordionItems = ACCORDION_ITEMS.map((item, index) => ({
-    title: item.title,
+  const accordionItems = ACCORDION_SLUGS.map((_, index) => ({
+    title: techPages[index]?.title ?? "",
     body: techPages[index]?.body ?? "",
-  })).filter((item) => item.body.trim());
+  })).filter((item) => item.body.trim() && item.title.trim());
 
   return (
     <main className={style.page}>

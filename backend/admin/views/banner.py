@@ -1,5 +1,8 @@
 """Рекламные баннеры. Картинка загружается с компа, конвертится в WebP."""
 
+import os
+import uuid
+from pathlib import Path
 from typing import Any
 
 from fastapi import HTTPException
@@ -19,6 +22,37 @@ from admin.views.common import (
 )
 from models.banner import Banner
 from services.uploads.image import ensure_extension, save_processed_sync
+
+
+# Каталог /backend/uploads (тот же, что main.py монтирует под /static/uploads).
+BANNER_UPLOADS_DIR = Path(__file__).resolve().parents[2] / "uploads" / "banners"
+
+VIDEO_ALLOWED_EXTS = {".mp4", ".webm", ".mov"}
+VIDEO_MAX_BYTES = 10 * 1024 * 1024
+
+
+async def _validate_and_get_video_size(upload) -> int:
+    ext = os.path.splitext(upload.filename or "")[1].lower()
+    if ext not in VIDEO_ALLOWED_EXTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Неподдерживаемый формат видео {ext}. Используйте MP4 или WebM.",
+        )
+    contents = await upload.read()
+    await upload.seek(0)
+    return len(contents)
+
+
+async def _save_banner_video(upload) -> str:
+    ext = os.path.splitext(upload.filename or "")[1].lower()
+    filename = f"{uuid.uuid4().hex}{ext}"
+    contents = await upload.read()
+
+    BANNER_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    target_path = BANNER_UPLOADS_DIR / filename
+    with open(target_path, "wb") as f:
+        f.write(contents)
+    return f"/static/uploads/banners/{filename}"
 
 
 def fmt_banner_thumb_small(model: Any, _attr: Any) -> Markup:
@@ -67,6 +101,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.title: "Название",
         Banner.description: "Краткое описание (показывается под заголовком)",
         Banner.image_url: "Картинка (JPG / PNG / WebP, до 10 МБ)",
+        Banner.video_url: "Видео (MP4 / WebM, до 10 МБ, опционально)",
         Banner.link_url: "Куда ведёт клик по баннеру (опционально)",
         Banner.placement: "Размещение",
         Banner.sort_order: "Порядок (меньше — выше)",
@@ -84,10 +119,17 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.placement: fmt_banner_placement,
     }
     column_default_sort = [("sort_order", False)]
-    form_overrides = {"image_url": FileField, "placement": SelectField}
+    form_overrides = {
+        "image_url": FileField,
+        "video_url": FileField,
+        "placement": SelectField,
+    }
     form_args = {
         "image_url": {
             "description": "Выберите файл с компьютера. JPG, PNG или WebP, до 10 МБ.",
+        },
+        "video_url": {
+            "description": "Опционально: видео MP4/WebM, до 10 МБ. Если указано, отображается вместо картинки с автовоспроизведением.",
         },
         "placement": {
             "choices": BANNER_PLACEMENT_CHOICES,
@@ -124,3 +166,13 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
                 status_code=400,
                 detail="Загрузите картинку для баннера",
             )
+
+        video_upload = data.pop("video_url", None)
+        if upload_is_real(video_upload):
+            size_bytes = await _validate_and_get_video_size(video_upload)
+            if size_bytes > VIDEO_MAX_BYTES:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Видео должно быть не больше 10 МБ",
+                )
+            data["video_url"] = await _save_banner_video(video_upload)
