@@ -3,7 +3,7 @@ import { ChatsPageShell } from "@/src/widgets/chat/chats-page-shell";
 
 export const metadata: Metadata = {
   title: "Сообщения",
-  description: "Чаты с продавцами и покупателями на LOSboard.",
+  description: "Чаты с продавцами и покупателями на LOS Daily.",
   robots: {
     index: false,
     follow: false,

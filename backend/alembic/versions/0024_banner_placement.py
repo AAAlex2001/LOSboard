@@ -1,4 +1,4 @@
-"""add placement field to banners
+"""добавить поле placement в banners
 
 Revision ID: 0024_banner_placement
 Revises: 0023_pricing_tech_tour_real

@@ -1,4 +1,4 @@
-"""add per-banner age_label field
+"""добавить поле age_label в banners
 
 Revision ID: 0028_banner_age_label
 Revises: 0027_banner_image_nullable

@@ -5,7 +5,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getContentPage("contacts").catch(() => null);
   const title = page?.title ?? "Связаться с нами";
   const description =
-    "Контактные данные службы поддержки и график работы LOSboard.";
+    "Контактные данные службы поддержки и график работы LOS Daily.";
   return {
     title,
     description,

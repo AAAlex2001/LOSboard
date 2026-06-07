@@ -17,11 +17,7 @@ CHAT_URL_PATTERN = re.compile(r"^/conversations/(\d+)/attachments/(.+)$")
 
 
 def attachment_public_url(stored_url: str | None) -> str | None:
-    """Парсит `/conversations/X/attachments/Y` → публичный URL под `/static/uploads/chat/...`.
-
-    Тот же путь, что монтирует main.py для UPLOADS_DIR, поэтому ссылка
-    открывается прямо из админки без отдельной авторизации.
-    """
+    """Маппит `/conversations/X/attachments/Y` на публичный путь `/static/uploads/chat/...` (тот же, что монтирует main.py)."""
     if not stored_url:
         return None
     match = CHAT_URL_PATTERN.match(stored_url)
@@ -32,7 +28,6 @@ def attachment_public_url(stored_url: str | None) -> str | None:
 
 
 def attachment_chip(att: Any) -> str:
-    """HTML-плашка одного вложения: миниатюра для картинок, иконка + имя для файлов."""
     url = attachment_public_url(att.url) or ""
     if att.kind == "image":
         return (
@@ -50,7 +45,6 @@ def attachment_chip(att: Any) -> str:
 
 
 def message_block(msg: Message) -> str:
-    """HTML одного сообщения: автор, время, текст, вложения."""
     sender_label = getattr(msg.sender, "name", None) or f"#{msg.sender_id}"
     when = msg.created_at.strftime("%Y-%m-%d %H:%M")
     text = escape((msg.text or "").strip())
@@ -82,7 +76,6 @@ def message_block(msg: Message) -> str:
 
 
 def conversation_thread(conv: Conversation, _attr: Any = None) -> Markup:
-    """Полная переписка диалога с вложениями для детальной страницы."""
     messages = list(conv.messages or [])
     if not messages:
         return Markup('<span style="color:#999">Сообщений нет</span>')
@@ -134,12 +127,7 @@ class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
     }
 
     async def get_object_for_details(self, request) -> Any:
-        """Eager-load переписки с отправителями и вложениями.
-
-        Без этого Jinja-форматтер ловит DetachedInstanceError, потому что
-        sqladmin закрывает сессию до рендера шаблона, а доступ к
-        `msg.sender` / `msg.attachments` триггерит lazy-load.
-        """
+        """Eager-load сообщений и вложений: sqladmin закрывает сессию до рендера, lazy-load кинул бы DetachedInstanceError."""
         pk = request.path_params["pk"]
         stmt = (
             select(Conversation)

@@ -16,6 +16,10 @@
   width: 100%;
 }
 
+.breadcrumbs {
+  width: 100%;
+}
+
 .title {
   margin: 0;
   font-family: Inter;
@@ -79,6 +83,7 @@
   .promoTablet {
     display: flex;
     justify-content: center;
+    max-width: 100%;
   }
 }
 

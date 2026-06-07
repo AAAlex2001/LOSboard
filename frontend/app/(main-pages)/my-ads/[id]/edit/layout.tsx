@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Редактирование объявления",
-  description: "Изменение и удаление вашего объявления на LOSboard.",
+  description: "Изменение и удаление вашего объявления на LOS Daily.",
   robots: {
     index: false,
     follow: false,

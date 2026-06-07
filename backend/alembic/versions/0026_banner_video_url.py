@@ -1,4 +1,4 @@
-"""add video_url field to banners
+"""добавить поле video_url в banners
 
 Revision ID: 0026_banner_video_url
 Revises: 0025_pricing_tech_titles

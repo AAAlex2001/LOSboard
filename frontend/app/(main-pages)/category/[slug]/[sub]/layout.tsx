@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       robots: { index: false, follow: false },
     };
   }
-  const description = `«${subcategory.name}» в категории «${cat.name}» — LOSboard, доска объявлений Республики Абхазия.`;
+  const description = `«${subcategory.name}» в категории «${cat.name}» — LOS Daily, доска объявлений Республики Абхазия.`;
   const canonical = `${SITE_ORIGIN}/category/${cat.slug}/${subcategory.slug}`;
   return {
     title: `${subcategory.name} — ${cat.name}`,

@@ -8,6 +8,7 @@ import style from "./style.module.scss";
 export interface BreadcrumbItem {
   label: string;
   href?: string;
+  onClick?: () => void;
 }
 
 interface BreadcrumbsProps {
@@ -23,23 +24,42 @@ export const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
+        const isInteractive = !isLast && (item.href || item.onClick);
+
+        let node;
+        if (isInteractive && item.href) {
+          node = (
+            <Link
+              href={item.href as string}
+              className={`${style.item} ${style.link}`}
+              onClick={item.onClick}
+            >
+              {item.label}
+            </Link>
+          );
+        } else if (isInteractive && item.onClick) {
+          node = (
+            <button
+              type="button"
+              className={`${style.item} ${style.link} ${style.button}`}
+              onClick={item.onClick}
+            >
+              {item.label}
+            </button>
+          );
+        } else {
+          node = (
+            <span
+              className={`${style.item} ${isLast ? style.active : style.text}`}
+            >
+              {item.label}
+            </span>
+          );
+        }
 
         return (
           <Fragment key={`${item.label}-${index}`}>
-            {item.href && !isLast ? (
-              <Link
-                href={item.href}
-                className={`${style.item} ${style.link}`}
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <span
-                className={`${style.item} ${isLast ? style.active : style.text}`}
-              >
-                {item.label}
-              </span>
-            )}
+            {node}
 
             {!isLast && (
               <span className={style.separator} aria-hidden="true">

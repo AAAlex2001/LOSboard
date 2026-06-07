@@ -194,21 +194,3 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
                     detail="Видео должно быть не больше 10 МБ",
                 )
             data["video_url"] = await _save_banner_video(video_upload)
-
-    async def _handle_form_data(self, request, obj=None):
-        """Override sqladmin form handling — skip empty file uploads so existing image/video URLs are preserved.
-
-        Without this, sqladmin crashes at `UploadFile(filename=f.name, file=f.open())`
-        when no new file is uploaded on edit.
-        """
-        from starlette.datastructures import FormData, UploadFile
-
-        form = await request.form()
-        items = []
-        for key, value in form.multi_items():
-            if isinstance(value, UploadFile):
-                filename = (value.filename or "").strip()
-                if not filename:
-                    continue
-            items.append((key, value))
-        return FormData(items)

@@ -13,6 +13,7 @@ import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
 import { PromoCarousel } from "@/src/widgets/advertisement/promo-carousel";
 import { useMainTopBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
+import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import style from "./style.module.scss";
 
 interface CatalogTopBarProps {
@@ -34,6 +35,7 @@ export const CatalogTopBar = ({
   const banners = useMainTopBanners();
   const settings = useSiteSettings();
   const ageLabel = settings?.ad_age_label;
+  const siteLabel = settings?.ad_site_label;
   const placeholderText = settings?.ad_placeholder_text;
 
   const handlePickCategory = (cat: Category) => {
@@ -53,14 +55,30 @@ export const CatalogTopBar = ({
 
   return (
     <div className={style.topbar}>
-      <div className={style.heroHeading}>
-        <h1 className={style.title}>{headerLabel}</h1>
-        {hasFilter && (
-          <button type="button" className={style.resetBtn} onClick={onReset}>
-            Сбросить
-          </button>
-        )}
-      </div>
+      {hasFilter ? (
+        <div className={style.breadcrumbs}>
+          <Breadcrumbs
+            items={[
+              { label: "Главная", onClick: onReset },
+              ...(category
+                ? [
+                    {
+                      label: category.name,
+                      onClick: subcategory
+                        ? () => onSelectSubcategory(null, category)
+                        : undefined,
+                    },
+                  ]
+                : []),
+              ...(subcategory ? [{ label: subcategory.name }] : []),
+            ]}
+          />
+        </div>
+      ) : (
+        <div className={style.heroHeading}>
+          <h1 className={style.title}>{headerLabel}</h1>
+        </div>
+      )}
 
       <div className={style.mobileBtn}>
         <Button
@@ -88,6 +106,7 @@ export const CatalogTopBar = ({
           variant="wide"
           slidesPerView={1}
           ageLabel={ageLabel}
+          siteLabel={siteLabel}
           placeholderText={placeholderText}
         />
       </div>
@@ -98,6 +117,7 @@ export const CatalogTopBar = ({
           variant="promo"
           slidesPerView={3}
           ageLabel={ageLabel}
+          siteLabel={siteLabel}
           placeholderText={placeholderText}
         />
       </div>

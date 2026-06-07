@@ -73,7 +73,7 @@ export const AdBanner = ({
         </div>
       )}
 
-      {siteLabel && <div className={style.siteLabel}>{siteLabel}</div>}
+      {!banner && siteLabel && <div className={style.siteLabel}>{siteLabel}</div>}
     </>
   );
 

@@ -1,4 +1,4 @@
-"""rename pricing tech accordion titles
+"""переименовать заголовки аккордеона pricing-tech
 
 Revision ID: 0025_pricing_tech_titles
 Revises: 0024_banner_placement

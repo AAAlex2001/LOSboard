@@ -1,4 +1,4 @@
-"""make banner image_url nullable
+"""сделать banners.image_url nullable
 
 Revision ID: 0027_banner_image_nullable
 Revises: 0026_banner_video_url

@@ -29,7 +29,8 @@ function transformBannerMockups(html: string): string {
       const hNum = parseInt(h, 10);
       const nameClean = name.trim();
       const noteClean = note ? note.trim() : "";
-      const figure = `<figure class="bannerMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${wNum}px;"><figcaption class="bannerMockupLabel"><span class="bannerMockupSize">${wNum} × ${hNum}</span><span class="bannerMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
+      const displayMaxWidth = Math.min(wNum, 400);
+      const figure = `<figure class="bannerMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${displayMaxWidth}px; max-height: 500px;"><figcaption class="bannerMockupLabel"><span class="bannerMockupSize">${wNum} × ${hNum}</span><span class="bannerMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
       if (noteClean) {
         return `${figure}<p class="bannerMockupNote">${escapeAttr(noteClean)}</p>`;
       }
@@ -73,7 +74,8 @@ function transformCardMockups(html: string): string {
       const hNum = parseInt(h, 10);
       const nameClean = name.trim();
       const noteClean = note ? note.trim() : "";
-      const figure = `<figure class="cardMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${wNum}px;"><figcaption class="cardMockupLabel"><span class="cardMockupSize">${wNum} × ${hNum}</span><span class="cardMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
+      const displayMaxWidth = Math.min(wNum, 400);
+      const figure = `<figure class="cardMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${displayMaxWidth}px; max-height: 500px;"><figcaption class="cardMockupLabel"><span class="cardMockupSize">${wNum} × ${hNum}</span><span class="cardMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
       if (noteClean) {
         return `${figure}<p class="cardMockupNote">${escapeAttr(noteClean)}</p>`;
       }

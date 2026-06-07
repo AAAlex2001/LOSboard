@@ -1,8 +1,11 @@
 import os
+from typing import Any
 
 from fastapi import FastAPI
 from sqladmin import Admin
+from starlette.datastructures import FormData, UploadFile
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
 
 from admin.auth import AdminAuth
 from admin.dashboard import DashboardView
@@ -30,12 +33,31 @@ from admin.views import (
 from database import engine
 
 
+class PatchedAdmin(Admin):
+    """Чинит sqladmin: при сохранении формы пустые UploadFile и строки не оборачиваются в UploadFile."""
+
+    async def _handle_form_data(self, request: Request, obj: Any = None) -> FormData:
+        form = await request.form()
+        items = []
+        for key, value in form.multi_items():
+            if isinstance(value, UploadFile):
+                filename = (value.filename or "").strip()
+                if not filename:
+                    continue
+                items.append((key, value))
+            elif isinstance(value, str):
+                items.append((key, value))
+            else:
+                continue
+        return FormData(items)
+
+
 def setup_admin(app: FastAPI) -> None:
     secret_key = os.environ["JWT_SECRET_KEY"]
     admin_base_url = os.environ["ADMIN_BASE_URL"]
     app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
-    admin = Admin(
+    admin = PatchedAdmin(
         app=app,
         engine=engine,
         title="Админка LOSboard",

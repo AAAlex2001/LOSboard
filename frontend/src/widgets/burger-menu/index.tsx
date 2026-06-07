@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import HomeIcon from "@/src/shared/ui/Icons/HomeIcon";
-import CategoriesIcon from "@/src/shared/ui/Icons/CategoriesIcon";
 import MapIcon from "@/src/shared/ui/Icons/MapIcon";
 import ChatIcon from "@/src/shared/ui/Icons/ChatIcon";
 import HeartIcon from "@/src/shared/ui/Icons/HeartIcon";
@@ -16,13 +15,13 @@ import { Button } from "@/src/shared/ui/Button";
 import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
 import { useUnreadTotal } from "@/src/entities/chat";
 import { logout } from "@/src/shared/auth/auth-storage";
+import { ViewModeToggle } from "@/src/features/view-mode-toggle";
 import style from "./style.module.scss";
 
 interface BurgerMenuProps {
   open: boolean;
   onClose: () => void;
   isAuthenticated: boolean;
-  onCategoriesClick?: () => void;
   onMapClick?: () => void;
   onChatClick?: () => void;
   onFavoritesClick?: () => void;
@@ -32,7 +31,6 @@ export const BurgerMenu = ({
   open,
   onClose,
   isAuthenticated,
-  onCategoriesClick,
   onMapClick,
   onChatClick,
   onFavoritesClick,
@@ -158,15 +156,6 @@ export const BurgerMenu = ({
             <button
               type="button"
               className={style.menuItem}
-              onClick={wrap(onCategoriesClick)}
-            >
-              <span className={style.menuIcon}><CategoriesIcon /></span>
-              <span className={style.menuLabel}>Категории</span>
-            </button>
-
-            <button
-              type="button"
-              className={style.menuItem}
               onClick={wrap(onMapClick)}
             >
               <span className={style.menuIcon}><MapIcon /></span>
@@ -248,6 +237,10 @@ export const BurgerMenu = ({
               Войти
             </Button>
           )}
+
+          <div style={{ marginTop: 12 }}>
+            <ViewModeToggle />
+          </div>
         </div>
       </div>
     </div>,

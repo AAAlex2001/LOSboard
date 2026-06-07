@@ -4,7 +4,7 @@ import { getContentPage } from "@/src/entities/content";
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getContentPage("pricing").catch(() => null);
   const title = page?.title ?? "Реклама в «LOS»";
-  const description = "Размещение рекламы и тарифы на доске объявлений LOSboard.";
+  const description = "Размещение рекламы и тарифы на доске объявлений LOS Daily.";
   return {
     title,
     description,

@@ -27,7 +27,6 @@ from models.user import User
 
 
 def user_advertisements_block(user: Any, _attr: Any = None) -> Markup:
-    """Список объявлений пользователя с кликабельными ссылками."""
     ads = list(getattr(user, "advertisements", None) or [])
     if not ads:
         return Markup('<span style="color:#999">Без объявлений</span>')
@@ -122,12 +121,7 @@ class UserAdmin(AdminOnly, ModelView, model=User):
     form_args = {"role": {"choices": ROLE_CHOICES}}
 
     async def get_object_for_details(self, request: Request) -> Any:
-        """Eager-load объявления пользователя для детальной страницы.
-
-        Без этого форматтер `user_advertisements_block` ловит DetachedInstanceError,
-        потому что sqladmin закрывает сессию до рендера шаблона, а доступ к
-        `user.advertisements` триггерит lazy-load.
-        """
+        """Eager-load объявлений: sqladmin закрывает сессию до рендера, lazy-load кинул бы DetachedInstanceError."""
         pk = request.path_params["pk"]
         stmt = (
             select(User)

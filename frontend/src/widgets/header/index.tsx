@@ -237,7 +237,6 @@ export const Header = ({
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         isAuthenticated={authed}
-        onCategoriesClick={() => setCategoriesOpen(true)}
         onMapClick={onMapClick}
         onChatClick={onChatClick}
         onFavoritesClick={onFavoritesClick}

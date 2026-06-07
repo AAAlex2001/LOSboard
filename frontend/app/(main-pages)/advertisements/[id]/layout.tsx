@@ -18,7 +18,7 @@ function buildDescription(ad: AdSummary): string {
   const location = ad.location ? ` · ${ad.location}` : "";
   const body = ad.description?.trim()
     ? ad.description.trim().slice(0, 200)
-    : "Объявление на LOSboard — доска объявлений Республики Абхазия.";
+    : "Объявление на LOS Daily — доска объявлений Республики Абхазия.";
   return `${price}${location}. ${body}`;
 }
 

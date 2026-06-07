@@ -20,16 +20,7 @@ async def get_active_banners(
     ),
     db: AsyncSession = Depends(get_db),
 ) -> list[Banner]:
-    """Активные баннеры в порядке `sort_order`.
-
-    Поля `starts_at` / `ends_at` хранятся для админа, но не фильтруют выдачу:
-    показ контролирует тогл «Показывать на сайте». Если позже потребуется
-    автоматическое расписание — добавим cron/scheduler.
-
-    Параметр `placement` опционален. Если задан — выдаются только баннеры
-    с этим размещением; иначе возвращаются все активные баннеры (обратная
-    совместимость со старыми клиентами).
-    """
+    """Активные баннеры, отсортированные по sort_order. Поля starts_at/ends_at сейчас не фильтруют выдачу — показ управляется только is_active."""
     stmt = select(Banner).where(Banner.is_active.is_(True))
     if placement is not None:
         stmt = stmt.where(Banner.placement == placement)

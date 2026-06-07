@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
   return {
     title: page.title,
-    description: `${page.title} — официальный документ LOSboard.`,
+    description: `${page.title} — официальный документ LOS Daily.`,
   };
 }
 

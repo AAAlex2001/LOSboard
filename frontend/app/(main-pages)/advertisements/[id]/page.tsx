@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import { BackButton } from "@/src/shared/ui/BackButton";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import { parseAdvertisementIdFromParam } from "@/src/shared/lib/slug";
@@ -39,10 +38,6 @@ export default async function AdvertisementPage({ params }: PageProps) {
   const subcategory =
     category?.subcategories.find((s) => s.id === ad.subcategory_id) ?? null;
 
-  const headingTitle = category
-    ? `Категория объявлений: «${category.name}»`
-    : "Объявление";
-
   return (
     <main className={style.page}>
       <Header />
@@ -70,11 +65,6 @@ export default async function AdvertisementPage({ params }: PageProps) {
 
           <div className={style.card}>
             <div className={style.detailBlock}>
-              <div className={style.feedHeading}>
-                <BackButton className={style.backBtn} fallbackHref="/" />
-                <h1 className={style.title}>{headingTitle}</h1>
-              </div>
-
               <AdvertisementDetail
                 advertisement={ad as Advertisement}
                 categoryName={category?.name}

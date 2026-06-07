@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/src/shared/auth/auth-provider";
@@ -12,7 +13,7 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
 });
 
-const SITE_NAME = "LOSboard";
+const SITE_NAME = "LOS Daily";
 const SITE_DESCRIPTION =
   "Доска объявлений Республики Абхазия. Купить, продать, обменять — быстро и без посредников.";
 const SITE_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE_URL!).origin;
@@ -48,7 +49,33 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/los.jpg", type: "image/jpeg" },
+    ],
+    apple: { url: "/los.jpg", type: "image/jpeg" },
+    shortcut: "/favicon.ico",
+  },
 };
+
+export async function generateViewport(): Promise<Viewport> {
+  const cookieStore = await cookies();
+  const isDesktop = cookieStore.get("view-mode")?.value === "desktop";
+  return isDesktop
+    ? {
+        width: 1440,
+        initialScale: 0.3,
+        maximumScale: 5,
+        userScalable: true,
+      }
+    : {
+        width: "device-width",
+        initialScale: 1,
+        maximumScale: 5,
+        userScalable: true,
+      };
+}
 
 const websiteJsonLd = {
   "@context": "https://schema.org",

@@ -403,6 +403,10 @@
   }
 
   &[data-variant="stacked"] {
+    > h1, > h2, > h3, > h4 {
+      text-align: left;
+    }
+
     > div:not(:global(.mockupRow)) {
       grid-template-columns: 1fr !important;
     }
@@ -415,6 +419,12 @@
       flex-direction: column !important;
       align-items: center !important;
       gap: 20px !important;
+    }
+
+    :global(.bannerMockup),
+    :global(.phoneMockup),
+    :global(.cardMockup) {
+      margin: 0 auto !important;
     }
   }
 }
