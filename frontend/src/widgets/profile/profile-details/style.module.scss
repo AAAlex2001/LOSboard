@@ -35,6 +35,38 @@
   width: 100%;
 }
 
+.viewModeRow {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 0 0 10px 0;
+  width: 100%;
+}
+
+.viewModeLabel {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #999999;
+  flex-shrink: 0;
+}
+
+@media (min-width: 850px) {
+  .viewModeRow {
+    padding: 10px 0;
+    gap: 20px;
+  }
+
+  .viewModeLabel {
+    width: 152px;
+    padding: 0 10px;
+  }
+}
+
 @media (min-width: 850px) {
   .header {
     gap: 20px;

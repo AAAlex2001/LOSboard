@@ -10,11 +10,13 @@ import { useSidebarBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import { useStartChat } from "@/src/features/chat";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
+import { useMeContext } from "@/src/entities/user";
 import style from "./style.module.scss";
 
 interface AdvertisementSidebarProps {
   advertisementId: number;
   price: number;
+  ownerId: number;
   sellerPhone?: string | null;
   canMessageSeller?: boolean;
 }
@@ -24,6 +26,7 @@ const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 export const AdvertisementSidebar = ({
   advertisementId,
   price,
+  ownerId,
   sellerPhone,
   canMessageSeller = true,
 }: AdvertisementSidebarProps) => {
@@ -32,6 +35,8 @@ export const AdvertisementSidebar = ({
   const { loading: startingChat, start } = useStartChat();
   const banners = useSidebarBanners();
   const settings = useSiteSettings();
+  const { user: currentUser } = useMeContext();
+  const isOwnAd = currentUser?.id === ownerId;
 
   const handleCall = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!checkAuth()) {
@@ -56,7 +61,7 @@ export const AdvertisementSidebar = ({
       <div className={style.priceBlock}>
         <div className={style.price}>{formatPrice(price)}</div>
         <div className={style.contactButtons}>
-          {phoneTel ? (
+          {phoneTel && !isOwnAd ? (
             <a
               href={`tel:${phoneTel}`}
               className={style.callLink}
@@ -67,7 +72,14 @@ export const AdvertisementSidebar = ({
               </Button>
             </a>
           ) : (
-            <Button type="button" variant="filled" color="blue" fullWidth disabled>
+            <Button
+              type="button"
+              variant="filled"
+              color="blue"
+              fullWidth
+              disabled
+              title={isOwnAd ? "Это ваше объявление" : undefined}
+            >
               Позвонить продавцу
             </Button>
           )}
@@ -76,7 +88,8 @@ export const AdvertisementSidebar = ({
               type="button"
               className={style.messageBtn}
               onClick={handleMessage}
-              disabled={startingChat}
+              disabled={startingChat || isOwnAd}
+              title={isOwnAd ? "Это ваше объявление" : undefined}
             >
               {startingChat ? "Открываем чат…" : "Написать продавцу"}
             </button>

@@ -145,43 +145,41 @@ export const AdvertisementDetail = ({
 
           <div className={style.contactsBlock}>
             <span className={style.label}>Узнайте больше</span>
-            {isOwnAd ? (
-              <div className={style.ownAdHint}>Это ваше объявление</div>
-            ) : (
-              <div className={style.contactButtons}>
-                {phoneTel ? (
-                  <a
-                    href={`tel:${phoneTel}`}
-                    className={style.callLink}
-                    onClick={handleCall}
-                  >
-                    <Button type="button" variant="filled" color="blue" fullWidth>
-                      Позвонить продавцу
-                    </Button>
-                  </a>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="filled"
-                    color="blue"
-                    fullWidth
-                    disabled
-                  >
+            <div className={style.contactButtons}>
+              {phoneTel && !isOwnAd ? (
+                <a
+                  href={`tel:${phoneTel}`}
+                  className={style.callLink}
+                  onClick={handleCall}
+                >
+                  <Button type="button" variant="filled" color="blue" fullWidth>
                     Позвонить продавцу
                   </Button>
-                )}
-                {canMessageSeller && (
-                  <button
-                    type="button"
-                    className={style.messageBtn}
-                    onClick={handleMessage}
-                    disabled={startingChat}
-                  >
-                    {startingChat ? "Открываем чат…" : "Написать продавцу"}
-                  </button>
-                )}
-              </div>
-            )}
+                </a>
+              ) : (
+                <Button
+                  type="button"
+                  variant="filled"
+                  color="blue"
+                  fullWidth
+                  disabled
+                  title={isOwnAd ? "Это ваше объявление" : undefined}
+                >
+                  Позвонить продавцу
+                </Button>
+              )}
+              {canMessageSeller && (
+                <button
+                  type="button"
+                  className={style.messageBtn}
+                  onClick={handleMessage}
+                  disabled={startingChat || isOwnAd}
+                  title={isOwnAd ? "Это ваше объявление" : undefined}
+                >
+                  {startingChat ? "Открываем чат…" : "Написать продавцу"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

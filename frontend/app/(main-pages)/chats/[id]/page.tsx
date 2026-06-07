@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
-import { Breadcrumbs, type BreadcrumbItem } from "@/src/shared/ui/Breadcrumbs";
+import { type BreadcrumbItem } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { ChatsShell } from "@/src/widgets/chat/chats-shell";
 import { ConversationThread } from "@/src/widgets/chat/conversation-thread";
 import {
@@ -51,6 +52,7 @@ export default function ChatThreadPage() {
   return (
     <main className={style.page}>
       <Header />
+      {ready && <CrumbsBar items={items} />}
       <div className={style.content}>
         {!ready ? (
           <div className={style.loadingArea}>
@@ -58,10 +60,6 @@ export default function ChatThreadPage() {
           </div>
         ) : (
           <div className={style.layout}>
-            <div className={style.crumbsSlot}>
-              <Breadcrumbs items={items} />
-            </div>
-
             <div className={style.feedSlot}>
               <div className={style.feedHeading}>
                 <h1 className={style.title}>Сообщения</h1>

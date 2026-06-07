@@ -76,11 +76,21 @@ export const Header = ({
 
   const handleSelectCategory = (cat: Category) => {
     setCategoriesOpen(false);
+    if (cat.slug === "urgent") {
+      router.push("/?urgent=1");
+      return;
+    }
+    router.push(`/category/${cat.slug}`);
     onSelectCategory?.(cat);
   };
 
   const handleSelectSubcategory = (sub: Subcategory, cat: Category) => {
     setCategoriesOpen(false);
+    if (cat.slug === "urgent") {
+      router.push("/?urgent=1");
+      return;
+    }
+    router.push(`/category/${cat.slug}/${sub.slug}`);
     onSelectSubcategory?.(sub, cat);
   };
 

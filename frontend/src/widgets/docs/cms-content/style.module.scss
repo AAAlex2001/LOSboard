@@ -29,7 +29,7 @@
   > :global(.bannerMockup),
   > :global(.phoneMockup),
   > :global(.cardMockup) {
-    margin-top: 30px;
+    margin-top: 50px;
   }
 
   > h2 + :global(.bannerMockup),
@@ -38,7 +38,18 @@
   > h3 + :global(.bannerMockup),
   > h3 + :global(.phoneMockup),
   > h3 + :global(.cardMockup) {
-    margin-top: 30px !important;
+    margin-top: 50px !important;
+  }
+
+  > :global(.bannerMockup) + blockquote,
+  > :global(.bannerMockup) + div:not(:global(.mockupRow)),
+  > :global(.phoneMockup) + blockquote,
+  > :global(.phoneMockup) + div:not(:global(.mockupRow)),
+  > :global(.cardMockup) + blockquote,
+  > :global(.cardMockup) + div:not(:global(.mockupRow)),
+  > :global(.mockupRow) + blockquote,
+  > :global(.mockupRow) + div:not(:global(.mockupRow)) {
+    margin-top: 50px !important;
   }
 
   :global(.cmsParen) {
@@ -64,6 +75,9 @@
     color: #000000;
     font-family: Inter;
     font-weight: 600;
+    text-align: left !important;
+    width: 100% !important;
+    display: block !important;
   }
   > h1 { font-size: 24px; line-height: 30px; }
   > h2 { font-size: 16px; line-height: 19px; }
@@ -399,13 +413,13 @@
   }
 
   > :global(.mockupRow) {
-    margin-top: 30px;
+    margin-top: 50px;
   }
 
   > h2 + :global(.mockupRow),
   > h3 + :global(.mockupRow),
   > h4 + :global(.mockupRow) {
-    margin-top: 30px;
+    margin-top: 50px;
   }
 
   > :global(.mockupRow) > :global(.bannerMockup),
@@ -444,6 +458,12 @@
     :global(.phoneMockup),
     :global(.cardMockup) {
       margin: 0 auto !important;
+    }
+
+    > blockquote,
+    > div:not(:global(.mockupRow)) > blockquote {
+      width: 100% !important;
+      max-width: 100% !important;
     }
   }
 }

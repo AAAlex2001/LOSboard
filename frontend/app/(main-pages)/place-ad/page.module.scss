@@ -28,11 +28,6 @@
   min-width: 0;
 }
 
-.breadcrumbs {
-  display: block;
-  width: 100%;
-}
-
 .formBlock {
   display: flex;
   flex-direction: column;
@@ -80,15 +75,9 @@
     padding: 0 60px;
     display: grid;
     grid-template-columns: 1fr 300px;
-    grid-template-areas:
-      "crumbs crumbs"
-      "form sidebar";
+    grid-template-areas: "form sidebar";
     column-gap: 40px;
     row-gap: 40px;
-  }
-
-  .breadcrumbs {
-    grid-area: crumbs;
   }
 
   .formBlock {

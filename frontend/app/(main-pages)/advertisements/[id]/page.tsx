@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { AdvertisementDetail } from "@/src/widgets/advertisement/advertisement-detail";
 import { AdvertisementSidebar } from "@/src/widgets/advertisement/advertisement-sidebar";
 import { parseAdvertisementIdFromParam } from "@/src/shared/lib/slug";
@@ -41,28 +41,25 @@ export default async function AdvertisementPage({ params }: PageProps) {
   return (
     <main className={style.page}>
       <Header />
+      <CrumbsBar
+        items={[
+          { label: "Главная", href: "/" },
+          ...(category
+            ? [{ label: category.name, href: `/category/${category.slug}` }]
+            : []),
+          ...(category && subcategory
+            ? [
+                {
+                  label: subcategory.name,
+                  href: `/category/${category.slug}/${subcategory.slug}`,
+                },
+              ]
+            : []),
+          { label: ad.title },
+        ]}
+      />
       <div className={style.content}>
         <div className={style.container}>
-          <div className={style.breadcrumbs}>
-            <Breadcrumbs
-              items={[
-                { label: "Главная", href: "/" },
-                ...(category
-                  ? [{ label: category.name, href: `/category/${category.slug}` }]
-                  : []),
-                ...(category && subcategory
-                  ? [
-                      {
-                        label: subcategory.name,
-                        href: `/category/${category.slug}/${subcategory.slug}`,
-                      },
-                    ]
-                  : []),
-                { label: ad.title },
-              ]}
-            />
-          </div>
-
           <div className={style.card}>
             <div className={style.detailBlock}>
               <AdvertisementDetail
@@ -76,6 +73,7 @@ export default async function AdvertisementPage({ params }: PageProps) {
               <AdvertisementSidebar
                 advertisementId={ad.id}
                 price={ad.price}
+                ownerId={ad.owner_id ?? 0}
                 sellerPhone={ad.seller_phone}
               />
             </div>

@@ -44,6 +44,7 @@ export const PromoCarousel = ({
       perView: slidesPerView,
       spacing,
     },
+    created: (s) => s.update(),
     slideChanged: (s) => setCurrentSlide(s.track.details.rel),
   });
 

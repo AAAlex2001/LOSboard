@@ -29,11 +29,6 @@
   min-width: 0;
 }
 
-.crumbsSlot {
-  display: block;
-  width: 100%;
-}
-
 .feedSlot {
   display: flex;
   flex-direction: column;
@@ -81,15 +76,9 @@
     padding: 0 60px;
     display: grid;
     grid-template-columns: 1fr 300px;
-    grid-template-areas:
-      "crumbs crumbs"
-      "feed sidebar";
+    grid-template-areas: "feed sidebar";
     column-gap: 40px;
     row-gap: 40px;
-  }
-
-  .crumbsSlot {
-    grid-area: crumbs;
   }
 
   .feedSlot {

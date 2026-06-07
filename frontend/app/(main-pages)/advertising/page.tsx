@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { HeroBanner } from "@/src/widgets/advertising/hero-banner";
 import { NoteLine } from "@/src/widgets/advertising/note-line";
 import { PromoBanner } from "@/src/widgets/advertising/promo-banner";
@@ -83,18 +83,15 @@ export default async function AdvertisingPage() {
   return (
     <main className={style.page}>
       <Header />
+      <CrumbsBar
+        items={[
+          { label: "Главная", href: "/" },
+          { label: "Документы сайта", href: "/docs" },
+          { label: PAGE_TITLE },
+        ]}
+      />
       <div className={style.content}>
         <div className={style.layout}>
-          <div className={style.crumbsSlot}>
-            <Breadcrumbs
-              items={[
-                { label: "Главная", href: "/" },
-                { label: "Документы сайта", href: "/docs" },
-                { label: PAGE_TITLE },
-              ]}
-            />
-          </div>
-
           <div className={style.headingRow}>
             <h1 className={style.title}>{PAGE_TITLE}</h1>
           </div>

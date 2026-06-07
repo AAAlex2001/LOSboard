@@ -7,6 +7,8 @@ import { Footer } from "@/src/widgets/footer";
 import { CatalogTopBar } from "@/src/widgets/advertisement/catalog-topbar";
 import { CatalogFeed } from "@/src/widgets/advertisement/catalog-feed";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
+import type { BreadcrumbItem } from "@/src/shared/ui/Breadcrumbs";
 import {
   URGENT_CATEGORY,
   URGENT_CATEGORY_ID,
@@ -105,6 +107,24 @@ export const CatalogPage = ({
 
   const displayCategory = state.urgentOnly ? URGENT_CATEGORY : activeCategory;
   const displaySubcategory = state.urgentOnly ? null : activeSubcategory;
+  const hasFilter = Boolean(displayCategory || displaySubcategory);
+
+  const crumbItems: BreadcrumbItem[] = hasFilter
+    ? [
+        { label: "Главная", onClick: handleReset },
+        ...(displayCategory
+          ? [
+              {
+                label: displayCategory.name,
+                onClick: displaySubcategory
+                  ? () => handleSelectSubcategory(null, displayCategory)
+                  : undefined,
+              },
+            ]
+          : []),
+        ...(displaySubcategory ? [{ label: displaySubcategory.name }] : []),
+      ]
+    : [];
 
   return (
     <main className={style.page}>
@@ -112,6 +132,7 @@ export const CatalogPage = ({
         onSelectCategory={handleSelectCategory}
         onSelectSubcategory={handleSelectSubcategory}
       />
+      {hasFilter && <CrumbsBar items={crumbItems} />}
       <div className={style.content}>
         <div className={style.layout}>
           <div className={style.topbarSlot}>
@@ -120,7 +141,6 @@ export const CatalogPage = ({
               subcategory={displaySubcategory}
               onSelectCategory={handleSelectCategory}
               onSelectSubcategory={handleSelectSubcategory}
-              onReset={handleReset}
             />
           </div>
           <div className={style.feedSlot}>

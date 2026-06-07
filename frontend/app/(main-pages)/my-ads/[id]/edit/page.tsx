@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { PlaceAdForm } from "@/src/features/place-ad";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
 import { getAdvertisement } from "@/src/entities/advertisement";
@@ -66,19 +66,16 @@ export default function EditAdPage() {
   return (
     <main className={style.page}>
       <Header />
+      <CrumbsBar
+        items={[
+          { label: "Главная", href: "/" },
+          { label: "Личный профиль", href: "/profile" },
+          { label: "Мои объявления", href: "/my-ads" },
+          { label: adTitle || "Редактирование" },
+        ]}
+      />
       <div className={style.content}>
         <div className={style.container}>
-          <div className={style.breadcrumbs}>
-            <Breadcrumbs
-              items={[
-                { label: "Главная", href: "/" },
-                { label: "Личный профиль", href: "/profile" },
-                { label: "Мои объявления", href: "/my-ads" },
-                { label: adTitle || "Редактирование" },
-              ]}
-            />
-          </div>
-
           <div className={style.formBlock}>
             <div className={style.feedHeading}>
               <h1 className={style.title}>

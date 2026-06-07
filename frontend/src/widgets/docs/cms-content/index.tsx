@@ -110,10 +110,12 @@ function wrapBlockquoteGroups(html: string): string {
 
 function wrapParensInHeadings(html: string): string {
   return html.replace(
-    /(<h[1-4]\b[^>]*>)([\s\S]*?)(<\/h[1-4]>)/gi,
-    (_match, open, content, close) => {
-      const replaced = content.replace(/\s*\(([^)]+)\)/g, ' <span class="cmsParen">($1)</span>');
-      return `${open}${replaced}${close}`;
+    /<(h[1-4])\b([^>]*)>([\s\S]*?)<\/h[1-4]>/gi,
+    (_match, tag, attrs, content) => {
+      const innerReplaced = content.replace(/\s*\(([^)]+)\)/g, ' <span class="cmsParen">($1)</span>');
+      const hasStyle = /style\s*=/i.test(attrs);
+      const styleAttr = hasStyle ? '' : ' style="text-align:left;"';
+      return `<${tag}${attrs}${styleAttr}>${innerReplaced}</${tag}>`;
     }
   );
 }

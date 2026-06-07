@@ -13,7 +13,6 @@ import { CategoriesStrip } from "@/src/widgets/advertisement/categories-strip";
 import { PromoCarousel } from "@/src/widgets/advertisement/promo-carousel";
 import { useMainTopBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import style from "./style.module.scss";
 
 interface CatalogTopBarProps {
@@ -21,7 +20,6 @@ interface CatalogTopBarProps {
   subcategory: Subcategory | null;
   onSelectCategory: (cat: Category | null) => void;
   onSelectSubcategory: (sub: Subcategory | null, cat: Category | null) => void;
-  onReset: () => void;
 }
 
 export const CatalogTopBar = ({
@@ -29,7 +27,6 @@ export const CatalogTopBar = ({
   subcategory,
   onSelectCategory,
   onSelectSubcategory,
-  onReset,
 }: CatalogTopBarProps) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const banners = useMainTopBanners();
@@ -55,26 +52,7 @@ export const CatalogTopBar = ({
 
   return (
     <div className={style.topbar}>
-      {hasFilter ? (
-        <div className={style.breadcrumbs}>
-          <Breadcrumbs
-            items={[
-              { label: "Главная", onClick: onReset },
-              ...(category
-                ? [
-                    {
-                      label: category.name,
-                      onClick: subcategory
-                        ? () => onSelectSubcategory(null, category)
-                        : undefined,
-                    },
-                  ]
-                : []),
-              ...(subcategory ? [{ label: subcategory.name }] : []),
-            ]}
-          />
-        </div>
-      ) : (
+      {!hasFilter && (
         <div className={style.heroHeading}>
           <h1 className={style.title}>{headerLabel}</h1>
         </div>

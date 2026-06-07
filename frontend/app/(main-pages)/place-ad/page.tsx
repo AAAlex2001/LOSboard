@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { PlaceAdForm } from "@/src/features/place-ad";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
@@ -26,6 +26,14 @@ export default function PlaceAdPage() {
   return (
     <main className={style.page}>
       <Header />
+      {ready && (
+        <CrumbsBar
+          items={[
+            { label: "Главная", href: "/" },
+            { label: "Подать объявление" },
+          ]}
+        />
+      )}
       <div className={style.content}>
         {!ready ? (
           <div className={style.loadingArea}>
@@ -33,15 +41,6 @@ export default function PlaceAdPage() {
           </div>
         ) : (
           <div className={style.container}>
-            <div className={style.breadcrumbs}>
-              <Breadcrumbs
-                items={[
-                  { label: "Главная", href: "/" },
-                  { label: "Подать объявление" },
-                ]}
-              />
-            </div>
-
             <div className={style.formBlock}>
               <div className={style.feedHeading}>
                 <h1 className={style.title}>Размещение объявления</h1>

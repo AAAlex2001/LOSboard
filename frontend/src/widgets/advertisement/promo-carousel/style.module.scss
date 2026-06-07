@@ -10,10 +10,19 @@
   width: 100%;
 }
 
+.track :global(.keen-slider) {
+  overflow: hidden;
+}
+
 .track :global(.keen-slider__slide) {
-  display: flex;
+  display: flex !important;
   justify-content: center;
   align-items: center;
+  min-width: 0;
+}
+
+.track:not(:global(.keen-slider--initialized)) :global(.keen-slider__slide) {
+  margin-right: 25px;
 }
 
 .arrow {

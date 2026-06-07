@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { DocsList } from "@/src/widgets/docs/docs-list";
 import { listContentPages } from "@/src/entities/content";
 import style from "./page.module.scss";
@@ -15,17 +15,14 @@ export default async function DocsPage() {
   return (
     <main className={style.page}>
       <Header />
+      <CrumbsBar
+        items={[
+          { label: "Главная", href: "/" },
+          { label: "Документы сайта" },
+        ]}
+      />
       <div className={style.content}>
         <div className={style.layout}>
-          <div className={style.crumbsSlot}>
-            <Breadcrumbs
-              items={[
-                { label: "Главная", href: "/" },
-                { label: "Документы сайта" },
-              ]}
-            />
-          </div>
-
           <div className={style.headingRow}>
             <h1 className={style.title}>Документы сайта «LOS»</h1>
           </div>

@@ -10,6 +10,7 @@ type ButtonProps = {
   children?: React.ReactNode;
   disabled?: boolean;
   fullWidth?: boolean;
+  title?: string;
 };
 
 export const Button = (props: ButtonProps) => {
@@ -38,6 +39,7 @@ export const Button = (props: ButtonProps) => {
       type={buttonType}
       onClick={props.onClick}
       disabled={props.disabled}
+      title={props.title}
     >
       {props.text}
       {props.children}

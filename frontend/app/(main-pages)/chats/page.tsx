@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
+import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { ChatsShell } from "@/src/widgets/chat/chats-shell";
 import { EmptyChatPlaceholder } from "@/src/entities/chat";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
@@ -26,6 +26,14 @@ export default function ChatsPage() {
   return (
     <main className={style.page}>
       <Header />
+      {ready && (
+        <CrumbsBar
+          items={[
+            { label: "Главная", href: "/" },
+            { label: "Сообщения" },
+          ]}
+        />
+      )}
       <div className={style.content}>
         {!ready ? (
           <div className={style.loadingArea}>
@@ -33,15 +41,6 @@ export default function ChatsPage() {
           </div>
         ) : (
           <div className={style.layout}>
-            <div className={style.crumbsSlot}>
-              <Breadcrumbs
-                items={[
-                  { label: "Главная", href: "/" },
-                  { label: "Сообщения" },
-                ]}
-              />
-            </div>
-
             <div className={style.feedSlot}>
               <div className={style.feedHeading}>
                 <h1 className={style.title}>Сообщения</h1>
