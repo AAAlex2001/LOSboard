@@ -459,5 +459,12 @@
       width: 100%;
       max-width: 100%;
     }
+
+    > div:not(:global(.mockupRow)) > blockquote,
+    > blockquote {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
   }
 }
