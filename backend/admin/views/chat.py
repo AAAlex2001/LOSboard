@@ -5,8 +5,11 @@ from typing import Any
 
 from markupsafe import Markup, escape
 from sqladmin import ModelView
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from admin.views.common import AdminOnly, img_thumb
+from database import AsyncSessionLocal
 from models.chat import Conversation, Message
 
 
@@ -129,3 +132,27 @@ class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
     column_formatters_detail = {
         Conversation.messages: conversation_thread,
     }
+
+    async def get_object_for_details(self, value: Any) -> Any:
+        """Eager-load переписки с отправителями и вложениями.
+
+        Без этого Jinja-форматтер ловит DetachedInstanceError, потому что
+        sqladmin закрывает сессию до рендера шаблона, а доступ к
+        `msg.sender` / `msg.attachments` триггерит lazy-load.
+        """
+        stmt = (
+            select(Conversation)
+            .where(Conversation.id == int(value))
+            .options(
+                selectinload(Conversation.advertisement),
+                selectinload(Conversation.buyer),
+                selectinload(Conversation.seller),
+                selectinload(Conversation.messages).options(
+                    selectinload(Message.sender),
+                    selectinload(Message.attachments),
+                ),
+            )
+        )
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(stmt)
+            return result.unique().scalar_one_or_none()

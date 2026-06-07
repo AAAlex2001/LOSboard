@@ -15,6 +15,13 @@ import style from "./page.module.scss";
 const PAGE_TITLE = "Реклама в «LOS»";
 const ACCORDION_HEADING = "Технические характеристики рекламы";
 
+const ACCORDION_ITEMS: ReadonlyArray<{ title: string; slug: string }> = [
+  { title: "Реклама на сайте LOS", slug: "pricing-tech-board" },
+  { title: "Реклама в соцсетях LOS", slug: "pricing-tech-social" },
+  { title: "Реклама в мобильном приложении LOS", slug: "pricing-tech-mobile" },
+  { title: "Реклама на сайте Тур-гид LOS", slug: "pricing-tech-tour" },
+];
+
 function stripHtmlTags(html: string): string {
   return html
     .replace(/<[^>]+>/g, "")
@@ -30,16 +37,21 @@ function extractLeadingParagraphs(
   const paragraphs: string[] = [];
   let rest = html;
   for (let i = 0; i < count; i++) {
-    const match = rest.match(/^\s*<p>([\s\S]*?)<\/p>\s*/);
+    const match = rest.match(/^\s*<p\b[^>]*>([\s\S]*?)<\/p>\s*/i);
     if (!match) break;
-    paragraphs.push(stripHtmlTags(match[1]));
+    const text = stripHtmlTags(match[1]);
+    if (!text) {
+      rest = rest.slice(match[0].length);
+      continue;
+    }
+    paragraphs.push(text);
     rest = rest.slice(match[0].length);
   }
   return { paragraphs, rest };
 }
 
 function splitByHr(html: string): [string, string] {
-  const match = html.match(/<hr\s*\/?>/i);
+  const match = html.match(/<hr\b[^>]*\/?>/i);
   if (!match) return [html, ""];
   const idx = html.indexOf(match[0]);
   return [
@@ -48,27 +60,13 @@ function splitByHr(html: string): [string, string] {
   ];
 }
 
-function parseAccordionItems(
-  html: string,
-): Array<{ title: string; content: string }> {
-  const parts = html.split(/(<h2\b[^>]*>[\s\S]*?<\/h2>)/i);
-  const items: Array<{ title: string; content: string }> = [];
-  for (let i = 0; i < parts.length; i++) {
-    const headingMatch = parts[i].match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/i);
-    if (!headingMatch) continue;
-    const title = stripHtmlTags(headingMatch[1]);
-    const content = (parts[i + 1] ?? "").trim();
-    items.push({ title, content });
-    i += 1;
-  }
-  return items;
-}
-
 export default async function AdvertisingPage() {
-  const [main, promo, tech] = await Promise.all([
+  const [main, promo, ...techPages] = await Promise.all([
     getContentPage("pricing").catch(() => null),
     getContentPage("pricing-promo").catch(() => null),
-    getContentPage("pricing-tech").catch(() => null),
+    ...ACCORDION_ITEMS.map((item) =>
+      getContentPage(item.slug).catch(() => null),
+    ),
   ]);
 
   const body = main?.body ?? "";
@@ -78,7 +76,10 @@ export default async function AdvertisingPage() {
   const [beforeHr, afterHr] = splitByHr(rest);
 
   const promoText = stripHtmlTags(promo?.body ?? "");
-  const accordionItems = parseAccordionItems(tech?.body ?? "");
+  const accordionItems = ACCORDION_ITEMS.map((item, index) => ({
+    title: item.title,
+    body: techPages[index]?.body ?? "",
+  })).filter((item) => item.body.trim());
 
   return (
     <main className={style.page}>
@@ -111,9 +112,7 @@ export default async function AdvertisingPage() {
                 heading={ACCORDION_HEADING}
                 items={accordionItems.map((item) => ({
                   title: item.title,
-                  content: item.content ? (
-                    <CmsContent body={item.content} />
-                  ) : null,
+                  content: <CmsContent body={item.body} />,
                 }))}
               />
             )}

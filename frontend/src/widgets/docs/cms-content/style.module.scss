@@ -3,6 +3,7 @@
   flex-direction: column;
   font-family: Inter;
   width: 100%;
+  color: #000000;
 
   > * { margin: 0; }
   > * + * { margin-top: 40px; }
@@ -14,14 +15,20 @@
     margin-top: 20px;
   }
 
-  > h1 + blockquote,
-  > h2 + blockquote,
-  > h3 + blockquote,
-  > h4 + blockquote {
+  > h1 + blockquote, > h1 + div,
+  > h2 + blockquote, > h2 + div,
+  > h3 + blockquote, > h3 + div,
+  > h4 + blockquote, > h4 + div {
     margin-top: 10px;
   }
 
   > blockquote + blockquote {
+    margin-top: 20px;
+  }
+
+  > :global(.bannerMockup),
+  > :global(.phoneMockup),
+  > :global(.cardMockup) {
     margin-top: 20px;
   }
 
@@ -32,7 +39,10 @@
   > ol + p,
   > p + blockquote,
   > ul + blockquote,
-  > ol + blockquote {
+  > ol + blockquote,
+  > p + div,
+  > ul + div,
+  > ol + div {
     margin-top: 20px;
   }
 
@@ -51,7 +61,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
-    color: #383F45;
+    color: #000000;
     white-space: pre-wrap;
   }
 
@@ -64,17 +74,18 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
-    color: #383F45;
+    color: #000000;
   }
 
-  > blockquote + p {
+  > blockquote + p,
+  > div + p {
     font-size: 14px;
     line-height: 17px;
     color: #000000;
     margin-top: 20px;
   }
 
-  > blockquote {
+  blockquote {
     background: #EDF5FF;
     border-radius: 20px;
     padding: 20px;
@@ -114,17 +125,12 @@
     }
   }
 
-  > blockquote[data-highlighted="true"],
-  > div > blockquote[data-highlighted="true"] {
-    background: rgba(17, 41, 189, 0.5);
+  blockquote[data-highlighted="true"] {
+    background: #1129BD;
 
-    p { color: #FFFFFF; }
-    strong { color: #FFFFFF; }
-    em { color: #FFFFFF; }
-    a { color: #FFFFFF; }
+    p, strong, em, a { color: #FFFFFF; }
   }
 
-  // Wrapper around blockquote groups becomes a responsive grid
   > div {
     display: grid;
     grid-template-columns: 1fr;
@@ -137,35 +143,11 @@
     }
   }
 
-  // Reset blockquote inside div — grid handles spacing
   > div > blockquote {
-    margin: 0 !important;
+    margin: 0;
   }
 
-  // Gap between H2 and a div-wrapped card group: 10px (same as h2 + blockquote)
-  > h1 + div,
-  > h2 + div,
-  > h3 + div,
-  > h4 + div {
-    margin-top: 10px;
-  }
-
-  // Gap between p/ul/ol and div: 20px (same as p + blockquote)
-  > p + div,
-  > ul + div,
-  > ol + div {
-    margin-top: 20px;
-  }
-
-  // div + p (e.g. day-off after cards group in contacts): 20px, 14/17 #000 like blockquote + p
-  > div + p {
-    font-size: 14px;
-    line-height: 17px;
-    color: #000000;
-    margin-top: 20px;
-  }
-
-  strong { color: #383F45; font-weight: 700; }
+  strong { color: #000000; font-weight: 700; }
   em { color: #1129BD; font-style: italic; }
   a { color: #1129BD; text-decoration: underline; }
 
@@ -173,5 +155,206 @@
     border: none;
     border-top: 1px solid #E5E7EE;
     margin: 20px 0;
+  }
+
+  :global(.bannerMockup) {
+    position: relative;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #979797;
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  :global(.bannerMockupLabel) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    gap: 4px;
+    background: #FFFFFF;
+  }
+
+  :global(.bannerMockupSize) {
+    font-family: Inter;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+  }
+
+  :global(.bannerMockupName) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.38);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  > :global(.bannerMockupNote) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(27, 31, 38, 0.72);
+    text-align: center;
+    margin-top: 10px !important;
+  }
+
+  :global(.phoneMockup) {
+    position: relative;
+    width: 200px;
+    aspect-ratio: 402 / 874;
+    background: #FFFFFF;
+    border: 1px solid #A6A6A6;
+    border-radius: 44px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  :global(.phoneMockupLabel) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    gap: 4px;
+    background: #FFFFFF;
+  }
+
+  :global(.phoneMockupSize) {
+    font-family: Inter;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+  }
+
+  :global(.phoneMockupName) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.38);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  > :global(.phoneMockupNote) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(27, 31, 38, 0.72);
+    text-align: center;
+    margin-top: 10px !important;
+  }
+
+  > :global(.cmsNote) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(17, 41, 189, 0.5);
+    text-align: center;
+  }
+
+  :global(.cardMockup) {
+    position: relative;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid rgba(128, 128, 128, 0.55);
+    border-radius: 15px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  :global(.cardMockupLabel) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    gap: 4px;
+    background: #FFFFFF;
+  }
+
+  :global(.cardMockupSize) {
+    font-family: Inter;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+  }
+
+  :global(.cardMockupName) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.38);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  > :global(.cardMockupNote) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(27, 31, 38, 0.72);
+    text-align: center;
+    margin-top: 10px !important;
+  }
+
+  > :global(.cmsHint) {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(27, 31, 38, 0.72);
+    text-align: center;
+  }
+
+  :global(.mockupRow) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+
+  @media (min-width: 850px) {
+    :global(.mockupRow) {
+      flex-direction: row;
+      justify-content: center;
+      gap: 60px;
+    }
+  }
+
+  > :global(.mockupRow) {
+    margin-top: 20px;
+  }
+
+  > :global(.mockupRow) > :global(.bannerMockup),
+  > :global(.mockupRow) > :global(.phoneMockup),
+  > :global(.mockupRow) > :global(.cardMockup) {
+    margin: 0;
   }
 }
