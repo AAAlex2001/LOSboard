@@ -9,25 +9,6 @@
 .track {
   width: 100%;
   overflow: hidden;
-  display: flex;
-  gap: var(--slides-spacing);
-}
-
-.track :global(.keen-slider__slide) {
-  flex: 0 0 calc(
-    (100% - (var(--slides-per-view) - 1) * var(--slides-spacing))
-    / var(--slides-per-view)
-  );
-  min-width: 0;
-}
-
-.track:global(.keen-slider--initialized) {
-  display: block;
-  gap: 0;
-}
-
-.track:global(.keen-slider--initialized) :global(.keen-slider__slide) {
-  flex: initial;
 }
 
 .slideInner {

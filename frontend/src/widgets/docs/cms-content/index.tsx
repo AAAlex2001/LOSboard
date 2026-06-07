@@ -164,11 +164,23 @@ function preprocess(html: string): string {
 }
 
 export const CmsContent = ({ body, variant = "default" }: CmsContentProps) => {
+  let processed = preprocess(body);
+  if (variant === "stacked") {
+    processed = processed.replace(
+      /<blockquote\b([^>]*)>/gi,
+      (_m, attrs) => {
+        const cleanedAttrs = attrs
+          .replace(/\sstyle\s*=\s*"[^"]*"/gi, "")
+          .replace(/\sstyle\s*=\s*'[^']*'/gi, "");
+        return `<blockquote${cleanedAttrs} style="width:100%;max-width:100%;box-sizing:border-box;">`;
+      }
+    );
+  }
   return (
     <article
       className={style.content}
       data-variant={variant}
-      dangerouslySetInnerHTML={{ __html: preprocess(body) }}
+      dangerouslySetInnerHTML={{ __html: processed }}
     />
   );
 };

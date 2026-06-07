@@ -53,16 +53,13 @@ export const PromoCarousel = ({
 
   if (slots.length === 0) return null;
 
+  const slideStyle: React.CSSProperties = {
+    flex: `0 0 calc((100% - ${(slidesPerView - 1) * spacing}px) / ${slidesPerView})`,
+    minWidth: 0,
+  };
+
   return (
-    <div
-      className={style.carousel}
-      style={
-        {
-          "--slides-per-view": slidesPerView,
-          "--slides-spacing": `${spacing}px`,
-        } as React.CSSProperties
-      }
-    >
+    <div className={style.carousel}>
       {canRotate && !isAtStart && (
         <button
           type="button"
@@ -75,7 +72,11 @@ export const PromoCarousel = ({
       )}
       <div ref={sliderRef} className={`keen-slider ${style.track}`}>
         {slots.map((banner, i) => (
-          <div key={banner?.id ?? `empty-${i}`} className="keen-slider__slide">
+          <div
+            key={banner?.id ?? `empty-${i}`}
+            className="keen-slider__slide"
+            style={slideStyle}
+          >
             <div className={style.slideInner}>
               <AdBanner
                 variant={variant}
