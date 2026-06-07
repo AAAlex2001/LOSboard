@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import { BackButton } from "@/src/shared/ui/BackButton";
 import { HeroBanner } from "@/src/widgets/advertising/hero-banner";
 import { NoteLine } from "@/src/widgets/advertising/note-line";
 import { PromoBanner } from "@/src/widgets/advertising/promo-banner";
@@ -97,7 +96,6 @@ export default async function AdvertisingPage() {
           </div>
 
           <div className={style.headingRow}>
-            <BackButton className={style.backBtn} fallbackHref="/" />
             <h1 className={style.title}>{PAGE_TITLE}</h1>
           </div>
 

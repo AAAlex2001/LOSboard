@@ -5,8 +5,8 @@ import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { AdBanner, type AdBannerVariant } from "@/src/entities/ad-banner";
 import type { Banner } from "@/src/entities/banner";
-import ChevronLeftIcon from "@/src/shared/ui/Icons/ChevronLeftIcon";
-import ChevronRightIcon from "@/src/shared/ui/Icons/ChevronRightIcon";
+import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
+import ArrowRightIcon from "@/src/shared/ui/Icons/ArrowRightIcon";
 import style from "./style.module.scss";
 
 interface PromoCarouselProps {
@@ -65,7 +65,7 @@ export const PromoCarousel = ({
           onClick={() => instanceRef.current?.prev()}
           aria-label="Предыдущий баннер"
         >
-          <ChevronLeftIcon />
+          <ArrowLeftIcon />
         </button>
       )}
       <div ref={sliderRef} className={`keen-slider ${style.track}`}>
@@ -88,7 +88,7 @@ export const PromoCarousel = ({
           onClick={() => instanceRef.current?.next()}
           aria-label="Следующий баннер"
         >
-          <ChevronRightIcon />
+          <ArrowRightIcon />
         </button>
       )}
     </div>

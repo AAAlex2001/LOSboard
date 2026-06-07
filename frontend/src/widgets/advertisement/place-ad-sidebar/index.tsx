@@ -67,13 +67,11 @@ export const PlaceAdSidebar = () => {
         <AdBanner
           banner={banners[0]}
           ageLabel={settings?.ad_age_label}
-          siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}
         />
         <AdBanner
           banner={banners[1]}
           ageLabel={settings?.ad_age_label}
-          siteLabel={settings?.ad_site_label}
           placeholderText={settings?.ad_placeholder_text}
         />
       </div>

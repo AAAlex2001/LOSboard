@@ -13,7 +13,8 @@ class Banner(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    image_url: Mapped[str] = mapped_column(String, nullable=False)
+    age_label: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     video_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     link_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     placement: Mapped[str] = mapped_column(

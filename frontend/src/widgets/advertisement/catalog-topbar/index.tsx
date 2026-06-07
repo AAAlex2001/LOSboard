@@ -34,7 +34,6 @@ export const CatalogTopBar = ({
   const banners = useMainTopBanners();
   const settings = useSiteSettings();
   const ageLabel = settings?.ad_age_label;
-  const siteLabel = settings?.ad_site_label;
   const placeholderText = settings?.ad_placeholder_text;
 
   const handlePickCategory = (cat: Category) => {
@@ -89,7 +88,6 @@ export const CatalogTopBar = ({
           variant="wide"
           slidesPerView={1}
           ageLabel={ageLabel}
-          siteLabel={siteLabel}
           placeholderText={placeholderText}
         />
       </div>
@@ -100,7 +98,6 @@ export const CatalogTopBar = ({
           variant="promo"
           slidesPerView={3}
           ageLabel={ageLabel}
-          siteLabel={siteLabel}
           placeholderText={placeholderText}
         />
       </div>

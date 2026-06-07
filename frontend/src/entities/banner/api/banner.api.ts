@@ -6,7 +6,8 @@ export interface Banner {
   id: number;
   title: string;
   description: string | null;
-  image_url: string;
+  age_label: string | null;
+  image_url: string | null;
   video_url: string | null;
   link_url: string | null;
   sort_order: number;

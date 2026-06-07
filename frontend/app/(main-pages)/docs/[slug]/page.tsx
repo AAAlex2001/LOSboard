@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
-import { BackButton } from "@/src/shared/ui/BackButton";
 import { CmsContent } from "@/src/widgets/docs/cms-content";
 import { getContentPage } from "@/src/entities/content";
 import style from "./page.module.scss";
@@ -40,7 +39,6 @@ export default async function DocPage({ params }: DocPageProps) {
           </div>
 
           <div className={style.headingRow}>
-            <BackButton className={style.backBtn} fallbackHref="/docs" />
             <h1 className={style.title}>{page.title}</h1>
           </div>
 

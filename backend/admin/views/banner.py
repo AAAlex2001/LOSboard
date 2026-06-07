@@ -81,6 +81,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.title,
         Banner.placement,
         Banner.link_url,
+        Banner.age_label,
         Banner.sort_order,
         Banner.is_active,
         Banner.starts_at,
@@ -100,9 +101,10 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.id: "ID",
         Banner.title: "Название",
         Banner.description: "Краткое описание (показывается под заголовком)",
-        Banner.image_url: "Картинка (JPG / PNG / WebP, до 10 МБ)",
+        Banner.image_url: "Картинка (JPG / PNG / WebP, до 10 МБ) — опционально, если есть видео",
         Banner.video_url: "Видео (MP4 / WebM, до 10 МБ, опционально)",
         Banner.link_url: "Куда ведёт клик по баннеру (опционально)",
+        Banner.age_label: "Возрастное ограничение (Реклама 0+, 6+, 12+, 16+, 18+)",
         Banner.placement: "Размещение",
         Banner.sort_order: "Порядок (меньше — выше)",
         Banner.is_active: "Показывать на сайте",
@@ -123,10 +125,11 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         "image_url": FileField,
         "video_url": FileField,
         "placement": SelectField,
+        "age_label": SelectField,
     }
     form_args = {
         "image_url": {
-            "description": "Выберите файл с компьютера. JPG, PNG или WebP, до 10 МБ.",
+            "description": "Опционально: JPG, PNG или WebP, до 10 МБ. Можно загрузить только видео (поле ниже) без картинки.",
         },
         "video_url": {
             "description": "Опционально: видео MP4/WebM, до 10 МБ. Если указано, отображается вместо картинки с автовоспроизведением.",
@@ -135,6 +138,17 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
             "choices": BANNER_PLACEMENT_CHOICES,
             "description": "Где показывать баннер. «Шапка главной» — 3 верхних баннера "
             "на главной странице. «Боковая панель» — 2 баннера в правом сайдбаре сайта.",
+        },
+        "age_label": {
+            "choices": [
+                ("", "— Без метки —"),
+                ("Реклама 0+", "Реклама 0+"),
+                ("Реклама 6+", "Реклама 6+"),
+                ("Реклама 12+", "Реклама 12+"),
+                ("Реклама 16+", "Реклама 16+"),
+                ("Реклама 18+", "Реклама 18+"),
+            ],
+            "description": "Опционально. Маленькая плашка в углу баннера. Можно оставить пустым.",
         },
         "is_active": {
             "description": "Главный переключатель: выключите — баннер исчезнет с сайта мгновенно.",
@@ -156,19 +170,23 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         is_created: bool,
         request: Request,
     ) -> None:
-        upload = data.pop("image_url", None)
-        if upload_is_real(upload):
-            ensure_extension(upload.filename or "")
-            raw = await read_starlette_upload(upload)
-            data["image_url"] = save_processed_sync(raw, subdir="banners")
-        elif is_created:
+        image_upload = data.pop("image_url", None)
+        video_upload = data.pop("video_url", None)
+        has_image = upload_is_real(image_upload)
+        has_video = upload_is_real(video_upload)
+
+        if is_created and not has_image and not has_video:
             raise HTTPException(
                 status_code=400,
-                detail="Загрузите картинку для баннера",
+                detail="Загрузите картинку или видео для баннера",
             )
 
-        video_upload = data.pop("video_url", None)
-        if upload_is_real(video_upload):
+        if has_image:
+            ensure_extension(image_upload.filename or "")
+            raw = await read_starlette_upload(image_upload)
+            data["image_url"] = save_processed_sync(raw, subdir="banners")
+
+        if has_video:
             size_bytes = await _validate_and_get_video_size(video_upload)
             if size_bytes > VIDEO_MAX_BYTES:
                 raise HTTPException(
@@ -176,3 +194,21 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
                     detail="Видео должно быть не больше 10 МБ",
                 )
             data["video_url"] = await _save_banner_video(video_upload)
+
+    async def _handle_form_data(self, request, obj=None):
+        """Override sqladmin form handling — skip empty file uploads so existing image/video URLs are preserved.
+
+        Without this, sqladmin crashes at `UploadFile(filename=f.name, file=f.open())`
+        when no new file is uploaded on edit.
+        """
+        from starlette.datastructures import FormData, UploadFile
+
+        form = await request.form()
+        items = []
+        for key, value in form.multi_items():
+            if isinstance(value, UploadFile):
+                filename = (value.filename or "").strip()
+                if not filename:
+                    continue
+            items.append((key, value))
+        return FormData(items)

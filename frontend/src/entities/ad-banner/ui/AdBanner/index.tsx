@@ -36,10 +36,11 @@ export const AdBanner = ({
   const title = banner?.title;
   const description = banner?.description ?? null;
   const hasMedia = Boolean(videoUrl || imageUrl);
+  const finalAgeLabel = banner?.age_label || ageLabel;
 
   const content = (
     <>
-      {ageLabel && <div className={style.adTag}>{ageLabel}</div>}
+      {finalAgeLabel && <div className={style.adTag}>{finalAgeLabel}</div>}
 
       {videoUrl ? (
         <video
