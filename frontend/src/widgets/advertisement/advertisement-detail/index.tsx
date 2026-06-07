@@ -4,10 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/shared/ui/Button";
 import { PhotoGallery } from "@/src/shared/ui/PhotoGallery";
-import {
-  resolveAssetUrl,
-  type Advertisement,
-} from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
+import type { Advertisement } from "@/src/entities/advertisement";
 import { useFavorite } from "@/src/features/favorite";
 import { useViewAdvertisement } from "@/src/features/advertisement";
 import { useStartChat } from "@/src/features/chat";
@@ -36,8 +34,9 @@ export const AdvertisementDetail = ({
   const [item, setItem] = useState<Advertisement>(advertisement);
   const { toggle, pendingIds } = useFavorite();
   const { loading: startingChat, start } = useStartChat();
-  const { user: currentUser } = useMeContext();
+  const { user: currentUser, loading: userLoading } = useMeContext();
   const isOwnAd = currentUser?.id === item.owner_id;
+  const sellerButtonsDisabled = isOwnAd || userLoading;
 
   const viewState = useViewAdvertisement({
     advertisementId: item.id,
@@ -146,7 +145,7 @@ export const AdvertisementDetail = ({
           <div className={style.contactsBlock}>
             <span className={style.label}>Узнайте больше</span>
             <div className={style.contactButtons}>
-              {phoneTel && !isOwnAd ? (
+              {phoneTel && !isOwnAd && !userLoading ? (
                 <a
                   href={`tel:${phoneTel}`}
                   className={style.callLink}
@@ -173,7 +172,7 @@ export const AdvertisementDetail = ({
                   type="button"
                   className={style.messageBtn}
                   onClick={handleMessage}
-                  disabled={startingChat || isOwnAd}
+                  disabled={startingChat || sellerButtonsDisabled}
                   title={isOwnAd ? "Это ваше объявление" : undefined}
                 >
                   {startingChat ? "Открываем чат…" : "Написать продавцу"}
@@ -195,7 +194,9 @@ export const AdvertisementDetail = ({
           />
         </div>
 
-        <ReportAdButton advertisementId={item.id} className={style.reportBtn} />
+        {!isOwnAd && (
+          <ReportAdButton advertisementId={item.id} className={style.reportBtn} />
+        )}
       </section>
     </div>
   );

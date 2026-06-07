@@ -8,7 +8,7 @@ import { Toggle } from "@/src/shared/ui/Toggle";
 import { PhotoUpload } from "@/src/shared/ui/PhotoUpload";
 import { AddressAutocomplete } from "@/src/shared/ui/AddressAutocomplete";
 import { Map } from "@/src/shared/ui/Map";
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import { usePlaceAd } from "../model/usePlaceAd";
 import { TITLE_MAX } from "../model/placeAdReducer";
 import { PlaceAdPreview } from "./PlaceAdPreview";

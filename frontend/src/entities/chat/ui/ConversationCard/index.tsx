@@ -1,7 +1,7 @@
 "use client";
 
 import { UserAvatar } from "@/src/entities/user";
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { ConversationListItem } from "../../model/types";
 import { formatChatDate } from "../../lib/formatChatDate";
 import style from "./style.module.scss";

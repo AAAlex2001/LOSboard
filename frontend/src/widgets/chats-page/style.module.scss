@@ -14,44 +14,31 @@
   padding: 40px 0 60px;
   width: 100%;
   box-sizing: border-box;
-  min-width: 0;
 }
 
 .layout {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
   width: 100%;
   max-width: 1480px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
-  min-width: 0;
-  flex: 1;
 }
 
-.crumbsSlot {
-  display: block;
-  width: 100%;
-}
-
-.threadSlot {
+.feedSlot {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  min-width: 0;
-  flex: 1;
 }
 
-.threadWrap,
 .shellWrap {
-  flex: 1;
-  min-height: 0;
-  display: flex;
+  width: 100%;
   height: 70vh;
   min-height: 480px;
-  width: 100%;
+  max-height: calc(100dvh - 200px);
 }
 
 .feedHeading {
@@ -75,6 +62,14 @@
   color: #1E1E1E;
 }
 
+.error {
+  margin: auto;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
 .loadingArea {
   flex: 1;
   display: flex;
@@ -84,16 +79,24 @@
   min-height: 300px;
 }
 
-.error {
-  margin: auto;
-  font-family: Inter;
-  font-weight: 500;
-  font-size: 14px;
-  color: #8a8a8a;
+@media (min-width: 850px) {
+  .layout {
+    gap: 30px;
+  }
+
+  .shellWrap {
+    height: 75vh;
+    max-height: calc(100dvh - 240px);
+  }
 }
 
 @media (min-width: 1440px) {
   .layout {
     padding: 0 60px;
+  }
+
+  .shellWrap {
+    height: 80vh;
+    max-height: calc(100dvh - 280px);
   }
 }

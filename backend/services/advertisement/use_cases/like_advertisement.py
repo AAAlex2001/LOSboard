@@ -41,15 +41,13 @@ class LikeAdvertisementUseCase:
         inserted_id = insert_result.scalar_one_or_none()
 
         if inserted_id is not None:
-            # Лайк поставлен — инкрементим счётчик.
             await db.execute(
                 update(Advertisement)
                 .where(Advertisement.id == advertisement_id)
                 .values(likes_count=Advertisement.likes_count + 1)
             )
-            advertisement.is_liked = True
+            new_is_liked = True
         else:
-            # Лайк уже был — снимаем (тоже атомарно).
             delete_result = await db.execute(
                 delete(LikedAdvertisement)
                 .where(
@@ -60,16 +58,14 @@ class LikeAdvertisementUseCase:
             )
             removed_id = delete_result.scalar_one_or_none()
             if removed_id is not None:
-                # GREATEST защищает от ухода в минус при гонках.
                 await db.execute(
                     update(Advertisement)
                     .where(Advertisement.id == advertisement_id)
-                    .values(
-                        likes_count=Advertisement.likes_count - 1
-                    )
+                    .values(likes_count=Advertisement.likes_count - 1)
                 )
-            advertisement.is_liked = False
+            new_is_liked = False
 
         await db.flush()
         await db.refresh(advertisement)
+        advertisement.is_liked = new_is_liked
         return advertisement

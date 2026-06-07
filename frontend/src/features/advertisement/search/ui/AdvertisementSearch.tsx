@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { SearchBar } from "@/src/shared/ui/SearchBar";
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import { useSearchAdvertisement } from "../model/useSearchAdvertisement";
 import style from "./AdvertisementSearch.module.scss";
 

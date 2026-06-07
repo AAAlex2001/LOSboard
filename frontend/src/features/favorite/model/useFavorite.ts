@@ -20,7 +20,6 @@ export function useFavorite() {
     onRevert?: (prev: Advertisement) => void
   ): Promise<Advertisement | null> => {
     if (state.pendingIds.has(ad.id)) return null;
-    // Оптимистичное обновление: сразу инвертируем is_liked и счётчик до ответа API
     const optimistic: Advertisement = {
       ...ad,
       is_liked: !ad.is_liked,

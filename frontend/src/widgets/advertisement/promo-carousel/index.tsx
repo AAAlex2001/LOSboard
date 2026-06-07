@@ -40,11 +40,11 @@ export const PromoCarousel = ({
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: false,
+    initial: 0,
     slides: {
       perView: slidesPerView,
       spacing,
     },
-    created: (s) => s.update(),
     slideChanged: (s) => setCurrentSlide(s.track.details.rel),
   });
 
@@ -54,7 +54,15 @@ export const PromoCarousel = ({
   if (slots.length === 0) return null;
 
   return (
-    <div className={style.carousel}>
+    <div
+      className={style.carousel}
+      style={
+        {
+          "--slides-per-view": slidesPerView,
+          "--slides-spacing": `${spacing}px`,
+        } as React.CSSProperties
+      }
+    >
       {canRotate && !isAtStart && (
         <button
           type="button"

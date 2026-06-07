@@ -1,4 +1,3 @@
-import { config } from "@/src/shared/config/config";
 import { apiFetch } from "@/src/shared/auth/api-fetch";
 import type { Advertisement, CreateAdvertisementPayload } from "../model/types";
 
@@ -10,20 +9,6 @@ export interface GetAdvertisementsParams {
   limit?: number;
   signal?: AbortSignal;
 }
-
-const apiOrigin = () => {
-  try {
-    return new URL(config.API_BASE_URL).origin;
-  } catch {
-    return "";
-  }
-};
-
-export const resolveAssetUrl = (path: string | null | undefined): string | null => {
-  if (!path) return null;
-  if (/^https?:\/\//i.test(path)) return path;
-  return `${apiOrigin()}${path}`;
-};
 
 async function readErrorDetail(response: Response, fallback: string): Promise<string> {
   const errorData = await response.json().catch(() => ({}));

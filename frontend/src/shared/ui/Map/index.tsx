@@ -123,7 +123,6 @@ export const Map = ({
           const lat = coords[0];
           const lon = coords[1];
 
-          // Сразу ставим/двигаем пин — визуальный фидбек до любых запросов
           if (placemarkRef.current) {
             placemarkRef.current.geometry.setCoordinates(coords);
           } else {
@@ -136,7 +135,6 @@ export const Map = ({
             placemarkRef.current = placemark;
           }
 
-          // Адрес как fallback (если геокодинг не сработает)
           let address = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
 
           try {
@@ -150,7 +148,7 @@ export const Map = ({
               address = data.display_name;
             }
           } catch {
-            // оставляем coords fallback
+            /* noop */
           }
 
           onClickRef.current?.({

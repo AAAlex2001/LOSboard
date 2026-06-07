@@ -44,7 +44,6 @@ export const AddressAutocomplete = ({
       return;
     }
 
-    // не дёргаем подсказки если value пришло программно (PREFILL) — только при ручном вводе
     if (!userTypedRef.current) return;
 
     if (!value || value.trim().length < 3) {

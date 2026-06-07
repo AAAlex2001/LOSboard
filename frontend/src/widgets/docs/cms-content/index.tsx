@@ -108,14 +108,30 @@ function wrapBlockquoteGroups(html: string): string {
   );
 }
 
-function wrapParensInHeadings(html: string): string {
+function unwrapHeadingDivs(html: string): string {
   return html.replace(
+    /<div[^>]*>\s*(<h[1-4]\b[^>]*>[\s\S]*?<\/h[1-4]>)\s*<\/div>/gi,
+    "$1"
+  );
+}
+
+function wrapParensInHeadings(html: string): string {
+  return unwrapHeadingDivs(html).replace(
     /<(h[1-4])\b([^>]*)>([\s\S]*?)<\/h[1-4]>/gi,
     (_match, tag, attrs, content) => {
-      const innerReplaced = content.replace(/\s*\(([^)]+)\)/g, ' <span class="cmsParen">($1)</span>');
-      const hasStyle = /style\s*=/i.test(attrs);
-      const styleAttr = hasStyle ? '' : ' style="text-align:left;"';
-      return `<${tag}${attrs}${styleAttr}>${innerReplaced}</${tag}>`;
+      const cleanedAttrs = attrs
+        .replace(/\sstyle\s*=\s*"[^"]*"/gi, "")
+        .replace(/\sstyle\s*=\s*'[^']*'/gi, "")
+        .replace(/\salign\s*=\s*"[^"]*"/gi, "")
+        .replace(/\sclass\s*=\s*"[^"]*"/gi, "")
+        .replace(/\sclass\s*=\s*'[^']*'/gi, "");
+      const styleAttr = ' style="text-align:left;font-size:16px;line-height:19px;font-weight:600;width:100%;display:block;"';
+      let inner = content.replace(/\s*\(([^)]+)\)/g, ' <span class="cmsParen">($1)</span>');
+      const wrappedStrongRe = /^\s*<strong\b[^>]*>([\s\S]*)<\/strong>\s*$/i;
+      const m = inner.match(wrappedStrongRe);
+      if (m) inner = m[1];
+      inner = inner.replace(/<br\s*\/?>(?:\s*<br\s*\/?>)*/gi, " ");
+      return `<${tag}${cleanedAttrs}${styleAttr}>${inner}</${tag}>`;
     }
   );
 }

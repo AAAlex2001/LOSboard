@@ -10,7 +10,6 @@ export {
   viewAdvertisement,
   searchAdvertisements,
   createComplaint,
-  resolveAssetUrl,
   type GetAdvertisementsParams,
   type GetMyAdvertisementsParams,
   type UpdateAdvertisementPayload,

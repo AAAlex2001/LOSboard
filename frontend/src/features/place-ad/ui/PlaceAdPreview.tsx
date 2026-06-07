@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "@/src/shared/ui/Loader";
 import { Button } from "@/src/shared/ui/Button";
 import { Lightbox } from "@/src/shared/ui/Lightbox";
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { PlaceAdState } from "../model/types";
 import type { Category, Subcategory } from "@/src/entities/category";
 import style from "./PlaceAdForm.module.scss";

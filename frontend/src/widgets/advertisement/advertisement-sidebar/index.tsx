@@ -35,8 +35,9 @@ export const AdvertisementSidebar = ({
   const { loading: startingChat, start } = useStartChat();
   const banners = useSidebarBanners();
   const settings = useSiteSettings();
-  const { user: currentUser } = useMeContext();
+  const { user: currentUser, loading: userLoading } = useMeContext();
   const isOwnAd = currentUser?.id === ownerId;
+  const sellerButtonsDisabled = isOwnAd || userLoading;
 
   const handleCall = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!checkAuth()) {
@@ -61,7 +62,7 @@ export const AdvertisementSidebar = ({
       <div className={style.priceBlock}>
         <div className={style.price}>{formatPrice(price)}</div>
         <div className={style.contactButtons}>
-          {phoneTel && !isOwnAd ? (
+          {phoneTel && !isOwnAd && !userLoading ? (
             <a
               href={`tel:${phoneTel}`}
               className={style.callLink}
@@ -88,7 +89,7 @@ export const AdvertisementSidebar = ({
               type="button"
               className={style.messageBtn}
               onClick={handleMessage}
-              disabled={startingChat || isOwnAd}
+              disabled={startingChat || sellerButtonsDisabled}
               title={isOwnAd ? "Это ваше объявление" : undefined}
             >
               {startingChat ? "Открываем чат…" : "Написать продавцу"}

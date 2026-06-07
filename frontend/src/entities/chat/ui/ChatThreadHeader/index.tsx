@@ -1,7 +1,7 @@
 "use client";
 
 import CloseIcon from "@/src/shared/ui/Icons/CloseIcon";
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { ChatAdvertisement } from "../../model/types";
 import style from "./style.module.scss";
 

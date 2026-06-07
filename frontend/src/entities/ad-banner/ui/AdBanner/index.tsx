@@ -1,6 +1,6 @@
 "use client";
 
-import { resolveAssetUrl } from "@/src/entities/advertisement";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { Banner } from "@/src/entities/banner";
 import style from "./style.module.scss";
 

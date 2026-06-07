@@ -1,8 +1,8 @@
 "use client";
 
 import EditIcon from "@/src/shared/ui/Icons/EditIcon";
+import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { Advertisement } from "../../model/types";
-import { resolveAssetUrl } from "../../api/advertisement.api";
 import style from "./style.module.scss";
 
 interface AdCardProps {

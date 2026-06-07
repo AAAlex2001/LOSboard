@@ -26,8 +26,6 @@ export function useViewAdvertisement({
   const registeredRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Считаем просмотр только у залогиненных и только один раз на маунт.
-    // Бэк дополнительно дедупит по unique constraint (user_id, advertisement_id).
     if (!isAuthenticated()) return;
     if (registeredRef.current === advertisementId) return;
     registeredRef.current = advertisementId;
