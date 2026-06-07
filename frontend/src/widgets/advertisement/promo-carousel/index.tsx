@@ -76,13 +76,15 @@ export const PromoCarousel = ({
       <div ref={sliderRef} className={`keen-slider ${style.track}`}>
         {slots.map((banner, i) => (
           <div key={banner?.id ?? `empty-${i}`} className="keen-slider__slide">
-            <AdBanner
-              variant={variant}
-              banner={banner}
-              ageLabel={ageLabel}
-              siteLabel={siteLabel}
-              placeholderText={placeholderText}
-            />
+            <div className={style.slideInner}>
+              <AdBanner
+                variant={variant}
+                banner={banner}
+                ageLabel={ageLabel}
+                siteLabel={siteLabel}
+                placeholderText={placeholderText}
+              />
+            </div>
           </div>
         ))}
       </div>

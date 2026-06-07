@@ -21,7 +21,7 @@
   flex-direction: column;
   gap: 40px;
   width: 100%;
-  max-width: 100%;
+  max-width: 1480px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
@@ -46,14 +46,8 @@
   color: #1E1E1E;
 }
 
-@media (min-width: 850px) {
-  .layout {
-    max-width: 850px;
-  }
-}
-
 @media (min-width: 1440px) {
   .layout {
-    max-width: 1100px;
+    padding: 0 60px;
   }
 }
