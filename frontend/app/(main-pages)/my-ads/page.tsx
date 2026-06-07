@@ -8,7 +8,6 @@ import { Loader } from "@/src/shared/ui/Loader";
 import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import { MyAdsFeed } from "@/src/widgets/advertisement/my-ads-feed";
 import { PlaceAdSidebar } from "@/src/widgets/advertisement/place-ad-sidebar";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./page.module.scss";
 
@@ -38,6 +37,7 @@ export default function MyAdsPage() {
               <Breadcrumbs
                 items={[
                   { label: "Главная", href: "/" },
+                  { label: "Личный профиль", href: "/profile" },
                   { label: "Мои объявления" },
                 ]}
               />
@@ -45,14 +45,6 @@ export default function MyAdsPage() {
 
             <div className={style.feedSlot}>
               <div className={style.feedHeading}>
-                <button
-                  type="button"
-                  className={style.backBtn}
-                  onClick={() => router.back()}
-                  aria-label="Назад"
-                >
-                  <ArrowLeftIcon />
-                </button>
                 <h1 className={style.title}>Мои объявления</h1>
               </div>
               <MyAdsFeed />

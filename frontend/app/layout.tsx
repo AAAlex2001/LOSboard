@@ -7,6 +7,7 @@ import { NotificationProvider } from "@/src/shared/ui/Notifications";
 import { UnreadProvider } from "@/src/entities/chat";
 import { MeProvider } from "@/src/entities/user";
 import { JsonLd } from "@/src/shared/ui/JsonLd";
+import { ViewModeToggle } from "@/src/features/view-mode-toggle";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -123,6 +124,7 @@ export default function RootLayout({
             </MeProvider>
           </AuthProvider>
         </NotificationProvider>
+        <ViewModeToggle />
       </body>
     </html>
   );

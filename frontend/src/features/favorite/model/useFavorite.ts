@@ -14,14 +14,26 @@ export function useFavorite() {
     initialFavoriteToggleState
   );
 
-  const toggle = async (ad: Advertisement): Promise<Advertisement | null> => {
+  const toggle = async (
+    ad: Advertisement,
+    onOptimistic?: (next: Advertisement) => void,
+    onRevert?: (prev: Advertisement) => void
+  ): Promise<Advertisement | null> => {
     if (state.pendingIds.has(ad.id)) return null;
+    // Оптимистичное обновление: сразу инвертируем is_liked и счётчик до ответа API
+    const optimistic: Advertisement = {
+      ...ad,
+      is_liked: !ad.is_liked,
+      likes_count: Math.max(0, (ad.likes_count ?? 0) + (ad.is_liked ? -1 : 1)),
+    };
+    onOptimistic?.(optimistic);
     dispatch({ type: "TOGGLE_START", payload: ad.id });
     try {
       const result = await toggleFavorite(ad.id);
       dispatch({ type: "TOGGLE_END", payload: ad.id });
       return result;
     } catch (err) {
+      onRevert?.(ad);
       dispatch({
         type: "TOGGLE_FAILURE",
         payload: {

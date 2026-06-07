@@ -1,9 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Typography from "@/src/shared/ui/Typography";
-import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
-import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import { formatPhone } from "@/src/shared/lib/phone";
 import { UserInfoRow, type User } from "@/src/entities/user";
 import { AvatarUploader } from "@/src/features/upload-avatar";
@@ -19,31 +16,12 @@ interface ProfileDetailsProps {
 }
 
 export const ProfileDetails = ({ user, onUserUpdated }: ProfileDetailsProps) => {
-  const router = useRouter();
   const editor = useEditProfileField({ user, onUpdated: onUserUpdated });
 
   return (
     <>
       <section className={style.profile}>
-        <div className={style.breadcrumbs}>
-          <Breadcrumbs
-            items={[
-              { label: "Главная", href: "/" },
-              { label: "Личный кабинет" },
-            ]}
-          />
-        </div>
-
         <div className={style.header}>
-          <button
-            type="button"
-            className={style.back}
-            onClick={() => router.back()}
-            aria-label="Назад"
-          >
-            <ArrowLeftIcon />
-          </button>
-
           <div className={style.title}>
             <Typography variant="h1">Личный профиль</Typography>
           </div>

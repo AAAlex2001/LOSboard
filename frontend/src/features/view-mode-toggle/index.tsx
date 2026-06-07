@@ -23,31 +23,18 @@ export const ViewModeToggle = () => {
     setMode(getCookie(COOKIE_NAME) === "desktop" ? "desktop" : "mobile");
   }, []);
 
-  const switchTo = (next: "mobile" | "desktop") => {
+  const handleClick = () => {
+    const next = mode === "desktop" ? "mobile" : "desktop";
     setCookie(COOKIE_NAME, next, COOKIE_MAX_AGE);
-    setMode(next);
     window.location.reload();
   };
 
+  const label =
+    mode === "desktop" ? "Вернуться на мобильную версию" : "Десктопная версия";
+
   return (
-    <div className={style.wrapper}>
-      <button
-        type="button"
-        onClick={() => switchTo(mode === "desktop" ? "mobile" : "desktop")}
-        style={{
-          background: "none",
-          border: "1px solid #1129BD",
-          borderRadius: 8,
-          padding: "8px 14px",
-          color: "#1129BD",
-          fontFamily: "Inter",
-          fontSize: 14,
-          fontWeight: 500,
-          cursor: "pointer",
-        }}
-      >
-        {mode === "desktop" ? "Мобильная версия" : "Десктопная версия"}
-      </button>
-    </div>
+    <button type="button" className={style.toggle} onClick={handleClick}>
+      {label}
+    </button>
   );
 };

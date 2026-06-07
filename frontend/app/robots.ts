@@ -10,6 +10,8 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/api/",
+          "/los-control-x9k2m-admin/",
+          "/static/uploads/chat/",
           "/login",
           "/register",
           "/profile",

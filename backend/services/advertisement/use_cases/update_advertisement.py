@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from models.advertisement import Advertisement
+from models.advertisement import Advertisement, MODERATION_PENDING
 from models.user import User
 from fastapi import HTTPException
 from schemas.advertisement import AdvertisementUpdate
@@ -39,6 +39,11 @@ class UpdateAdvertisementUseCase:
 
         for field, value in update_data.items():
             setattr(advertisement, field, value)
+
+        advertisement.moderation_status = MODERATION_PENDING
+        advertisement.moderation_reason = None
+        advertisement.moderated_at = None
+        advertisement.moderated_by_id = None
 
         await db.flush()
 

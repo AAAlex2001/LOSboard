@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategories } from "@/src/entities/category";
 import {
@@ -99,13 +99,9 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     return () => controller.abort();
   }, [selectedCategory?.id, selectedSubcategory?.id]);
 
-  const attributesValid = useMemo(
-    () =>
-      attributes.every(
-        (a) =>
-          !a.is_required || (state.attributeValues[a.id]?.trim() ?? "").length > 0
-      ),
-    [attributes, state.attributeValues]
+  const attributesValid = attributes.every(
+    (a) =>
+      !a.is_required || (state.attributeValues[a.id]?.trim() ?? "").length > 0,
   );
 
   const isValid =

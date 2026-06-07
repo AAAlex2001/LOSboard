@@ -76,21 +76,24 @@ export const AdCard = ({
           )}
         </div>
 
-        {is_urgent && <span className={style.urgentBadge}>Срочно</span>}
-
-        {showModeration && (
-          <span
-            className={`${style.moderationBadge} ${
-              moderation_status === "pending"
-                ? style.moderationPending
-                : moderation_status === "rejected"
-                ? style.moderationRejected
-                : style.moderationApproved
-            }`}
-            title={moderation_reason ?? undefined}
-          >
-            {moderationLabel}
-          </span>
+        {(is_urgent || showModeration) && (
+          <div className={style.badgesStack}>
+            {is_urgent && <span className={style.urgentBadge}>Срочно</span>}
+            {showModeration && (
+              <span
+                className={`${style.moderationBadge} ${
+                  moderation_status === "pending"
+                    ? style.moderationPending
+                    : moderation_status === "rejected"
+                    ? style.moderationRejected
+                    : style.moderationApproved
+                }`}
+                title={moderation_reason ?? undefined}
+              >
+                {moderationLabel}
+              </span>
+            )}
+          </div>
         )}
 
         {onEdit ? (

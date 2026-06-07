@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ChatsPageShell } from "@/src/widgets/chat/chats-page-shell";
 
 export const metadata: Metadata = {
   title: "Сообщения",
@@ -15,5 +14,5 @@ export default function ChatsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ChatsPageShell>{children}</ChatsPageShell>;
+  return children;
 }

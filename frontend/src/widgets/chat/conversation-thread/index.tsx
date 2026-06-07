@@ -14,6 +14,7 @@ import { useConversationThread } from "@/src/features/chat";
 import { ChatComposer } from "@/src/features/chat/composer";
 import { useUnreadTotal } from "@/src/entities/chat";
 import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
+import { useSetChatThreadBreadcrumb } from "@/src/widgets/chat/chats-page-shell/breadcrumb-context";
 import style from "./style.module.scss";
 
 interface ConversationThreadProps {
@@ -31,6 +32,10 @@ export const ConversationThread = ({
     useConversationThread(conversationId);
   const messagesRef = useRef<HTMLDivElement>(null);
   const { refresh: refreshUnread } = useUnreadTotal();
+
+  useSetChatThreadBreadcrumb(
+    conversation?.peer.name ?? conversation?.advertisement.title ?? null
+  );
 
   useEffect(() => {
     const el = messagesRef.current;

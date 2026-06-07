@@ -208,6 +208,22 @@
   width: 100%;
 }
 
+.ownAdHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  min-height: 39px;
+  background: #F1F3FB;
+  border-radius: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #1129BD;
+  text-align: center;
+}
+
 .messageBtn {
   display: flex;
   justify-content: center;

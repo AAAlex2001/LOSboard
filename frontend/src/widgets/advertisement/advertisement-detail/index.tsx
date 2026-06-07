@@ -14,6 +14,7 @@ import { useStartChat } from "@/src/features/chat";
 import { ReportAdButton } from "@/src/features/report-ad";
 import { formatPostedAt } from "@/src/shared/lib/date";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
+import { useMeContext } from "@/src/entities/user";
 import style from "./style.module.scss";
 
 interface AdvertisementDetailProps {
@@ -35,6 +36,8 @@ export const AdvertisementDetail = ({
   const [item, setItem] = useState<Advertisement>(advertisement);
   const { toggle, pendingIds } = useFavorite();
   const { loading: startingChat, start } = useStartChat();
+  const { user: currentUser } = useMeContext();
+  const isOwnAd = currentUser?.id === item.owner_id;
 
   const viewState = useViewAdvertisement({
     advertisementId: item.id,
@@ -56,13 +59,17 @@ export const AdvertisementDetail = ({
 
   const handleFavorite = async () => {
     if (!guardAuth()) return;
-    const updated = await toggle(item);
+    const updated = await toggle(
+      item,
+      (optimistic) => setItem(optimistic),
+      (prev) => setItem(prev)
+    );
     if (updated) {
-      setItem({
-        ...item,
+      setItem((prev) => ({
+        ...prev,
         is_liked: updated.is_liked,
-        likes_count: updated.likes_count ?? item.likes_count,
-      });
+        likes_count: updated.likes_count ?? prev.likes_count,
+      }));
     }
   };
 
@@ -138,39 +145,43 @@ export const AdvertisementDetail = ({
 
           <div className={style.contactsBlock}>
             <span className={style.label}>Узнайте больше</span>
-            <div className={style.contactButtons}>
-              {phoneTel ? (
-                <a
-                  href={`tel:${phoneTel}`}
-                  className={style.callLink}
-                  onClick={handleCall}
-                >
-                  <Button type="button" variant="filled" color="blue" fullWidth>
+            {isOwnAd ? (
+              <div className={style.ownAdHint}>Это ваше объявление</div>
+            ) : (
+              <div className={style.contactButtons}>
+                {phoneTel ? (
+                  <a
+                    href={`tel:${phoneTel}`}
+                    className={style.callLink}
+                    onClick={handleCall}
+                  >
+                    <Button type="button" variant="filled" color="blue" fullWidth>
+                      Позвонить продавцу
+                    </Button>
+                  </a>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="filled"
+                    color="blue"
+                    fullWidth
+                    disabled
+                  >
                     Позвонить продавцу
                   </Button>
-                </a>
-              ) : (
-                <Button
-                  type="button"
-                  variant="filled"
-                  color="blue"
-                  fullWidth
-                  disabled
-                >
-                  Позвонить продавцу
-                </Button>
-              )}
-              {canMessageSeller && (
-                <button
-                  type="button"
-                  className={style.messageBtn}
-                  onClick={handleMessage}
-                  disabled={startingChat}
-                >
-                  {startingChat ? "Открываем чат…" : "Написать продавцу"}
-                </button>
-              )}
-            </div>
+                )}
+                {canMessageSeller && (
+                  <button
+                    type="button"
+                    className={style.messageBtn}
+                    onClick={handleMessage}
+                    disabled={startingChat}
+                  >
+                    {startingChat ? "Открываем чат…" : "Написать продавцу"}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

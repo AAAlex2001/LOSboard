@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { AdBanner, type AdBannerVariant } from "@/src/entities/ad-banner";
@@ -16,7 +16,6 @@ interface PromoCarouselProps {
   ageLabel?: string;
   siteLabel?: string;
   placeholderText?: string;
-  autoRotateMs?: number;
   spacing?: number;
 }
 
@@ -32,33 +31,30 @@ export const PromoCarousel = ({
   ageLabel,
   siteLabel,
   placeholderText,
-  autoRotateMs = 2500,
   spacing = 25,
 }: PromoCarouselProps) => {
   const slots = fillSlots(banners, slidesPerView);
   const canRotate = banners.length > slidesPerView;
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    loop: canRotate,
+    loop: false,
     slides: {
       perView: slidesPerView,
       spacing,
     },
+    slideChanged: (s) => setCurrentSlide(s.track.details.rel),
   });
 
-  useEffect(() => {
-    if (!canRotate) return;
-    const id = setInterval(() => {
-      instanceRef.current?.next();
-    }, autoRotateMs);
-    return () => clearInterval(id);
-  }, [autoRotateMs, canRotate, instanceRef]);
+  const isAtStart = currentSlide === 0;
+  const isAtEnd = currentSlide >= slots.length - slidesPerView;
 
   if (slots.length === 0) return null;
 
   return (
     <div className={style.carousel}>
-      {canRotate && (
+      {canRotate && !isAtStart && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowPrev}`}
@@ -81,7 +77,7 @@ export const PromoCarousel = ({
           </div>
         ))}
       </div>
-      {canRotate && (
+      {canRotate && !isAtEnd && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowNext}`}

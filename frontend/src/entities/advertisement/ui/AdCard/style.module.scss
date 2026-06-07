@@ -63,11 +63,20 @@
   }
 }
 
-.urgentBadge {
+.badgesStack {
   position: absolute;
   top: 8px;
   left: 8px;
+  right: 8px;
   z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.urgentBadge {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -81,13 +90,10 @@
   font-size: 12px;
   line-height: 14px;
   text-transform: uppercase;
+  pointer-events: auto;
 }
 
 .moderationBadge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 3;
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -99,6 +105,7 @@
   font-weight: 600;
   font-size: 12px;
   line-height: 14px;
+  pointer-events: auto;
 }
 
 .moderationPending {

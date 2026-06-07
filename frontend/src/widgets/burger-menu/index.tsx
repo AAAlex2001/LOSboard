@@ -15,7 +15,6 @@ import { Button } from "@/src/shared/ui/Button";
 import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
 import { useUnreadTotal } from "@/src/entities/chat";
 import { logout } from "@/src/shared/auth/auth-storage";
-import { ViewModeToggle } from "@/src/features/view-mode-toggle";
 import style from "./style.module.scss";
 
 interface BurgerMenuProps {
@@ -237,10 +236,6 @@ export const BurgerMenu = ({
               Войти
             </Button>
           )}
-
-          <div style={{ marginTop: 12 }}>
-            <ViewModeToggle />
-          </div>
         </div>
       </div>
     </div>,

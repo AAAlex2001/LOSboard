@@ -6,6 +6,7 @@ import { Header } from "@/src/widgets/header";
 import { ProfileDetails } from "@/src/widgets/profile/profile-details";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
+import { Breadcrumbs } from "@/src/shared/ui/Breadcrumbs";
 import { useMeContext } from "@/src/entities/user";
 import style from "./page.module.scss";
 
@@ -28,7 +29,17 @@ export default function ProfilePage() {
             <Loader />
           </div>
         ) : (
-          <ProfileDetails user={user} onUserUpdated={setUser} />
+          <div className={style.layout}>
+            <div className={style.crumbsSlot}>
+              <Breadcrumbs
+                items={[
+                  { label: "Главная", href: "/" },
+                  { label: "Личный профиль" },
+                ]}
+              />
+            </div>
+            <ProfileDetails user={user} onUserUpdated={setUser} />
+          </div>
         )}
       </div>
       <Footer />

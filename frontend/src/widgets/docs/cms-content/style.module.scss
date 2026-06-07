@@ -38,7 +38,7 @@
   > h3 + :global(.bannerMockup),
   > h3 + :global(.phoneMockup),
   > h3 + :global(.cardMockup) {
-    margin-top: 30px;
+    margin-top: 30px !important;
   }
 
   :global(.cmsParen) {
@@ -209,9 +209,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    gap: 4px;
+    padding: 4px 12px;
+    gap: 2px;
     background: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
   }
 
   :global(.bannerMockupSize) {
@@ -264,9 +267,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    gap: 4px;
+    padding: 4px 12px;
+    gap: 2px;
     background: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
   }
 
   :global(.phoneMockupSize) {
@@ -303,7 +309,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
-    color: rgba(17, 41, 189, 0.5);
+    color: rgba(17, 41, 189, 0.5) !important;
     text-align: center;
   }
 
@@ -327,9 +333,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    gap: 4px;
+    padding: 4px 12px;
+    gap: 2px;
     background: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
   }
 
   :global(.cardMockupSize) {
@@ -404,7 +413,8 @@
 
   &[data-variant="stacked"] {
     > h1, > h2, > h3, > h4 {
-      text-align: left;
+      text-align: left !important;
+      width: 100%;
     }
 
     > div:not(:global(.mockupRow)) {
