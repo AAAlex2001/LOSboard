@@ -98,25 +98,19 @@ function transformHintMarkers(html: string): string {
 function wrapMockupRows(html: string): string {
   return html.replace(
     /(<figure\s+class="(?:bannerMockup|phoneMockup|cardMockup)"[^>]*>[\s\S]*?<\/figure>(?:\s*<figure\s+class="(?:bannerMockup|phoneMockup|cardMockup)"[^>]*>[\s\S]*?<\/figure>)+)/g,
-    '<div class="mockupRow" style="display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:50px;">$1</div>'
+    '<div class="mockupRow">$1</div>'
   );
 }
 
 function wrapBlockquoteGroups(html: string): string {
   return html.replace(
     /(<blockquote\b[^>]*>[\s\S]*?<\/blockquote>(?:\s*<blockquote\b[^>]*>[\s\S]*?<\/blockquote>)+)/g,
-    '<div style="display:flex;flex-direction:column;gap:20px;width:100%;">$1</div>'
+    "<div>$1</div>"
   );
 }
 
 function forceBlockquoteWidth(html: string): string {
-  return html.replace(
-    /<blockquote\b([^>]*)>/gi,
-    (_match, attrs) => {
-      const cleanedAttrs = attrs.replace(/\sstyle\s*=\s*"[^"]*"/gi, "").replace(/\sstyle\s*=\s*'[^']*'/gi, "");
-      return `<blockquote${cleanedAttrs} style="width:100%;max-width:100%;box-sizing:border-box;">`;
-    }
-  );
+  return html;
 }
 
 function unwrapHeadingDivs(html: string): string {

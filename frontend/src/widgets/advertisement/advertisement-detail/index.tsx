@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/shared/ui/Button";
 import { PhotoGallery } from "@/src/shared/ui/PhotoGallery";
 import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
-import type { Advertisement } from "@/src/entities/advertisement";
+import { getAdvertisement, type Advertisement } from "@/src/entities/advertisement";
 import { useFavorite } from "@/src/features/favorite";
 import { useViewAdvertisement } from "@/src/features/advertisement";
 import { useStartChat } from "@/src/features/chat";
@@ -37,6 +37,22 @@ export const AdvertisementDetail = ({
   const { user: currentUser, loading: userLoading } = useMeContext();
   const isOwnAd = currentUser?.id === item.owner_id;
   const sellerButtonsDisabled = isOwnAd || userLoading;
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const controller = new AbortController();
+    getAdvertisement(advertisement.id, { signal: controller.signal })
+      .then((fresh) => {
+        if (controller.signal.aborted) return;
+        setItem((prev) => ({
+          ...prev,
+          is_liked: fresh.is_liked,
+          likes_count: fresh.likes_count ?? prev.likes_count,
+        }));
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [currentUser?.id, advertisement.id]);
 
   const viewState = useViewAdvertisement({
     advertisementId: item.id,
