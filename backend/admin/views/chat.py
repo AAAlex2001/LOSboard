@@ -133,16 +133,17 @@ class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
         Conversation.messages: conversation_thread,
     }
 
-    async def get_object_for_details(self, value: Any) -> Any:
+    async def get_object_for_details(self, request) -> Any:
         """Eager-load переписки с отправителями и вложениями.
 
         Без этого Jinja-форматтер ловит DetachedInstanceError, потому что
         sqladmin закрывает сессию до рендера шаблона, а доступ к
         `msg.sender` / `msg.attachments` триггерит lazy-load.
         """
+        pk = request.path_params["pk"]
         stmt = (
             select(Conversation)
-            .where(Conversation.id == int(value))
+            .where(Conversation.id == int(pk))
             .options(
                 selectinload(Conversation.advertisement),
                 selectinload(Conversation.buyer),

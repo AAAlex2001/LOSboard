@@ -1,6 +1,6 @@
 """accordion content slugs for /advertising tech specs
 
-Revision ID: 0015_advertising_accordion_content
+Revision ID: 0015_pricing_tech_accordion
 Revises: 0014_advertising_cms_content
 Create Date: 2026-06-07 18:00:00.000000
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 
-revision: str = "0015_advertising_accordion_content"
+revision: str = "0015_pricing_tech_accordion"
 down_revision: Union[str, None] = "0014_advertising_cms_content"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

@@ -9,9 +9,7 @@ import { listContentPages } from "@/src/entities/content";
 import style from "./page.module.scss";
 
 export default async function DocsPage() {
-  const items = (await listContentPages().catch(() => [])).filter(
-    (item) => !item.slug.startsWith("pricing") && item.slug !== "contacts",
-  );
+  const items = await listContentPages().catch(() => []);
 
   return (
     <main className={style.page}>

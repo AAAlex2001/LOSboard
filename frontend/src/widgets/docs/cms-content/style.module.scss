@@ -29,7 +29,7 @@
   > :global(.bannerMockup),
   > :global(.phoneMockup),
   > :global(.cardMockup) {
-    margin-top: 20px;
+    margin-top: 30px;
   }
 
   > p + p,
@@ -139,7 +139,11 @@
 
   @media (min-width: 850px) {
     > div {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    > div:has(> blockquote:nth-child(3)) {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -160,7 +164,9 @@
   :global(.bannerMockup) {
     position: relative;
     width: 100%;
-    background: #FFFFFF;
+    background-color: #FFFFFF;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><line x1='0' y1='0' x2='100' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/><line x1='100' y1='0' x2='0' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/></svg>");
+    background-size: 100% 100%;
     border: 1px solid #979797;
     border-radius: 10px;
     margin: 0 auto;
@@ -213,7 +219,9 @@
     position: relative;
     width: 200px;
     aspect-ratio: 402 / 874;
-    background: #FFFFFF;
+    background-color: #FFFFFF;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><line x1='0' y1='0' x2='100' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/><line x1='100' y1='0' x2='0' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/></svg>");
+    background-size: 100% 100%;
     border: 1px solid #A6A6A6;
     border-radius: 44px;
     margin: 0 auto;
@@ -274,7 +282,9 @@
   :global(.cardMockup) {
     position: relative;
     width: 100%;
-    background: #FFFFFF;
+    background-color: #FFFFFF;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><line x1='0' y1='0' x2='100' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/><line x1='100' y1='0' x2='0' y2='100' stroke='%23979797' stroke-width='1' vector-effect='non-scaling-stroke'/></svg>");
+    background-size: 100% 100%;
     border: 1px solid rgba(128, 128, 128, 0.55);
     border-radius: 15px;
     margin: 0 auto;
@@ -349,7 +359,7 @@
   }
 
   > :global(.mockupRow) {
-    margin-top: 20px;
+    margin-top: 30px;
   }
 
   > :global(.mockupRow) > :global(.bannerMockup),

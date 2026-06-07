@@ -1,7 +1,7 @@
 """update pricing-tech-social body with stories and posts content
 
-Revision ID: 0016_update_pricing_tech_social
-Revises: 0015_advertising_accordion_content
+Revision ID: 0016_pricing_tech_social_body
+Revises: 0015_pricing_tech_accordion
 Create Date: 2026-06-07 19:00:00.000000
 
 """
@@ -11,8 +11,8 @@ import sqlalchemy as sa
 from alembic import op
 
 
-revision: str = "0016_update_pricing_tech_social"
-down_revision: Union[str, None] = "0015_advertising_accordion_content"
+revision: str = "0016_pricing_tech_social_body"
+down_revision: Union[str, None] = "0015_pricing_tech_accordion"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
