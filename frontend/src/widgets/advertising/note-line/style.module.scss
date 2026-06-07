@@ -1,0 +1,16 @@
+.note {
+  display: none;
+  margin: 0;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  color: #1129BD;
+  text-align: center;
+}
+
+@media (min-width: 1440px) {
+  .note {
+    display: block;
+  }
+}

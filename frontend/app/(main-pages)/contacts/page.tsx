@@ -24,6 +24,7 @@ export default async function ContactsPage() {
             <Breadcrumbs
               items={[
                 { label: "Главная", href: "/" },
+                { label: "Документы сайта", href: "/docs" },
                 { label: page.title },
               ]}
             />

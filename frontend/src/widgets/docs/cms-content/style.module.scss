@@ -114,6 +114,57 @@
     }
   }
 
+  > blockquote[data-highlighted="true"],
+  > div > blockquote[data-highlighted="true"] {
+    background: rgba(17, 41, 189, 0.5);
+
+    p { color: #FFFFFF; }
+    strong { color: #FFFFFF; }
+    em { color: #FFFFFF; }
+    a { color: #FFFFFF; }
+  }
+
+  // Wrapper around blockquote groups becomes a responsive grid
+  > div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 850px) {
+    > div {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+  }
+
+  // Reset blockquote inside div — grid handles spacing
+  > div > blockquote {
+    margin: 0 !important;
+  }
+
+  // Gap between H2 and a div-wrapped card group: 10px (same as h2 + blockquote)
+  > h1 + div,
+  > h2 + div,
+  > h3 + div,
+  > h4 + div {
+    margin-top: 10px;
+  }
+
+  // Gap between p/ul/ol and div: 20px (same as p + blockquote)
+  > p + div,
+  > ul + div,
+  > ol + div {
+    margin-top: 20px;
+  }
+
+  // div + p (e.g. day-off after cards group in contacts): 20px, 14/17 #000 like blockquote + p
+  > div + p {
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+    margin-top: 20px;
+  }
+
   strong { color: #383F45; font-weight: 700; }
   em { color: #1129BD; font-style: italic; }
   a { color: #1129BD; text-decoration: underline; }
