@@ -1,4 +1,4 @@
-"""Диалоги, сообщения, вложения. Только просмотр (для админа)."""
+"""Диалоги. Просмотр переписки целиком с вложениями."""
 
 import re
 from typing import Any
@@ -7,17 +7,17 @@ from markupsafe import Markup, escape
 from sqladmin import ModelView
 
 from admin.views.common import AdminOnly, img_thumb
-from models.chat import Conversation, Message, MessageAttachment
+from models.chat import Conversation, Message
 
 
 CHAT_URL_PATTERN = re.compile(r"^/conversations/(\d+)/attachments/(.+)$")
 
 
 def attachment_public_url(stored_url: str | None) -> str | None:
-    """Парсит `/conversations/X/attachments/Y` → `/static/uploads/chat/X/Y`.
+    """Парсит `/conversations/X/attachments/Y` → публичный URL под `/static/uploads/chat/...`.
 
-    Это публично смонтированный путь (`UPLOADS_DIR` в main.py), поэтому
-    превью открывается прямо из админки в новой вкладке без отдельного auth-обхода.
+    Тот же путь, что монтирует main.py для UPLOADS_DIR, поэтому ссылка
+    открывается прямо из админки без отдельной авторизации.
     """
     if not stored_url:
         return None
@@ -28,28 +28,70 @@ def attachment_public_url(stored_url: str | None) -> str | None:
     return f"/static/uploads/chat/{conv_id}/{filename}"
 
 
-def attachment_preview(model: Any, _attr: Any) -> Markup:
-    """Картинка → миниатюра-ссылка. Видео/документ → иконка + кликабельное имя."""
-    url = attachment_public_url(model.url)
-    if not url:
-        return Markup('<span style="color:#999">—</span>')
-
-    if model.kind == "image":
-        return Markup(img_thumb(url, size=80))
-
-    icon = {"video": "🎬", "document": "📄"}.get(model.kind, "📎")
-    return Markup(
+def attachment_chip(att: Any) -> str:
+    """HTML-плашка одного вложения: миниатюра для картинок, иконка + имя для файлов."""
+    url = attachment_public_url(att.url) or ""
+    if att.kind == "image":
+        return (
+            f'<a href="{escape(url)}" target="_blank" rel="noreferrer">'
+            f"{img_thumb(url, size=80)}"
+            f"</a>"
+        )
+    icon = {"video": "🎬", "document": "📄"}.get(att.kind, "📎")
+    return (
         f'<a href="{escape(url)}" target="_blank" rel="noreferrer" '
         f'style="color:#1565C0; text-decoration:none;">'
-        f"{icon} {escape(model.filename or 'файл')}"
+        f"{icon} {escape(att.filename or 'файл')}"
         f"</a>"
     )
+
+
+def message_block(msg: Message) -> str:
+    """HTML одного сообщения: автор, время, текст, вложения."""
+    sender_label = getattr(msg.sender, "name", None) or f"#{msg.sender_id}"
+    when = msg.created_at.strftime("%Y-%m-%d %H:%M")
+    text = escape((msg.text or "").strip())
+    read_mark = "✓" if msg.is_read else "·"
+    attachments = list(msg.attachments or [])
+
+    body_html = text if text else '<em style="color:#9ca3af;">(без текста)</em>'
+
+    chips_html = ""
+    if attachments:
+        chips_html = (
+            '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">'
+            + "".join(attachment_chip(a) for a in attachments)
+            + "</div>"
+        )
+
+    return (
+        '<div style="border:1px solid #e5e7eb; border-radius:10px; '
+        'padding:12px 14px; margin-bottom:10px; background:#fafbfc;">'
+        '<div style="display:flex; justify-content:space-between; '
+        'font-size:13px; color:#6b7280; margin-bottom:6px;">'
+        f'<strong style="color:#111827;">{escape(sender_label)}</strong>'
+        f"<span>{escape(when)} {read_mark}</span>"
+        "</div>"
+        f'<div style="white-space:pre-wrap; font-size:14px; color:#111827;">{body_html}</div>'
+        f"{chips_html}"
+        "</div>"
+    )
+
+
+def conversation_thread(conv: Conversation, _attr: Any = None) -> Markup:
+    """Полная переписка диалога с вложениями для детальной страницы."""
+    messages = list(conv.messages or [])
+    if not messages:
+        return Markup('<span style="color:#999">Сообщений нет</span>')
+    return Markup("".join(message_block(m) for m in messages))
 
 
 class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
     name = "диалог"
     name_plural = "Диалоги"
     icon = "fa-solid fa-comments"
+    can_create = False
+    can_edit = False
     column_list = [
         Conversation.id,
         Conversation.advertisement,
@@ -73,78 +115,17 @@ class ConversationAdmin(AdminOnly, ModelView, model=Conversation):
         Conversation.advertisement: "Объявление",
         Conversation.buyer: "Покупатель",
         Conversation.seller: "Продавец",
-        Conversation.messages: "Сообщения",
+        Conversation.messages: "Переписка",
     }
-    column_details_exclude_list = [Conversation.messages]
-    form_excluded_columns = [Conversation.messages]
-
-
-class MessageAdmin(AdminOnly, ModelView, model=Message):
-    name = "сообщение"
-    name_plural = "Сообщения"
-    icon = "fa-solid fa-message"
-    column_list = [
-        Message.id,
-        Message.conversation,
-        Message.sender,
-        Message.text,
-        Message.created_at,
-        Message.is_read,
+    column_details_list = [
+        Conversation.id,
+        Conversation.advertisement,
+        Conversation.buyer,
+        Conversation.seller,
+        Conversation.created_at,
+        Conversation.last_message_at,
+        Conversation.messages,
     ]
-    column_searchable_list = [Message.text]
-    column_sortable_list = [Message.id, Message.created_at, Message.is_read]
-    column_labels = {
-        Message.id: "ID",
-        Message.conversation_id: "ID диалога",
-        Message.sender_id: "ID отправителя",
-        Message.text: "Текст",
-        Message.created_at: "Создано",
-        Message.is_read: "Прочитано",
-        Message.conversation: "Диалог",
-        Message.sender: "Отправитель",
-        Message.attachments: "Вложения",
+    column_formatters_detail = {
+        Conversation.messages: conversation_thread,
     }
-    form_excluded_columns = [Message.attachments]
-    column_formatters_detail = {Message.attachments: lambda m, _a: message_attachments_block(m)}
-
-
-def message_attachments_block(model: Any) -> Markup:
-    """Список вложений сообщения с превью для админ-детали."""
-    items = list(model.attachments or [])
-    if not items:
-        return Markup('<span style="color:#999">Без вложений</span>')
-    parts = [attachment_preview(att, None) for att in items]
-    return Markup(
-        '<div style="display:flex; flex-wrap:wrap; gap:8px;">'
-        + "".join(str(p) for p in parts)
-        + "</div>"
-    )
-
-
-class MessageAttachmentAdmin(AdminOnly, ModelView, model=MessageAttachment):
-    name = "вложение"
-    name_plural = "Вложения сообщений"
-    icon = "fa-solid fa-paperclip"
-    column_list = [
-        MessageAttachment.id,
-        MessageAttachment.url,
-        MessageAttachment.message,
-        MessageAttachment.filename,
-        MessageAttachment.kind,
-        MessageAttachment.mime_type,
-        MessageAttachment.size_bytes,
-    ]
-    column_searchable_list = [MessageAttachment.filename, MessageAttachment.mime_type]
-    column_sortable_list = [MessageAttachment.id, MessageAttachment.size_bytes]
-    column_labels = {
-        MessageAttachment.id: "ID",
-        MessageAttachment.message_id: "ID сообщения",
-        MessageAttachment.url: "Файл (клик — открыть)",
-        MessageAttachment.filename: "Имя файла",
-        MessageAttachment.kind: "Тип",
-        MessageAttachment.mime_type: "MIME-тип",
-        MessageAttachment.size_bytes: "Размер, байт",
-        MessageAttachment.message: "Сообщение",
-    }
-    column_formatters = {MessageAttachment.url: attachment_preview}
-    column_formatters_detail = {MessageAttachment.url: attachment_preview}

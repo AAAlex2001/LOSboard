@@ -20,8 +20,6 @@ from admin.views import (
     ConversationAdmin,
     FooterLinkAdmin,
     LikedAdvertisementAdmin,
-    MessageAdmin,
-    MessageAttachmentAdmin,
     ModerationQueueAdmin,
     RejectedAdvertisementsAdmin,
     SiteSettingsAdmin,
@@ -65,5 +63,3 @@ def setup_admin(app: FastAPI) -> None:
     admin.add_view(LikedAdvertisementAdmin)
     admin.add_view(ViewedAdvertisementAdmin)
     admin.add_view(ConversationAdmin)
-    admin.add_view(MessageAdmin)
-    admin.add_view(MessageAttachmentAdmin)

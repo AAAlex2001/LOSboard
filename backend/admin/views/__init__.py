@@ -5,7 +5,7 @@
 - attribute.py — динамические доп. поля категорий
 - banner.py — баннеры с загрузкой картинки
 - category.py — категории и подкатегории
-- chat.py — диалоги/сообщения/вложения
+- chat.py — диалоги (с переписью и вложениями в детали)
 - complaint.py — жалобы
 - content.py — контент-страницы / футер / настройки сайта
 - likes_views.py — технические таблицы лайков/просмотров
@@ -26,11 +26,7 @@ from admin.views.attribute import (
 )
 from admin.views.banner import BannerAdmin
 from admin.views.category import CategoryAdmin, SubcategoryAdmin
-from admin.views.chat import (
-    ConversationAdmin,
-    MessageAdmin,
-    MessageAttachmentAdmin,
-)
+from admin.views.chat import ConversationAdmin
 from admin.views.complaint import ComplaintAdmin
 from admin.views.content import (
     ContentPageAdmin,
@@ -56,8 +52,6 @@ __all__ = [
     "ConversationAdmin",
     "FooterLinkAdmin",
     "LikedAdvertisementAdmin",
-    "MessageAdmin",
-    "MessageAttachmentAdmin",
     "ModerationQueueAdmin",
     "RejectedAdvertisementsAdmin",
     "SiteSettingsAdmin",

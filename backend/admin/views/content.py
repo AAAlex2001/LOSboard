@@ -39,10 +39,11 @@ class ContentPageAdmin(AdminOnly, ModelView, model=ContentPage):
         ContentPage.updated_by_id: "ID редактора",
     }
     column_default_sort = [("updated_at", True)]
-    form_excluded_columns = [
-        ContentPage.updated_at,
-        ContentPage.updated_by,
-        ContentPage.updated_by_id,
+    form_columns = [
+        ContentPage.slug,
+        ContentPage.title,
+        ContentPage.is_published,
+        ContentPage.body,
     ]
     form_widget_args = {
         "body": {"class": "rich-editor", "rows": 20},
