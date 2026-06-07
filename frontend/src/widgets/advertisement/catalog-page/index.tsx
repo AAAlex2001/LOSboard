@@ -30,9 +30,6 @@ export const CatalogPage = ({
   const searchParams = useSearchParams();
   const urgentParam = searchParams.get("urgent") === "1";
   const { categories } = useCategories();
-  const { state, setCategory, setSubcategory, reset, patchItem } =
-    useAdvertisementList();
-
   const activeCategory = initialCategorySlug
     ? categories.find((c) => c.slug === initialCategorySlug) ?? null
     : null;
@@ -43,7 +40,13 @@ export const CatalogPage = ({
         ) ?? null
       : null;
 
+  const filtersReady = !initialCategorySlug || activeCategory !== null;
+
+  const { state, setCategory, setSubcategory, reset, patchItem } =
+    useAdvertisementList({ enabled: filtersReady });
+
   useEffect(() => {
+    if (!filtersReady) return;
     if (urgentParam && !initialCategorySlug) {
       setCategory(URGENT_CATEGORY);
       return;
@@ -52,13 +55,13 @@ export const CatalogPage = ({
       reset();
       return;
     }
-    if (!activeCategory) return;
     if (activeSubcategory) {
       setSubcategory(activeSubcategory, activeCategory);
-    } else {
+    } else if (activeCategory) {
       setCategory(activeCategory);
     }
   }, [
+    filtersReady,
     urgentParam,
     activeCategory?.id,
     activeSubcategory?.id,

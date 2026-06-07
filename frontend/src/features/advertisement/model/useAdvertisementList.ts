@@ -15,13 +15,20 @@ import {
   initialAdvertisementListState,
 } from "./advertisementListReducer";
 
-export function useAdvertisementList() {
+interface UseAdvertisementListOptions {
+  enabled?: boolean;
+}
+
+export function useAdvertisementList({
+  enabled = true,
+}: UseAdvertisementListOptions = {}) {
   const [state, dispatch] = useReducer(
     advertisementListReducer,
     initialAdvertisementListState
   );
 
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     dispatch({ type: "FETCH_START" });
 
@@ -44,7 +51,7 @@ export function useAdvertisementList() {
       });
 
     return () => controller.abort();
-  }, [state.categoryId, state.subcategoryId, state.urgentOnly]);
+  }, [enabled, state.categoryId, state.subcategoryId, state.urgentOnly]);
 
   const setCategory = (cat: Category | null) => {
     if (cat?.id === URGENT_CATEGORY_ID) {

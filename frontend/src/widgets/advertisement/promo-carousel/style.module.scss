@@ -10,6 +10,12 @@
   width: 100%;
 }
 
+.track :global(.keen-slider__slide) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .arrow {
   position: absolute;
   top: 50%;
