@@ -1,4 +1,13 @@
-from fastapi import APIRouter, Depends, File, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    Cookie,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -15,7 +24,8 @@ from schemas.auth import (
     UploadAvatarResponse,
 )
 from models.user import User
-from services.auth.dependencies import get_current_user
+from services.auth.cookies import clear_auth_cookies, set_auth_cookies
+from services.auth.dependencies import REFRESH_TOKEN_COOKIE, get_current_user
 from services.auth.use_cases.login_account import LoginAccountUseCase
 from services.auth.use_cases.create_account import CreateAccountUseCase
 from services.auth.use_cases.update_account import UpdateAccountUseCase
@@ -75,19 +85,36 @@ async def upload_avatar_endpoint(
 @limiter.limit("10/minute")
 async def login_account_endpoint(
     request: Request,
+    response: Response,
     payload: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = LoginAccountUseCase()
-    return await use_case.login_account(payload, db)
+    result = await use_case.login_account(payload, db)
+    set_auth_cookies(response, result.access_token, result.refresh_token)
+    return result
 
 
 @router.post("/refresh", response_model=RefreshTokenResponse)
 @limiter.limit("20/minute")
 async def refresh_token_endpoint(
     request: Request,
-    payload: RefreshTokenRequest,
+    response: Response,
     db: AsyncSession = Depends(get_db),
+    payload: RefreshTokenRequest | None = None,
+    refresh_cookie: str | None = Cookie(default=None, alias=REFRESH_TOKEN_COOKIE),
 ):
+    token_value = (payload.refresh_token if payload else None) or refresh_cookie
+    if not token_value:
+        raise HTTPException(status_code=401, detail="Требуется refresh-токен")
     use_case = RefreshTokenUseCase()
-    return await use_case.refresh_token(payload, db)
+    refresh_request = RefreshTokenRequest(refresh_token=token_value)
+    result = await use_case.refresh_token(refresh_request, db)
+    set_auth_cookies(response, result.access_token, result.refresh_token)
+    return result
+
+
+@router.post("/logout")
+async def logout_endpoint(response: Response):
+    clear_auth_cookies(response)
+    return {"message": "Сессия завершена"}

@@ -15,6 +15,7 @@ export async function login(
 ): Promise<LoginResponse> {
   const response = await fetch(`${config.API_BASE_URL}auth/login`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
@@ -49,17 +50,16 @@ let inflightRefresh: Promise<LoginResponse> | null = null;
 
 async function doRefresh(): Promise<LoginResponse> {
   const currentRefreshToken = getRefreshToken();
-
-  if (!currentRefreshToken) {
-    throw new RefreshAuthError("Нет refresh токена");
-  }
+  const body: Record<string, string> = {};
+  if (currentRefreshToken) body.refresh_token = currentRefreshToken;
 
   let response: Response;
   try {
     response = await fetch(`${config.API_BASE_URL}auth/refresh`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: currentRefreshToken }),
+      body: JSON.stringify(body),
     });
   } catch (err) {
     throw new RefreshNetworkError(
@@ -88,4 +88,15 @@ export async function refreshToken(): Promise<LoginResponse> {
     });
   }
   return inflightRefresh;
+}
+
+export async function logoutRequest(): Promise<void> {
+  try {
+    await fetch(`${config.API_BASE_URL}auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {
+    /* сервер уже мог уронить cookie на клиенте через logout-storage */
+  }
 }

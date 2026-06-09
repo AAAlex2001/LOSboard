@@ -43,6 +43,7 @@ export async function apiFetch(
 ): Promise<Response> {
   const response = await fetch(`${config.API_BASE_URL}${path}`, {
     ...options,
+    credentials: "include",
     headers: buildHeaders(getAccessToken(), options.body, options.headers),
   });
 
@@ -54,6 +55,7 @@ export async function apiFetch(
     const refreshed = await refreshToken();
     return await fetch(`${config.API_BASE_URL}${path}`, {
       ...options,
+      credentials: "include",
       headers: buildHeaders(refreshed.access_token, options.body, options.headers),
     });
   } catch (err) {
