@@ -1,15 +1,16 @@
-import { redirect } from "next/navigation";
+import { CatalogPage } from "@/src/widgets/advertisement/catalog-page";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
 
-export default async function CategoryRedirect({ params }: PageProps) {
+export default async function CategoryRoute({ params }: PageProps) {
   const { slug } = await params;
   const [categorySlug, subcategorySlug] = slug;
-  const search = new URLSearchParams();
-  if (categorySlug) search.set("cat", categorySlug);
-  if (subcategorySlug) search.set("sub", subcategorySlug);
-  const qs = search.toString();
-  redirect(qs ? `/?${qs}` : "/");
+  return (
+    <CatalogPage
+      initialCategorySlug={categorySlug}
+      initialSubcategorySlug={subcategorySlug}
+    />
+  );
 }
