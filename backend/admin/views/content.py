@@ -52,7 +52,7 @@ class ContentPageAdmin(AdminOnly, ModelView, model=ContentPage):
         "slug": {
             "description": (
                 "Slug определяет, куда блок попадёт на сайте. Самые частые: "
-                "contacts / contacts-data / contacts-hours — страница «Связаться с нами»; "
+                "contacts — страница «Связаться с нами»; "
                 "pricing / pricing-promo / pricing-tech-* — страница «Реклама в LOS»; "
                 "любой другой slug отдаётся по URL /docs/<slug>."
             ),

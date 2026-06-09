@@ -6,17 +6,10 @@ import style from "./style.module.scss";
 
 interface ContactsPageViewProps {
   title: string;
-  intro: string;
-  dataBlock: string;
-  hoursBlock: string;
+  body: string;
 }
 
-export const ContactsPageView = ({
-  title,
-  intro,
-  dataBlock,
-  hoursBlock,
-}: ContactsPageViewProps) => {
+export const ContactsPageView = ({ title, body }: ContactsPageViewProps) => {
   return (
     <main className={style.page}>
       <Header />
@@ -32,9 +25,7 @@ export const ContactsPageView = ({
             <h1 className={style.title}>{title}</h1>
           </div>
 
-          {intro && <CmsContent body={intro} />}
-          {dataBlock && <CmsContent body={dataBlock} />}
-          {hoursBlock && <CmsContent body={hoursBlock} />}
+          <CmsContent body={body} />
         </div>
       </div>
       <Footer />
