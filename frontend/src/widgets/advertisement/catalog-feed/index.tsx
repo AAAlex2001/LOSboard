@@ -34,11 +34,6 @@ export const CatalogFeed = ({ state, title, onItemPatch }: CatalogFeedProps) => 
   return (
     <div className={style.feed}>
       <h2 className={titleClass}>{title ?? "Все объявления"}</h2>
-      {state.urgentOnly && (
-        <div className={style.urgentBanner}>
-          Показаны только срочные объявления. Выберите подкатегорию выше, чтобы сузить выдачу.
-        </div>
-      )}
 
       {state.loading && (
         <div className={style.feedback}>

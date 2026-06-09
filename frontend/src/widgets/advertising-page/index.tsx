@@ -39,7 +39,6 @@ export const AdvertisingPageView = ({
       <CrumbsBar
         items={[
           { label: "Главная", href: "/" },
-          { label: "Документы сайта", href: "/docs" },
           { label: PAGE_TITLE },
         ]}
       />

@@ -126,7 +126,10 @@ export const CatalogTopBar = ({
 
       <div className={style.strip}>
         <CategoriesStrip
-          activeCategoryId={urgentOnly ? URGENT_CATEGORY_ID : category?.id ?? null}
+          activeCategoryId={
+            urgentOnly && !category ? URGENT_CATEGORY_ID : category?.id ?? null
+          }
+          urgentTone={urgentOnly}
           onSelect={handlePickCategory}
         />
       </div>

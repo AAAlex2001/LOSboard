@@ -7,12 +7,18 @@ import style from "./style.module.scss";
 interface CategoryCardProps {
   category: Category;
   active?: boolean;
+  urgentTone?: boolean;
   onClick?: (category: Category) => void;
 }
 
-export const CategoryCard = ({ category, active, onClick }: CategoryCardProps) => {
+export const CategoryCard = ({
+  category,
+  active,
+  urgentTone,
+  onClick,
+}: CategoryCardProps) => {
   const Icon = getCategoryIcon(category.slug);
-  const urgent = category.slug === "urgent";
+  const urgent = category.slug === "urgent" || urgentTone;
 
   return (
     <button

@@ -15,11 +15,13 @@ import style from "./style.module.scss";
 
 interface CategoriesStripProps {
   activeCategoryId: number | null;
+  urgentTone?: boolean;
   onSelect: (category: Category) => void;
 }
 
 export const CategoriesStrip = ({
   activeCategoryId,
+  urgentTone,
   onSelect,
 }: CategoriesStripProps) => {
   const { categories, loading } = useCategories();
@@ -68,6 +70,7 @@ export const CategoriesStrip = ({
             <CategoryCard
               category={cat}
               active={activeCategoryId === cat.id}
+              urgentTone={urgentTone}
               onClick={onSelect}
             />
           </div>

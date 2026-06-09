@@ -16,7 +16,6 @@ export const ContactsPageView = ({ title, body }: ContactsPageViewProps) => {
       <CrumbsBar
         items={[
           { label: "Главная", href: "/" },
-          { label: "Документы сайта", href: "/docs" },
           { label: title },
         ]}
       />
