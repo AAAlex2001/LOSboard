@@ -19,46 +19,39 @@ import {
 import { useAdvertisementList } from "@/src/features/advertisement";
 import style from "./style.module.scss";
 
-interface CatalogPageProps {
-  initialCategorySlug?: string;
-  initialSubcategorySlug?: string;
-}
-
-function buildUrgentUrl(categorySlug?: string, subcategorySlug?: string): string {
+function buildUrl(opts: {
+  urgent?: boolean;
+  categorySlug?: string | null;
+  subcategorySlug?: string | null;
+}): string {
   const params = new URLSearchParams();
-  params.set("urgent", "1");
-  if (categorySlug) params.set("category", categorySlug);
-  if (subcategorySlug) params.set("subcategory", subcategorySlug);
-  return `/?${params.toString()}`;
+  if (opts.urgent) params.set("urgent", "1");
+  if (opts.categorySlug) params.set("cat", opts.categorySlug);
+  if (opts.subcategorySlug) params.set("sub", opts.subcategorySlug);
+  const qs = params.toString();
+  return qs ? `/?${qs}` : "/";
 }
 
-export const CatalogPage = ({
-  initialCategorySlug,
-  initialSubcategorySlug,
-}: CatalogPageProps) => {
+export const CatalogPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urgentParam = searchParams.get("urgent") === "1";
-  const urgentCategorySlug = urgentParam ? searchParams.get("category") : null;
-  const urgentSubcategorySlug = urgentParam ? searchParams.get("subcategory") : null;
+  const categorySlugParam = searchParams.get("cat");
+  const subcategorySlugParam = searchParams.get("sub");
 
   const { categories } = useCategories();
 
-  const effectiveCategorySlug = initialCategorySlug ?? urgentCategorySlug ?? null;
-  const effectiveSubcategorySlug =
-    initialSubcategorySlug ?? urgentSubcategorySlug ?? null;
-
-  const activeCategory = effectiveCategorySlug
-    ? categories.find((c) => c.slug === effectiveCategorySlug) ?? null
+  const activeCategory = categorySlugParam
+    ? categories.find((c) => c.slug === categorySlugParam) ?? null
     : null;
   const activeSubcategory =
-    activeCategory && effectiveSubcategorySlug
+    activeCategory && subcategorySlugParam
       ? activeCategory.subcategories.find(
-          (s) => s.slug === effectiveSubcategorySlug
+          (s) => s.slug === subcategorySlugParam
         ) ?? null
       : null;
 
-  const filtersReady = !effectiveCategorySlug || activeCategory !== null;
+  const filtersReady = !categorySlugParam || activeCategory !== null;
 
   const { state, setFilters, patchItem } = useAdvertisementList({
     enabled: filtersReady,
@@ -82,22 +75,14 @@ export const CatalogPage = ({
 
   const handleSelectCategory = (cat: Category | null) => {
     if (!cat) {
-      if (state.urgentOnly) {
-        navigate(buildUrgentUrl());
-        return;
-      }
-      navigate("/");
+      navigate(buildUrl({ urgent: urgentParam }));
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      navigate(buildUrgentUrl());
+      navigate(buildUrl({ urgent: true }));
       return;
     }
-    if (state.urgentOnly) {
-      navigate(buildUrgentUrl(cat.slug));
-      return;
-    }
-    navigate(`/category/${cat.slug}`);
+    navigate(buildUrl({ urgent: urgentParam, categorySlug: cat.slug }));
   };
 
   const handleSelectSubcategory = (
@@ -105,45 +90,37 @@ export const CatalogPage = ({
     cat: Category | null
   ) => {
     if (!cat) {
-      if (state.urgentOnly) {
-        navigate(buildUrgentUrl());
-        return;
-      }
-      navigate("/");
+      navigate(buildUrl({ urgent: urgentParam }));
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      navigate(buildUrgentUrl());
+      navigate(buildUrl({ urgent: true }));
       return;
     }
-    if (state.urgentOnly) {
-      navigate(buildUrgentUrl(cat.slug, sub?.slug));
-      return;
-    }
-    if (sub) {
-      navigate(`/category/${cat.slug}/${sub.slug}`);
-    } else {
-      navigate(`/category/${cat.slug}`);
-    }
+    navigate(
+      buildUrl({
+        urgent: urgentParam,
+        categorySlug: cat.slug,
+        subcategorySlug: sub?.slug,
+      })
+    );
   };
 
   const handleReset = () => {
     navigate("/");
   };
 
-  const topbarCategory = state.urgentOnly && !activeCategory ? null : activeCategory;
-  const topbarSubcategory = activeSubcategory;
-  const hasFilter = Boolean(activeCategory || activeSubcategory || state.urgentOnly);
+  const hasFilter = Boolean(activeCategory || activeSubcategory || urgentParam);
 
   const feedTitle = (() => {
-    if (state.urgentOnly && activeSubcategory) {
+    if (urgentParam && activeSubcategory) {
       return `Срочные · ${activeCategory?.name ?? ""} · ${activeSubcategory.name}`;
     }
-    if (state.urgentOnly && activeCategory) {
+    if (urgentParam && activeCategory) {
       return `Срочные · ${activeCategory.name}`;
     }
-    if (state.urgentOnly) return "Срочные объявления";
-    if (activeSubcategory) return activeSubcategory.name;
+    if (urgentParam) return "Срочные объявления";
+    if (activeSubcategory) return `${activeCategory?.name ?? ""} · ${activeSubcategory.name}`;
     if (activeCategory) return activeCategory.name;
     return "Все объявления";
   })();
@@ -151,13 +128,13 @@ export const CatalogPage = ({
   const crumbItems: BreadcrumbItem[] = hasFilter
     ? [
         { label: "Главная", onClick: handleReset },
-        ...(state.urgentOnly
+        ...(urgentParam
           ? [
               {
                 label: URGENT_CATEGORY.name,
                 onClick:
                   activeCategory || activeSubcategory
-                    ? () => navigate(buildUrgentUrl())
+                    ? () => navigate(buildUrl({ urgent: true }))
                     : undefined,
               },
             ]
@@ -167,7 +144,13 @@ export const CatalogPage = ({
               {
                 label: activeCategory.name,
                 onClick: activeSubcategory
-                  ? () => handleSelectSubcategory(null, activeCategory)
+                  ? () =>
+                      navigate(
+                        buildUrl({
+                          urgent: urgentParam,
+                          categorySlug: activeCategory.slug,
+                        })
+                      )
                   : undefined,
               },
             ]
@@ -187,9 +170,9 @@ export const CatalogPage = ({
         <div className={style.layout}>
           <div className={style.topbarSlot}>
             <CatalogTopBar
-              category={topbarCategory}
-              subcategory={topbarSubcategory}
-              urgentOnly={state.urgentOnly}
+              category={activeCategory}
+              subcategory={activeSubcategory}
+              urgentOnly={urgentParam}
               onSelectCategory={handleSelectCategory}
               onSelectSubcategory={handleSelectSubcategory}
               onResetFilters={handleReset}
