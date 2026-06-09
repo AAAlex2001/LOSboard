@@ -4,12 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas.auth import CreateAccountRequest, CreateAccountResponse
 from models.user import User
-from services.auth.password import password_context
+from services.auth.password import hash_password
 
 
 class CreateAccountUseCase:
-    def __init__(self):
-        self.password_context = password_context
 
     async def create_account(
         self,
@@ -27,7 +25,7 @@ class CreateAccountUseCase:
         new_user = User(
             name=request.name,
             email=request.email,
-            password=self.password_context.hash(request.password),
+            password=await hash_password(request.password),
         )
 
         db.add(new_user)

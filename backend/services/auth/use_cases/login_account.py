@@ -5,12 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.auth import LoginRequest, LoginResponse
 from models.user import User
 from services.auth.jwt_service import JWTService
-from services.auth.password import password_context, DUMMY_PASSWORD_HASH
+from services.auth.password import DUMMY_PASSWORD_HASH, verify_password
 
 
 class LoginAccountUseCase:
     def __init__(self):
-        self.password_context = password_context
         self.jwt_service = JWTService()
 
     async def login_account(
@@ -24,7 +23,7 @@ class LoginAccountUseCase:
         user = result.scalar_one_or_none()
 
         password_to_check = user.password if user else DUMMY_PASSWORD_HASH
-        password_ok = self.password_context.verify(request.password, password_to_check)
+        password_ok = await verify_password(request.password, password_to_check)
 
         if not user or not password_ok:
             raise HTTPException(status_code=401, detail="Неверный email или пароль")

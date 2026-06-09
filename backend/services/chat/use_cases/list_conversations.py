@@ -45,7 +45,6 @@ class ListConversationsUseCase:
 
         conv_ids = [c.id for c in conversations]
 
-        # Последние сообщения по диалогам (text последнего created_at)
         last_msg_subq = (
             select(
                 Message.conversation_id,
@@ -64,7 +63,6 @@ class ListConversationsUseCase:
         )
         last_msgs = {m.conversation_id: m for m in last_msgs_result.scalars().all()}
 
-        # Непрочитанные сообщения для текущего пользователя
         unread_result = await db.execute(
             select(
                 Message.conversation_id,

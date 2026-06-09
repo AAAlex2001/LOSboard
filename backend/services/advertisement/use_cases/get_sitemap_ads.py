@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.advertisement import Advertisement
+from models.advertisement import Advertisement, MODERATION_APPROVED
 from schemas.advertisement import AdvertisementSitemapItem
 
 
@@ -18,7 +18,8 @@ class GetSitemapAdsUseCase:
                 Advertisement.created_at,
             )
             .where(
-                Advertisement.is_active == True,  # noqa: E712
+                Advertisement.is_active.is_(True),
+                Advertisement.moderation_status == MODERATION_APPROVED,
                 Advertisement.deleted_at.is_(None),
             )
             .order_by(Advertisement.id.desc())

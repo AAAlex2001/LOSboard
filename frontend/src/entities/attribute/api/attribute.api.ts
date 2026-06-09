@@ -1,4 +1,5 @@
 import { config } from "@/src/shared/config/config";
+import { readErrorDetail } from "@/src/shared/lib/http";
 
 export type AttributeKind = "text" | "number" | "select" | "boolean";
 
@@ -10,15 +11,6 @@ export interface Attribute {
   options: string[] | null;
   is_required: boolean;
   sort_order: number;
-}
-
-async function readErrorDetail(
-  response: Response,
-  fallback: string
-): Promise<string> {
-  const errorData = await response.json().catch(() => ({}));
-  const detail = errorData.detail;
-  return typeof detail === "string" ? detail : fallback;
 }
 
 export async function getAttributes(

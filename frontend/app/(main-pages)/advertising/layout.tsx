@@ -10,10 +10,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: { canonical: `${siteOrigin()}/advertising` },
     openGraph: {
       title,
       description,
       type: "website",
+      url: `${siteOrigin()}/advertising`,
+      siteName: "LOS Daily",
+      locale: "ru_RU",
       images: [{ url: ogImage, alt: "LOS Daily" }],
     },
     twitter: {

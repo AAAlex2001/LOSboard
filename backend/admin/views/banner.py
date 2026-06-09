@@ -1,5 +1,6 @@
 """Рекламные баннеры. Картинка загружается с компа, конвертится в WebP."""
 
+import asyncio
 import os
 import uuid
 from pathlib import Path
@@ -24,14 +25,13 @@ from models.banner import Banner
 from services.uploads.image import ensure_extension, save_processed_sync
 
 
-# Каталог /backend/uploads (тот же, что main.py монтирует под /static/uploads).
 BANNER_UPLOADS_DIR = Path(__file__).resolve().parents[2] / "uploads" / "banners"
 
 VIDEO_ALLOWED_EXTS = {".mp4", ".webm", ".mov"}
 VIDEO_MAX_BYTES = 10 * 1024 * 1024
 
 
-async def _validate_and_get_video_size(upload) -> int:
+async def validate_and_get_video_size(upload) -> int:
     ext = os.path.splitext(upload.filename or "")[1].lower()
     if ext not in VIDEO_ALLOWED_EXTS:
         raise HTTPException(
@@ -43,15 +43,14 @@ async def _validate_and_get_video_size(upload) -> int:
     return len(contents)
 
 
-async def _save_banner_video(upload) -> str:
+async def save_banner_video(upload) -> str:
     ext = os.path.splitext(upload.filename or "")[1].lower()
     filename = f"{uuid.uuid4().hex}{ext}"
     contents = await upload.read()
 
-    BANNER_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    await asyncio.to_thread(BANNER_UPLOADS_DIR.mkdir, parents=True, exist_ok=True)
     target_path = BANNER_UPLOADS_DIR / filename
-    with open(target_path, "wb") as f:
-        f.write(contents)
+    await asyncio.to_thread(target_path.write_bytes, contents)
     return f"/static/uploads/banners/{filename}"
 
 
@@ -187,10 +186,10 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
             data["image_url"] = save_processed_sync(raw, subdir="banners")
 
         if has_video:
-            size_bytes = await _validate_and_get_video_size(video_upload)
+            size_bytes = await validate_and_get_video_size(video_upload)
             if size_bytes > VIDEO_MAX_BYTES:
                 raise HTTPException(
                     status_code=400,
                     detail="Видео должно быть не больше 10 МБ",
                 )
-            data["video_url"] = await _save_banner_video(video_upload)
+            data["video_url"] = await save_banner_video(video_upload)

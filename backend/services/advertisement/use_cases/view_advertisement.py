@@ -22,14 +22,15 @@ class ViewAdvertisementUseCase:
         current_user: User,
     ) -> Advertisement:
         ad_result = await db.execute(
-            select(Advertisement).where(Advertisement.id == advertisement_id)
+            select(Advertisement).where(
+                Advertisement.id == advertisement_id,
+                Advertisement.deleted_at.is_(None),
+            )
         )
         advertisement = ad_result.scalar_one_or_none()
         if not advertisement:
             raise HTTPException(status_code=404, detail="Объявление не найдено")
 
-        # Атомарный INSERT с дедупликацией по (user_id, advertisement_id).
-        # Если конфликт (уже смотрел) — returning отдаёт пустой результат.
         insert_stmt = (
             insert(ViewedAdvertisement)
             .values(user_id=current_user.id, advertisement_id=advertisement_id)

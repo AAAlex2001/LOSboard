@@ -20,7 +20,7 @@ router = APIRouter(prefix="/content", tags=["content"])
 async def list_content_pages(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(ContentPage)
-        .where(ContentPage.is_published == True)
+        .where(ContentPage.is_published.is_(True))
         .order_by(ContentPage.title.asc())
     )
     return result.scalars().all()
@@ -31,7 +31,7 @@ async def get_content_page(slug: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(ContentPage).where(
             ContentPage.slug == slug,
-            ContentPage.is_published == True,
+            ContentPage.is_published.is_(True),
         )
     )
     page = result.scalar_one_or_none()
@@ -53,7 +53,7 @@ async def get_site_settings(db: AsyncSession = Depends(get_db)) -> SiteSettings:
 async def get_footer(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(FooterLink)
-        .where(FooterLink.is_active == True)
+        .where(FooterLink.is_active.is_(True))
         .order_by(FooterLink.sort_order.asc(), FooterLink.id.asc())
     )
     links = [FooterLinkResponse.model_validate(row) for row in result.scalars().all()]

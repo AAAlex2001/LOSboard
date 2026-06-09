@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Разместить объявление",
   description:
     "Разместите объявление на LOS Daily — выберите категорию, добавьте фото и описание, укажите цену.",
+  robots: { index: false, follow: false },
 };
 
 export default function PlaceAdLayout({

@@ -1,4 +1,5 @@
 import { config } from "@/src/shared/config/config";
+import { readErrorDetail } from "@/src/shared/lib/http";
 
 export type BannerPlacement = "main_top" | "sidebar";
 
@@ -12,15 +13,6 @@ export interface Banner {
   link_url: string | null;
   sort_order: number;
   placement: BannerPlacement;
-}
-
-async function readErrorDetail(
-  response: Response,
-  fallback: string
-): Promise<string> {
-  const errorData = await response.json().catch(() => ({}));
-  const detail = errorData.detail;
-  return typeof detail === "string" ? detail : fallback;
 }
 
 export async function getActiveBanners(

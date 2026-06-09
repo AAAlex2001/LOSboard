@@ -5,7 +5,7 @@ from typing import Any
 
 from markupsafe import Markup, escape
 from sqladmin import ModelView, action
-from sqlalchemy import delete, select, update
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
@@ -191,7 +191,15 @@ class UserAdmin(AdminOnly, ModelView, model=User):
         if pks:
             async with self.session_maker() as session:
                 await session.execute(
-                    delete(Advertisement).where(Advertisement.owner_id.in_(pks))
+                    update(Advertisement)
+                    .where(
+                        Advertisement.owner_id.in_(pks),
+                        Advertisement.deleted_at.is_(None),
+                    )
+                    .values(
+                        is_active=False,
+                        deleted_at=datetime.utcnow(),
+                    )
                 )
                 await session.commit()
         return redirect_to_list(request, self.identity)

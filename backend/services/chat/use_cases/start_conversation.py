@@ -26,7 +26,10 @@ class StartConversationUseCase:
         current_user: User,
     ) -> Conversation:
         ad_result = await db.execute(
-            select(Advertisement).where(Advertisement.id == advertisement_id)
+            select(Advertisement).where(
+                Advertisement.id == advertisement_id,
+                Advertisement.deleted_at.is_(None),
+            )
         )
         advertisement = ad_result.scalar_one_or_none()
         if not advertisement:
@@ -38,7 +41,6 @@ class StartConversationUseCase:
                 detail="Нельзя написать самому себе",
             )
 
-        # Атомарно создаём диалог; если уже есть — берём существующий.
         insert_stmt = (
             insert(Conversation)
             .values(

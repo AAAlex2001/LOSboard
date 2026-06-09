@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -11,5 +11,5 @@ export default async function CategoryRedirect({ params }: PageProps) {
   if (categorySlug) search.set("cat", categorySlug);
   if (subcategorySlug) search.set("sub", subcategorySlug);
   const qs = search.toString();
-  redirect(qs ? `/?${qs}` : "/");
+  permanentRedirect(qs ? `/?${qs}` : "/");
 }

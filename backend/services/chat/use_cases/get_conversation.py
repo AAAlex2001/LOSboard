@@ -43,7 +43,6 @@ class GetConversationUseCase:
         if current_user.id not in (conversation.buyer_id, conversation.seller_id):
             raise HTTPException(status_code=403, detail="Нет доступа к диалогу")
 
-        # Помечаем входящие как прочитанные
         await db.execute(
             update(Message)
             .where(

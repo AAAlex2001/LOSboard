@@ -4,12 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas.auth import UpdateAccountRequest, UpdateAccountResponse
 from models.user import User
-from services.auth.password import password_context
+from services.auth.password import hash_password, verify_password
 
 
 class UpdateAccountUseCase:
-    def __init__(self):
-        self.password_context = password_context
 
     async def update_account(
         self,
@@ -31,7 +29,7 @@ class UpdateAccountUseCase:
                     status_code=400,
                     detail="Для смены email или пароля укажите текущий пароль",
                 )
-            if not self.password_context.verify(
+            if not await verify_password(
                 request.current_password, existing_user.password
             ):
                 raise HTTPException(
@@ -41,7 +39,7 @@ class UpdateAccountUseCase:
         if request.name is not None:
             existing_user.name = request.name
         if request.password is not None:
-            existing_user.password = self.password_context.hash(request.password)
+            existing_user.password = await hash_password(request.password)
             existing_user.token_version = (existing_user.token_version or 0) + 1
         if request.phone_number is not None:
             if not request.phone_number.isdigit() or len(request.phone_number) != 11:

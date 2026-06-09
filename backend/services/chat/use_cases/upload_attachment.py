@@ -1,3 +1,4 @@
+import asyncio
 import io
 import secrets
 
@@ -53,9 +54,9 @@ class UploadChatAttachmentUseCase:
                 )
 
         target_dir = CHAT_UPLOAD_DIR / str(conversation_id)
-        target_dir.mkdir(parents=True, exist_ok=True)
+        await asyncio.to_thread(target_dir.mkdir, parents=True, exist_ok=True)
         stored_name = f"{secrets.token_hex(12)}{ext}"
-        (target_dir / stored_name).write_bytes(contents)
+        await asyncio.to_thread((target_dir / stored_name).write_bytes, contents)
 
         return AttachmentMeta(
             url=f"/conversations/{conversation_id}/attachments/{stored_name}",

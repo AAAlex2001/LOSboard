@@ -23,7 +23,7 @@ class GetListAdvertisementsUseCase:
     ) -> list[Advertisement]:
 
         stmt = select(Advertisement).where(
-            Advertisement.is_active == True,
+            Advertisement.is_active.is_(True),
             Advertisement.moderation_status == MODERATION_APPROVED,
             Advertisement.deleted_at.is_(None),
         )
@@ -100,6 +100,8 @@ class GetListAdvertisementsUseCase:
             .join(LikedAdvertisement, LikedAdvertisement.advertisement_id == Advertisement.id)
             .where(
                 LikedAdvertisement.user_id == current_user.id,
+                Advertisement.is_active.is_(True),
+                Advertisement.moderation_status == MODERATION_APPROVED,
                 Advertisement.deleted_at.is_(None),
             )
             .order_by(Advertisement.id.desc())

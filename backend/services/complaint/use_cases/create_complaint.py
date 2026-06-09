@@ -20,7 +20,10 @@ class CreateComplaintUseCase:
             raise HTTPException(status_code=422, detail="Неверная причина жалобы")
 
         ad = await db.scalar(
-            select(Advertisement).where(Advertisement.id == advertisement_id)
+            select(Advertisement).where(
+                Advertisement.id == advertisement_id,
+                Advertisement.deleted_at.is_(None),
+            )
         )
         if not ad:
             raise HTTPException(status_code=404, detail="Объявление не найдено")

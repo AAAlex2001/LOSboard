@@ -1,16 +1,11 @@
 import { apiFetch } from "@/src/shared/auth/api-fetch";
+import { readErrorDetail } from "@/src/shared/lib/http";
 import type { Advertisement } from "@/src/entities/advertisement";
 
 export interface GetFavoritesParams {
   skip?: number;
   limit?: number;
   signal?: AbortSignal;
-}
-
-async function readErrorDetail(response: Response, fallback: string): Promise<string> {
-  const errorData = await response.json().catch(() => ({}));
-  const detail = errorData.detail;
-  return typeof detail === "string" ? detail : fallback;
 }
 
 export async function getFavorites(

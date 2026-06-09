@@ -1,21 +1,13 @@
 import { config } from "@/src/shared/config/config";
 import { apiFetch } from "@/src/shared/auth/api-fetch";
 import { getAccessToken } from "@/src/shared/auth/auth-storage";
+import { readErrorDetail } from "@/src/shared/lib/http";
 import type {
   ChatAttachment,
   ChatMessage,
   ConversationDetail,
   ConversationListItem,
 } from "../model/types";
-
-async function readErrorDetail(response: Response, fallback: string): Promise<string> {
-  const errorData = await response.json().catch(() => ({}));
-  const detail = errorData.detail;
-  if (Array.isArray(detail)) {
-    return detail.map((d) => d.msg).join("; ");
-  }
-  return typeof detail === "string" ? detail : fallback;
-}
 
 export async function getConversations(
   options: { signal?: AbortSignal } = {}

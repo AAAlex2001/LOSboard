@@ -1,3 +1,5 @@
+import asyncio
+
 from passlib.context import CryptContext
 
 
@@ -9,3 +11,13 @@ password_context = CryptContext(
 )
 
 DUMMY_PASSWORD_HASH = password_context.hash("dummy-password-for-constant-time-compare")
+
+
+async def hash_password(password: str) -> str:
+    """Хеширует пароль argon2 в треде, чтобы не блокировать event loop."""
+    return await asyncio.to_thread(password_context.hash, password)
+
+
+async def verify_password(password: str, hashed: str) -> bool:
+    """Проверяет пароль argon2 в треде, чтобы не блокировать event loop."""
+    return await asyncio.to_thread(password_context.verify, password, hashed)

@@ -1,4 +1,5 @@
 import { config } from "@/src/shared/config/config";
+import { readErrorDetail } from "@/src/shared/lib/http";
 
 export interface ContentPage {
   slug: string;
@@ -35,15 +36,6 @@ export interface SiteSettings {
   ad_age_label: string;
   ad_site_label: string;
   ad_placeholder_text: string;
-}
-
-async function readErrorDetail(
-  response: Response,
-  fallback: string
-): Promise<string> {
-  const errorData = await response.json().catch(() => ({}));
-  const detail = errorData.detail;
-  return typeof detail === "string" ? detail : fallback;
 }
 
 export async function listContentPages(

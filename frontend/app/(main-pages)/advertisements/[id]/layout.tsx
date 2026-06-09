@@ -68,6 +68,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: ad.title,
       description,
       url: canonical,
+      siteName: "LOS Daily",
+      locale: "ru_RU",
       images: [{ url: ogImage, alt: ad.title }],
       type: "article",
     },
@@ -99,6 +101,10 @@ export default async function AdvertisementLayout({ params, children }: Props) {
   const subcategory =
     category?.subcategories.find((s) => s.id === ad.subcategory_id) ?? null;
 
+  const priceValidUntil = new Date(Date.now() + 1000 * 60 * 60 * 24 * 60)
+    .toISOString()
+    .slice(0, 10);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -107,16 +113,22 @@ export default async function AdvertisementLayout({ params, children }: Props) {
     image: images.length > 0 ? images : [`${origin}/los.jpg`],
     url: canonical,
     category: subcategory?.name ?? category?.name,
+    itemCondition: "https://schema.org/UsedCondition",
     offers: {
       "@type": "Offer",
       price: ad.price,
       priceCurrency: "RUB",
+      priceValidUntil,
       availability:
         ad.is_active === false
           ? "https://schema.org/SoldOut"
           : "https://schema.org/InStock",
       url: canonical,
       areaServed: ad.location || undefined,
+      seller: {
+        "@type": "Person",
+        name: ad.seller_name ?? "LOS Daily",
+      },
     },
   };
 

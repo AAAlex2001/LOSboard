@@ -1,8 +1,9 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CatalogPage } from "@/src/widgets/advertisement/catalog-page";
 import { JsonLd } from "@/src/shared/ui/JsonLd";
 import { fetchCategoryTree, siteOrigin } from "@/src/shared/lib/server-api";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   searchParams: Promise<{
@@ -152,9 +153,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     <>
       {breadcrumbJsonLd && <JsonLd data={breadcrumbJsonLd} />}
       {collectionJsonLd && <JsonLd data={collectionJsonLd} />}
-      <Suspense fallback={null}>
-        <CatalogPage />
-      </Suspense>
+      <CatalogPage />
     </>
   );
 }

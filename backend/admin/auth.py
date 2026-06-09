@@ -4,7 +4,7 @@ from starlette.requests import Request
 
 from database import AsyncSessionLocal
 from models.user import STAFF_ROLES, User
-from services.auth.password import DUMMY_PASSWORD_HASH, password_context
+from services.auth.password import DUMMY_PASSWORD_HASH, verify_password
 
 
 class AdminAuth(AuthenticationBackend):
@@ -18,7 +18,7 @@ class AdminAuth(AuthenticationBackend):
             user = result.scalar_one_or_none()
 
         password_hash = user.password if user else DUMMY_PASSWORD_HASH
-        password_ok = password_context.verify(password, password_hash)
+        password_ok = await verify_password(password, password_hash)
 
         if not user or not password_ok or not user.is_active:
             return False
@@ -45,7 +45,7 @@ class AdminAuth(AuthenticationBackend):
             result = await session.execute(
                 select(User).where(
                     User.id == user_id,
-                    User.is_active == True,
+                    User.is_active.is_(True),
                 )
             )
             user = result.scalar_one_or_none()

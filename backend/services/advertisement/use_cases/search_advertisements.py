@@ -20,7 +20,7 @@ class SearchAdvertisementsUseCase:
         pattern = f"%{query}%"
         stmt = (
             select(Advertisement)
-            .where(Advertisement.is_active == True)  # noqa: E712
+            .where(Advertisement.is_active.is_(True))
             .where(Advertisement.moderation_status == MODERATION_APPROVED)
             .where(Advertisement.deleted_at.is_(None))
             .where(Advertisement.title.ilike(pattern))

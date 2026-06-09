@@ -1,3 +1,4 @@
+import asyncio
 import io
 import os
 import secrets
@@ -52,7 +53,7 @@ class UploadAvatarUseCase:
 
         filename = f"{current_user.id}_{secrets.token_hex(8)}.webp"
         target_path = AVATARS_DIR / filename
-        target_path.write_bytes(processed)
+        await asyncio.to_thread(target_path.write_bytes, processed)
 
         old_url = current_user.avatar_url
         avatar_url = f"{AVATARS_PUBLIC_PREFIX}{filename}"
@@ -63,8 +64,8 @@ class UploadAvatarUseCase:
         if old_url and old_url.startswith(AVATARS_PUBLIC_PREFIX):
             old_path = AVATARS_DIR / Path(old_url).name
             try:
-                if old_path.exists():
-                    os.remove(old_path)
+                if await asyncio.to_thread(old_path.exists):
+                    await asyncio.to_thread(os.remove, old_path)
             except OSError:
                 pass
 

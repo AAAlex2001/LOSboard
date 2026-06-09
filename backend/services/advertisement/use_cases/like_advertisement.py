@@ -28,7 +28,6 @@ class LikeAdvertisementUseCase:
         if not advertisement:
             raise HTTPException(status_code=404, detail="Объявление не найдено")
 
-        # Пытаемся поставить лайк (атомарно).
         insert_stmt = (
             insert(LikedAdvertisement)
             .values(user_id=current_user.id, advertisement_id=advertisement_id)
