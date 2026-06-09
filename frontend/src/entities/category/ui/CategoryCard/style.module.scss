@@ -1,3 +1,9 @@
+$blue: #1129BD;
+$blue-soft: #EEF4FF;
+$orange: #FF8D28;
+$orange-soft: #FFD2A6;
+$orange-bg: #FFE5CC;
+
 .card {
   box-sizing: border-box;
   display: flex;
@@ -10,76 +16,32 @@
   height: 120px;
   flex-shrink: 0;
   background: #FFFFFF;
-  border: 1px solid #EEF4FF;
+  border: 1px solid $blue-soft;
   border-radius: 10px;
   cursor: pointer;
+  color: $blue;
   transition: border-color 0.15s ease;
 
   &:hover {
-    border-color: #1129BD;
+    border-color: $blue;
   }
 }
 
 .cardActive {
-  border-color: #1129BD;
-}
-
-.cardUrgent {
-  width: 119px;
-  padding: 30px 0 20px;
-  border-color: #FF8D28;
-
-  &:hover {
-    border-color: #E46F09;
-  }
-}
-
-.cardUrgent.cardActive {
-  border-color: #FF8D28;
+  border-color: $blue;
 }
 
 .cardUrgentTone {
-  border-color: #FFD2A6;
+  color: $orange;
+  border-color: $orange-soft;
 
   &:hover {
-    border-color: #FF8D28;
-  }
-
-  .label {
-    color: #FF8D28;
-  }
-
-  .icon path,
-  .icon circle,
-  .icon rect,
-  .icon polygon {
-    fill: #FF8D28;
-  }
-
-  .iconFallback {
-    background: #FFE5CC;
-    color: #FF8D28;
+    border-color: $orange;
   }
 }
 
 .cardUrgentTone.cardActive {
-  border-color: #FF8D28;
-}
-
-.cardUrgent .iconWrap {
-  width: 32px;
-  height: 32px;
-}
-
-.cardUrgent .icon {
-  width: 32px;
-  height: 32px;
-}
-
-.cardUrgent .label {
-  width: 119px;
-  padding: 0 20px;
-  color: #FF8D28;
+  border-color: $orange;
 }
 
 .iconWrap {
@@ -102,12 +64,16 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #EEF4FF;
-  color: #1129BD;
+  background: $blue-soft;
+  color: inherit;
   font-family: Inter;
   font-weight: 700;
   font-size: 18px;
   line-height: 1;
+}
+
+.cardUrgentTone .iconFallback {
+  background: $orange-bg;
 }
 
 .label {
@@ -118,7 +84,7 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 17px;
-  color: #1129BD;
+  color: inherit;
   text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 2;

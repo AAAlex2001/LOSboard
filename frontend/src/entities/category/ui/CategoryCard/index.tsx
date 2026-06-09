@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { getCategoryIcon } from "@/src/shared/ui/Icons/Categories";
 import type { Category } from "../../model/types";
 import style from "./style.module.scss";
@@ -18,14 +19,15 @@ export const CategoryCard = ({
   onClick,
 }: CategoryCardProps) => {
   const Icon = getCategoryIcon(category.slug);
-  const isUrgentCard = category.slug === "urgent";
+  const orangeTheme = category.slug === "urgent" || urgentTone;
 
   return (
     <button
       type="button"
-      className={`${style.card} ${isUrgentCard ? style.cardUrgent : ""} ${
-        urgentTone && !isUrgentCard ? style.cardUrgentTone : ""
-      } ${active ? style.cardActive : ""}`}
+      className={classNames(style.card, {
+        [style.cardUrgentTone]: orangeTheme,
+        [style.cardActive]: active,
+      })}
       onClick={() => onClick?.(category)}
       title={category.name}
     >
