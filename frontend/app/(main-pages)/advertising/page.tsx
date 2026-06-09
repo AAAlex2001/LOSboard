@@ -2,20 +2,18 @@ export const dynamic = "force-dynamic";
 
 import { AdvertisingPageView } from "@/src/widgets/advertising-page";
 import {
-  ADVERTISING_ACCORDION_SLUGS,
   extractLeadingParagraphs,
   splitByHr,
   stripHtmlTags,
+  splitAccordionByH1,
 } from "@/src/widgets/advertising-page/extract-content";
 import { getContentPage } from "@/src/entities/content";
 
 export default async function AdvertisingPage() {
-  const [main, promo, ...techPages] = await Promise.all([
+  const [main, promo, tech] = await Promise.all([
     getContentPage("pricing").catch(() => null),
     getContentPage("pricing-promo").catch(() => null),
-    ...ADVERTISING_ACCORDION_SLUGS.map((slug) =>
-      getContentPage(slug).catch(() => null),
-    ),
+    getContentPage("pricing-tech").catch(() => null),
   ]);
 
   const body = main?.body ?? "";
@@ -25,10 +23,7 @@ export default async function AdvertisingPage() {
   const [beforeHr, afterHr] = splitByHr(rest);
 
   const promoText = stripHtmlTags(promo?.body ?? "");
-  const accordionItems = ADVERTISING_ACCORDION_SLUGS.map((_, index) => ({
-    title: techPages[index]?.title ?? "",
-    body: techPages[index]?.body ?? "",
-  })).filter((item) => item.body.trim() && item.title.trim());
+  const accordionItems = splitAccordionByH1(tech?.body ?? "");
 
   return (
     <AdvertisingPageView
