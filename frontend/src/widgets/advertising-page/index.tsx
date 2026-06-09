@@ -8,15 +8,14 @@ import { TechSpecsAccordion } from "@/src/widgets/advertising/tech-specs-accordi
 import { CmsContent } from "@/src/widgets/docs/cms-content";
 import style from "./style.module.scss";
 
-const PAGE_TITLE = "Реклама в «LOS»";
-const ACCORDION_HEADING = "Технические характеристики рекламы";
-
 interface AccordionItemData {
   title: string;
   body: string;
 }
 
 interface AdvertisingPageViewProps {
+  title: string;
+  accordionHeading: string;
   heroText: string;
   noteText: string;
   beforeHr: string;
@@ -26,6 +25,8 @@ interface AdvertisingPageViewProps {
 }
 
 export const AdvertisingPageView = ({
+  title,
+  accordionHeading,
   heroText,
   noteText,
   beforeHr,
@@ -39,13 +40,13 @@ export const AdvertisingPageView = ({
       <CrumbsBar
         items={[
           { label: "Главная", href: "/" },
-          { label: PAGE_TITLE },
+          { label: title },
         ]}
       />
       <div className={style.content}>
         <div className={style.layout}>
           <div className={style.headingRow}>
-            <h1 className={style.title}>{PAGE_TITLE}</h1>
+            <h1 className={style.title}>{title}</h1>
           </div>
 
           <div className={style.body}>
@@ -56,7 +57,7 @@ export const AdvertisingPageView = ({
             {afterHr && <CmsContent body={afterHr} />}
             {accordionItems.length > 0 && (
               <TechSpecsAccordion
-                heading={ACCORDION_HEADING}
+                heading={accordionHeading}
                 items={accordionItems.map((item) => ({
                   title: item.title,
                   content: <CmsContent body={item.body} variant="stacked" />,

@@ -27,6 +27,8 @@ export default async function AdvertisingPage() {
 
   return (
     <AdvertisingPageView
+      title={main?.title ?? "Реклама в «LOS»"}
+      accordionHeading={tech?.title ?? "Технические характеристики рекламы"}
       heroText={heroText}
       noteText={noteText}
       beforeHr={beforeHr}

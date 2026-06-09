@@ -23,21 +23,34 @@
        чтобы не «уплывало» вправо и не наезжало на строку с кнопками */
     .form-fieldset .form-text,
     .form-fieldset .form-hint,
+    .form-fieldset small,
     .form-fieldset small.text-muted,
-    .form-fieldset .help-block {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      white-space: pre-wrap;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      margin-top: 6px;
-      color: #6c757d;
-      font-size: 13px;
-      line-height: 1.5;
-      clear: both;
+    .form-fieldset .help-block,
+    .form-fieldset .form-help,
+    .form-fieldset i.form-hint,
+    .form-fieldset div.description,
+    .form-fieldset .description {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+      margin-top: 6px !important;
+      margin-bottom: 8px !important;
+      color: #6c757d !important;
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      clear: both !important;
+      float: none !important;
+      position: static !important;
     }
     .form-fieldset .row { clear: both; }
+    /* Гарантируем что низ карточки с кнопками всегда новой строкой */
+    .card-body > form > .row:last-child {
+      clear: both;
+      margin-top: 16px;
+    }
   </style>
   {% endblock %}
   {% if admin.favicon_url %}
