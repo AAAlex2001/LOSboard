@@ -108,6 +108,9 @@ export const Footer = () => {
                   <FacebookIcon />
                 </a>
               </div>
+              <div className={style.viewMode}>
+                <ViewModeToggle />
+              </div>
             </div>
           )}
         </nav>
@@ -129,9 +132,6 @@ export const Footer = () => {
               © {new Date().getFullYear()} {settings.copyright_line}
             </p>
           )}
-          <div className={style.viewMode}>
-            <ViewModeToggle />
-          </div>
         </div>
       </div>
     </footer>

@@ -185,10 +185,8 @@
 }
 
 .viewMode {
-  flex-basis: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 6px;
+  margin-top: 16px;
 }
 
 @media (min-width: 850px) {
