@@ -10,6 +10,7 @@ import {
   type FooterLink,
   type SiteSettings,
 } from "@/src/entities/content";
+import { ViewModeToggle } from "@/src/features/view-mode-toggle";
 import style from "./style.module.scss";
 
 export const Footer = () => {
@@ -128,6 +129,9 @@ export const Footer = () => {
               © {new Date().getFullYear()} {settings.copyright_line}
             </p>
           )}
+          <div className={style.viewMode}>
+            <ViewModeToggle />
+          </div>
         </div>
       </div>
     </footer>

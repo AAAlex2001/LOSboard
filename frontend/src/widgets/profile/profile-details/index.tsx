@@ -8,7 +8,6 @@ import {
   EditProfileFieldModal,
   useEditProfileField,
 } from "@/src/features/edit-profile-field";
-import { ViewModeToggle } from "@/src/features/view-mode-toggle";
 import style from "./style.module.scss";
 
 interface ProfileDetailsProps {
@@ -50,10 +49,6 @@ export const ProfileDetails = ({ user, onUserUpdated }: ProfileDetailsProps) => 
             actionText={user.phone_number ? "Изменить" : "Добавить"}
             onAction={() => editor.open("phone_number")}
           />
-          <div className={style.viewModeRow}>
-            <span className={style.viewModeLabel}>Версия сайта</span>
-            <ViewModeToggle />
-          </div>
         </div>
       </section>
 

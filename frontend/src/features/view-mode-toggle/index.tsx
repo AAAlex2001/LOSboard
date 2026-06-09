@@ -87,18 +87,29 @@ export const ViewModeToggle = () => {
     window.location.reload();
   };
 
-  let label: string;
-  if (mode !== "desktop") {
-    label = "Переключиться на десктопную версию";
-  } else if (origin === "tablet") {
-    label = "Переключиться на планшетную версию";
-  } else {
-    label = "Переключиться на мобильную версию";
-  }
+  const isDesktop = mode === "desktop";
+  const backLabel =
+    origin === "tablet" ? "планшетную версию" : "мобильную версию";
+  const title = isDesktop
+    ? `Переключиться на ${backLabel}`
+    : "Переключиться на десктопную версию";
 
   return (
-    <button type="button" className={style.toggle} onClick={handleClick}>
-      {label}
+    <button
+      type="button"
+      className={style.toggle}
+      onClick={handleClick}
+      role="switch"
+      aria-checked={isDesktop}
+      title={title}
+    >
+      <span className={style.label}>Десктопная версия</span>
+      <span
+        className={`${style.switch} ${isDesktop ? style.switchOn : ""}`}
+        aria-hidden="true"
+      >
+        <span className={style.knob} />
+      </span>
     </button>
   );
 };

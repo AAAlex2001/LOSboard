@@ -184,6 +184,13 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+.viewMode {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
 @media (min-width: 850px) {
   .container {
     gap: 50px;
