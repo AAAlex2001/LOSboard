@@ -23,7 +23,7 @@ function escapeAttr(value: string): string {
 
 function transformBannerMockups(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*BANNER\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\]\s*<\/p>/gi,
+    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*BANNER\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
     (_match, w, h, name, note) => {
       const wNum = parseInt(w, 10);
       const hNum = parseInt(h, 10);
@@ -41,7 +41,7 @@ function transformBannerMockups(html: string): string {
 
 function transformPhoneMockups(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*PHONE\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\]\s*<\/p>/gi,
+    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*PHONE\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
     (_match, w, h, name, note) => {
       const wNum = parseInt(w, 10);
       const hNum = parseInt(h, 10);
@@ -58,7 +58,7 @@ function transformPhoneMockups(html: string): string {
 
 function transformNoteMarkers(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*NOTE\s+([^\]]+?)\s*\]\s*<\/p>/gi,
+    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*NOTE\s+([^\]]+?)\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
     (_match, text) => {
       const textClean = text.trim();
       const noteStyle = "color:rgba(17,41,189,0.5);text-align:center;font-size:16px;line-height:19px;font-weight:400;font-family:Inter;";
@@ -69,7 +69,7 @@ function transformNoteMarkers(html: string): string {
 
 function transformCardMockups(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*CARD\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\]\s*<\/p>/gi,
+    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*CARD\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
     (_match, w, h, name, note) => {
       const wNum = parseInt(w, 10);
       const hNum = parseInt(h, 10);
@@ -87,7 +87,7 @@ function transformCardMockups(html: string): string {
 
 function transformHintMarkers(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*HINT\s+([^\]]+?)\s*\]\s*<\/p>/gi,
+    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*HINT\s+([^\]]+?)\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
     (_match, text) => {
       const textClean = text.trim();
       return `<p class="cmsHint">${escapeAttr(textClean)}</p>`;
@@ -109,15 +109,24 @@ function wrapBlockquoteGroups(html: string): string {
   );
 }
 
-function forceBlockquoteWidth(html: string): string {
-  return html;
-}
-
 function unwrapHeadingDivs(html: string): string {
   return html.replace(
     /<div[^>]*>\s*(<h[1-4]\b[^>]*>[\s\S]*?<\/h[1-4]>)\s*<\/div>/gi,
     "$1"
   );
+}
+
+function normalizeAdminHtml(html: string): string {
+  let out = html;
+  out = out.replace(/\sclass\s*=\s*"[^"]*"/gi, "");
+  out = out.replace(/\sclass\s*=\s*'[^']*'/gi, "");
+  out = out.replace(/\sstyle\s*=\s*"[^"]*"/gi, "");
+  out = out.replace(/\sstyle\s*=\s*'[^']*'/gi, "");
+  out = out.replace(/\sdata-list\s*=\s*"[^"]*"/gi, "");
+  out = out.replace(/<span\b[^>]*>/gi, "").replace(/<\/span>/gi, "");
+  out = out.replace(/<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*<\/p>/gi, "");
+  out = out.replace(/<p\b[^>]*>\s*<\/p>/gi, "");
+  return out;
 }
 
 function wrapParensInHeadings(html: string): string {
@@ -142,16 +151,16 @@ function wrapParensInHeadings(html: string): string {
 }
 
 function preprocess(html: string): string {
-  return forceBlockquoteWidth(
-    wrapBlockquoteGroups(
-      markHighlightedCards(
-        wrapMockupRows(
-          transformCardMockups(
-            transformPhoneMockups(
-              transformBannerMockups(
-                transformHintMarkers(
-                  transformNoteMarkers(
-                    wrapParensInHeadings(html)
+  return wrapBlockquoteGroups(
+    markHighlightedCards(
+      wrapMockupRows(
+        transformCardMockups(
+          transformPhoneMockups(
+            transformBannerMockups(
+              transformHintMarkers(
+                transformNoteMarkers(
+                  wrapParensInHeadings(
+                    normalizeAdminHtml(html)
                   )
                 )
               )
