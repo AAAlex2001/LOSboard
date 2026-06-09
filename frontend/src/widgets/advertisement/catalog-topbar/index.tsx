@@ -45,36 +45,44 @@ export const CatalogTopBar = ({
   const placeholderText = settings?.ad_placeholder_text;
 
   const handlePickCategory = (cat: Category) => {
-    onSelectCategory(cat);
-    onSelectSubcategory(null, cat);
     setPickerOpen(false);
+    onSelectCategory(cat);
   };
 
   const handlePickSubcategory = (sub: Subcategory, cat: Category) => {
-    onSelectSubcategory(sub, cat);
     setPickerOpen(false);
+    onSelectSubcategory(sub, cat);
   };
 
   const headerLabel =
     subcategory?.name ?? category?.name ?? "Выберите категорию";
   const hasFilter = Boolean(category || subcategory || urgentOnly);
 
-  const chipsItems: SubcategoryChipItem[] =
-    urgentOnly && !category
-      ? categories
-          .filter((c) => c.id !== URGENT_CATEGORY_ID)
-          .map((c) => ({ id: c.id, name: c.name, slug: c.slug }))
-      : category?.subcategories.map((s) => ({
-          id: s.id,
-          name: s.name,
-          slug: s.slug,
-        })) ?? [];
+  const showCategoryChips = urgentOnly && !category;
+  const showSubcategoryChips = !showCategoryChips && Boolean(category);
 
-  const chipsActiveId =
-    urgentOnly && !subcategory ? category?.id ?? null : subcategory?.id ?? null;
+  let chipsItems: SubcategoryChipItem[] = [];
+  let chipsActiveId: number | null = null;
+  let chipsAllLabel = "Все";
+
+  if (showCategoryChips) {
+    chipsItems = categories
+      .filter((c) => c.id !== URGENT_CATEGORY_ID)
+      .map((c) => ({ id: c.id, name: c.name, slug: c.slug }));
+    chipsActiveId = null;
+    chipsAllLabel = "Все категории";
+  } else if (showSubcategoryChips && category) {
+    chipsItems = category.subcategories.map((s) => ({
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+    }));
+    chipsActiveId = subcategory?.id ?? null;
+    chipsAllLabel = "Все подкатегории";
+  }
 
   const handlePickChip = (item: SubcategoryChipItem | null) => {
-    if (urgentOnly && !category) {
+    if (showCategoryChips) {
       if (!item) {
         onSelectCategory(null);
         return;
@@ -93,8 +101,6 @@ export const CatalogTopBar = ({
     onSelectSubcategory(sub, category);
   };
 
-  const chipsAllLabel =
-    urgentOnly && !category ? "Все категории" : "Все подкатегории";
   const chipsVariant = urgentOnly ? "orange" : "blue";
 
   return (

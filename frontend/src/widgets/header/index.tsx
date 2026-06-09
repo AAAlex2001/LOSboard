@@ -76,22 +76,28 @@ export const Header = ({
 
   const handleSelectCategory = (cat: Category) => {
     setCategoriesOpen(false);
+    if (onSelectCategory) {
+      onSelectCategory(cat);
+      return;
+    }
     if (cat.slug === "urgent") {
       router.push("/?urgent=1", { scroll: false });
       return;
     }
     router.push(`/category/${cat.slug}`, { scroll: false });
-    onSelectCategory?.(cat);
   };
 
   const handleSelectSubcategory = (sub: Subcategory, cat: Category) => {
     setCategoriesOpen(false);
+    if (onSelectSubcategory) {
+      onSelectSubcategory(sub, cat);
+      return;
+    }
     if (cat.slug === "urgent") {
       router.push("/?urgent=1", { scroll: false });
       return;
     }
     router.push(`/category/${cat.slug}/${sub.slug}`, { scroll: false });
-    onSelectSubcategory?.(sub, cat);
   };
 
   const handlePlaceAd = () => {

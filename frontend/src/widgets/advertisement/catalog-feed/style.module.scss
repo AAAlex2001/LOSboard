@@ -16,6 +16,25 @@
   color: #1E1E1E;
 }
 
+.titleUrgent {
+  color: #FF8D28;
+}
+
+.urgentBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #FFF3E5;
+  border: 1px solid #FFD2A6;
+  border-radius: 10px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #B65A0E;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

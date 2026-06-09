@@ -135,6 +135,19 @@ export const CatalogPage = ({
   const topbarSubcategory = activeSubcategory;
   const hasFilter = Boolean(activeCategory || activeSubcategory || state.urgentOnly);
 
+  const feedTitle = (() => {
+    if (state.urgentOnly && activeSubcategory) {
+      return `Срочные · ${activeCategory?.name ?? ""} · ${activeSubcategory.name}`;
+    }
+    if (state.urgentOnly && activeCategory) {
+      return `Срочные · ${activeCategory.name}`;
+    }
+    if (state.urgentOnly) return "Срочные объявления";
+    if (activeSubcategory) return activeSubcategory.name;
+    if (activeCategory) return activeCategory.name;
+    return "Все объявления";
+  })();
+
   const crumbItems: BreadcrumbItem[] = hasFilter
     ? [
         { label: "Главная", onClick: handleReset },
@@ -182,7 +195,11 @@ export const CatalogPage = ({
             />
           </div>
           <div className={style.feedSlot}>
-            <CatalogFeed state={state} onItemPatch={patchItem} />
+            <CatalogFeed
+              state={state}
+              title={feedTitle}
+              onItemPatch={patchItem}
+            />
           </div>
           <div className={style.sidebarSlot}>
             <PlaceAdSidebar />

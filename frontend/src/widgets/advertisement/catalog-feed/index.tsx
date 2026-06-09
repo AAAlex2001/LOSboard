@@ -10,10 +10,11 @@ import style from "./style.module.scss";
 
 interface CatalogFeedProps {
   state: AdvertisementListState;
+  title?: string;
   onItemPatch: (ad: Advertisement) => void;
 }
 
-export const CatalogFeed = ({ state, onItemPatch }: CatalogFeedProps) => {
+export const CatalogFeed = ({ state, title, onItemPatch }: CatalogFeedProps) => {
   const router = useRouter();
   const { toggle, pendingIds } = useFavorite();
 
@@ -26,9 +27,18 @@ export const CatalogFeed = ({ state, onItemPatch }: CatalogFeedProps) => {
     if (updated) onItemPatch(updated);
   };
 
+  const titleClass = state.urgentOnly
+    ? `${style.title} ${style.titleUrgent}`
+    : style.title;
+
   return (
     <div className={style.feed}>
-      <h2 className={style.title}>Все объявления</h2>
+      <h2 className={titleClass}>{title ?? "Все объявления"}</h2>
+      {state.urgentOnly && (
+        <div className={style.urgentBanner}>
+          Показаны только срочные объявления. Выберите подкатегорию выше, чтобы сузить выдачу.
+        </div>
+      )}
 
       {state.loading && (
         <div className={style.feedback}>
