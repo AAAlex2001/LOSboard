@@ -61,19 +61,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categoryEntries = categories.flatMap((cat) => {
     const root = {
-      url: `${origin}/category/${cat.slug}`,
+      url: `${origin}/?cat=${encodeURIComponent(cat.slug)}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.8,
     };
     const subs = cat.subcategories.map((sub) => ({
-      url: `${origin}/category/${cat.slug}/${sub.slug}`,
+      url: `${origin}/?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.slug)}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.7,
     }));
     return [root, ...subs];
   });
+
+  const urgentRoot = {
+    url: `${origin}/?urgent=1`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  };
+  const urgentCategoryEntries = categories.flatMap((cat) => [
+    {
+      url: `${origin}/?urgent=1&cat=${encodeURIComponent(cat.slug)}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.6,
+    },
+    ...cat.subcategories.map((sub) => ({
+      url: `${origin}/?urgent=1&cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.slug)}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.5,
+    })),
+  ]);
 
   const adEntries = ads.slice(0, SITEMAP_MAX_URLS).map((ad) => {
     const slug = slugify(ad.title);
@@ -107,6 +128,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...docPageEntries,
     ...categoryEntries,
+    urgentRoot,
+    ...urgentCategoryEntries,
     ...adEntries,
   ];
 }

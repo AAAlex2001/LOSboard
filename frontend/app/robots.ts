@@ -21,7 +21,6 @@ export default function robots(): MetadataRoute.Robots {
           "/my-ads/",
           "/favorites",
           "/place-ad",
-          "/*?urgent=",
           "/*?q=",
         ],
       },
