@@ -1,5 +1,6 @@
 import asyncio
 import io
+import logging
 import os
 import secrets
 from pathlib import Path
@@ -16,6 +17,8 @@ AVATAR_MAX_DIMENSION = 512
 AVATAR_WEBP_QUALITY = 85
 AVATARS_DIR = Path(__file__).resolve().parents[3] / "uploads" / "avatars"
 AVATARS_PUBLIC_PREFIX = "/static/uploads/avatars/"
+
+logger = logging.getLogger(__name__)
 
 
 class UploadAvatarUseCase:
@@ -66,7 +69,9 @@ class UploadAvatarUseCase:
             try:
                 if await asyncio.to_thread(old_path.exists):
                     await asyncio.to_thread(os.remove, old_path)
-            except OSError:
-                pass
+            except OSError as exc:
+                logger.warning(
+                    "Не удалось удалить старый аватар %s: %s", old_path, exc
+                )
 
         return avatar_url
