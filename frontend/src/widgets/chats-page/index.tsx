@@ -1,45 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
 import { CrumbsBar } from "@/src/shared/ui/PageBar";
+import { RequireAuth } from "@/src/shared/ui/RequireAuth";
 import { ChatsShell } from "@/src/widgets/chat/chats-shell";
 import { EmptyChatPlaceholder } from "@/src/entities/chat";
-import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
 export const ChatsPageView = () => {
-  const router = useRouter();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    if (!checkAuth()) {
-      router.replace("/login");
-    } else {
-      setReady(true);
-    }
-  }, [router]);
-
   return (
     <main className={style.page}>
       <Header />
-      {ready && (
+      <RequireAuth
+        fallback={
+          <div className={style.content}>
+            <div className={style.loadingArea}>
+              <Loader />
+            </div>
+          </div>
+        }
+      >
         <CrumbsBar
           items={[
             { label: "Главная", href: "/" },
             { label: "Сообщения" },
           ]}
         />
-      )}
-      <div className={style.content}>
-        {!ready ? (
-          <div className={style.loadingArea}>
-            <Loader />
-          </div>
-        ) : (
+        <div className={style.content}>
           <div className={style.layout}>
             <div className={style.feedSlot}>
               <div className={style.feedHeading}>
@@ -52,8 +41,8 @@ export const ChatsPageView = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </RequireAuth>
       <Footer />
     </main>
   );

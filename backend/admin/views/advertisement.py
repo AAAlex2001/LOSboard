@@ -1,7 +1,7 @@
 """Объявления: базовая вью + 4 пресет-вью по статусам (очередь, активные, архив, отклонённые)."""
 
 from datetime import datetime
-from typing import Any, List
+from typing import Any
 
 from markupsafe import Markup
 from sqladmin import ModelView, action
@@ -11,6 +11,7 @@ from starlette.responses import RedirectResponse
 from wtforms import SelectField
 
 from admin.views.common import (
+    AdminOnly,
     MODERATION_CHOICES,
     apply_date_range,
     moderation_badge,
@@ -38,7 +39,7 @@ def fmt_ad_moderation(model: Any, _attr: Any) -> Markup:
     return moderation_badge(model.moderation_status)
 
 
-class AdvertisementAdmin(ModelView, model=Advertisement):
+class AdvertisementAdmin(AdminOnly, ModelView, model=Advertisement):
     """Все объявления на сайте — поиск по любому полю, модерация, ручное редактирование."""
 
     name = "объявление"
@@ -136,11 +137,12 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
             Advertisement.deleted_at.is_(None)
         )
 
-    async def delete_model(self, request: Request, pks: List[Any]) -> None:
+    async def delete_model(self, request: Request, pk: Any) -> None:
         """Soft-delete объявления — оставляем строку, чтобы не падать на FK с чатами."""
-        if not pks:
+        raw = pk if isinstance(pk, (list, tuple)) else str(pk).split(",")
+        ids = [int(p) for p in raw if str(p).strip()]
+        if not ids:
             return
-        ids = [int(pk) for pk in pks]
         async with self.session_maker() as session:
             await session.execute(
                 update(Advertisement)
@@ -163,7 +165,10 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
             async with self.session_maker() as session:
                 await session.execute(
                     update(Advertisement)
-                    .where(Advertisement.id.in_(pks))
+                    .where(
+                        Advertisement.id.in_(pks),
+                        Advertisement.deleted_at.is_(None),
+                    )
                     .values(
                         moderation_status=status,
                         moderation_reason=reason,
@@ -302,11 +307,6 @@ class RejectedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
         )
 
 
-# Метакласс SQLAdmin при `model=Advertisement` затирает `identity` именем модели
-# («advertisement»), поэтому все 4 пресет-вью получали один и тот же URL и
-# роутились в первый зарегистрированный AdvertisementAdmin. Выставляем уникальный
-# identity после определения класса — это единственное место, где это можно сделать,
-# чтобы метакласс библиотеки нас не перебил.
 ModerationQueueAdmin.identity = "moderation-queue"
 ActiveAdvertisementsAdmin.identity = "ads-active"
 ArchivedAdvertisementsAdmin.identity = "ads-archived"

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { login, type LoginResponse } from "@/src/shared/auth/auth-api";
 import { getAccessToken, logout } from "@/src/shared/auth/auth-storage";
+import { useIsAuthenticated } from "@/src/shared/auth/useIsAuthenticated";
 import { apiFetch } from "@/src/shared/auth/api-fetch";
 
 type User = {
@@ -33,6 +34,7 @@ function mapLoginResponseToUser(data: LoginResponse): User {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isAuthenticated = useIsAuthenticated();
 
   async function reloadUser() {
     const accessToken = getAccessToken();
@@ -74,7 +76,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    reloadUser();
+    let cancelled = false;
+
+    void (async () => {
+      await Promise.resolve();
+      if (!cancelled) await reloadUser();
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -82,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isLoading,
-        isAuthenticated: Boolean(user),
+        isAuthenticated,
         loginUser,
         logoutUser,
         reloadUser,

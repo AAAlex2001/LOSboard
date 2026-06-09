@@ -87,7 +87,9 @@ export const Map = ({
   const placemarkRef = useRef<YmapsPlacemark | null>(null);
   const onClickRef = useRef(onLocationClick);
 
-  onClickRef.current = onLocationClick;
+  useEffect(() => {
+    onClickRef.current = onLocationClick;
+  }, [onLocationClick]);
 
   useEffect(() => {
     let cancelled = false;

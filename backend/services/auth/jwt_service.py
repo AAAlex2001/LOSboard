@@ -6,8 +6,24 @@ from fastapi import HTTPException
 from jose import JWTError, jwt
 
 
+ALLOWED_JWT_ALGORITHMS = {"HS256"}
+DEFAULT_JWT_ALGORITHM = "HS256"
+
+
+def _resolve_jwt_algorithm(raw: str | None) -> str:
+    """Возвращает безопасный алгоритм: пустое/none → HS256, чужой алгоритм → ошибка старта."""
+    candidate = (raw or "").strip()
+    if not candidate or candidate.lower() == "none":
+        return DEFAULT_JWT_ALGORITHM
+    if candidate not in ALLOWED_JWT_ALGORITHMS:
+        raise ValueError(
+            f"JWT_ALGORITHM={candidate!r} запрещён; разрешены только {sorted(ALLOWED_JWT_ALGORITHMS)}"
+        )
+    return candidate
+
+
 JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
-JWT_ALGORITHM = os.environ["JWT_ALGORITHM"]
+JWT_ALGORITHM = _resolve_jwt_algorithm(os.environ.get("JWT_ALGORITHM"))
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"])
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.environ["REFRESH_TOKEN_EXPIRE_DAYS"])
 
@@ -39,7 +55,7 @@ class JWTService:
             raise ValueError("JWT_SECRET_KEY must be set")
 
         self.secret_key = secret_key
-        self.algorithm = algorithm
+        self.algorithm = _resolve_jwt_algorithm(algorithm)
         self.access_token_expire_minutes = access_token_expire_minutes
         self.refresh_token_expire_days = refresh_token_expire_days
 

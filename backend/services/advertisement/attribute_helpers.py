@@ -1,7 +1,7 @@
 from typing import Any, List, Sequence
 
 from fastapi import HTTPException
-from sqlalchemy import or_, select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.attribute import (
@@ -87,13 +87,11 @@ async def replace_attribute_values(
 
     validate_required_attrs(attrs, payload)
 
-    existing = await db.execute(
-        select(AdvertisementAttributeValue).where(
+    await db.execute(
+        delete(AdvertisementAttributeValue).where(
             AdvertisementAttributeValue.advertisement_id == advertisement_id
         )
     )
-    for old in existing.scalars().all():
-        await db.delete(old)
 
     for item in payload:
         attr = by_id.get(item.attribute_id)

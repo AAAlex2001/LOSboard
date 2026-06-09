@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import { getCategoryIcon } from "@/src/shared/ui/Icons/Categories";
+import { renderCategoryIcon } from "@/src/shared/ui/Icons/Categories";
 import type { Category } from "../../model/types";
 import style from "./style.module.scss";
 
@@ -18,7 +18,7 @@ export const CategoryCard = ({
   urgentTone,
   onClick,
 }: CategoryCardProps) => {
-  const Icon = getCategoryIcon(category.slug);
+  const icon = renderCategoryIcon(category.slug, style.icon);
   const orangeTheme = category.slug === "urgent" || urgentTone;
 
   return (
@@ -32,9 +32,7 @@ export const CategoryCard = ({
       title={category.name}
     >
       <span className={style.iconWrap} aria-hidden="true">
-        {Icon ? (
-          <Icon className={style.icon} />
-        ) : (
+        {icon ?? (
           <span className={style.iconFallback}>
             {category.name.charAt(0).toUpperCase()}
           </span>

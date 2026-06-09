@@ -53,7 +53,7 @@ export const CatalogPage = () => {
 
   const filtersReady = !categorySlugParam || activeCategory !== null;
 
-  const { state, setFilters, patchItem } = useAdvertisementList({
+  const { state, setFilters, patchItem, loadMore } = useAdvertisementList({
     enabled: filtersReady,
   });
 
@@ -64,6 +64,7 @@ export const CatalogPage = () => {
       subcategoryId: activeSubcategory?.id ?? null,
       urgentOnly: urgentParam,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filtersReady,
     urgentParam,
@@ -183,6 +184,7 @@ export const CatalogPage = () => {
               state={state}
               title={feedTitle}
               onItemPatch={patchItem}
+              onLoadMore={loadMore}
             />
           </div>
           <div className={style.sidebarSlot}>

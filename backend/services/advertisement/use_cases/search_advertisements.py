@@ -17,13 +17,14 @@ class SearchAdvertisementsUseCase:
         if not query:
             return []
 
-        pattern = f"%{query}%"
+        escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        pattern = f"%{escaped}%"
         stmt = (
             select(Advertisement)
             .where(Advertisement.is_active.is_(True))
             .where(Advertisement.moderation_status == MODERATION_APPROVED)
             .where(Advertisement.deleted_at.is_(None))
-            .where(Advertisement.title.ilike(pattern))
+            .where(Advertisement.title.ilike(pattern, escape="\\"))
             .order_by(Advertisement.id.desc())
             .limit(limit)
         )

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +24,7 @@ from services.chat.use_cases.list_conversations import ListConversationsUseCase
 from services.chat.use_cases.send_message import SendMessageUseCase
 from services.chat.use_cases.start_conversation import StartConversationUseCase
 from services.chat.use_cases.upload_attachment import UploadChatAttachmentUseCase
+from services.rate_limit import limiter
 
 
 router = APIRouter(prefix="/conversations", tags=["chat"])
@@ -104,7 +105,9 @@ async def send_message(
     "/{conversation_id}/attachments",
     response_model=AttachmentMeta,
 )
+@limiter.limit("20/minute")
 async def upload_attachment(
+    request: Request,
     conversation_id: int,
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),

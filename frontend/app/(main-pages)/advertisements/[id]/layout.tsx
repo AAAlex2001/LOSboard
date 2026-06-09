@@ -33,6 +33,13 @@ function parseId(idParam: string): number {
   return match ? Number(match[1]) : NaN;
 }
 
+/** Дата окончания актуальности цены: вызывается на момент запроса, чтобы Date.now не дёргался в теле рендера. */
+function buildPriceValidUntil(): string {
+  return new Date(Date.now() + 1000 * 60 * 60 * 24 * 60)
+    .toISOString()
+    .slice(0, 10);
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id: idParam } = await params;
   const id = parseId(idParam);
@@ -101,9 +108,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
   const subcategory =
     category?.subcategories.find((s) => s.id === ad.subcategory_id) ?? null;
 
-  const priceValidUntil = new Date(Date.now() + 1000 * 60 * 60 * 24 * 60)
-    .toISOString()
-    .slice(0, 10);
+  const priceValidUntil = buildPriceValidUntil();
 
   const productJsonLd = {
     "@context": "https://schema.org",

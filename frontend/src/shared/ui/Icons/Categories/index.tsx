@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactElement } from "react";
 import TransportIcon from "./TransportIcon";
 import RealtyIcon from "./RealtyIcon";
 import JobsIcon from "./JobsIcon";
@@ -33,3 +33,40 @@ const CATEGORY_ICONS: Record<string, CategoryIconComponent> = {
 
 export const getCategoryIcon = (slug: string): CategoryIconComponent | null =>
   CATEGORY_ICONS[slug] ?? null;
+
+/** Готовый элемент иконки по slug: статически объявленные компоненты, чтобы тип не создавался в теле рендера потребителя. */
+export const renderCategoryIcon = (
+  slug: string,
+  className?: string,
+): ReactElement | null => {
+  switch (slug) {
+    case "transport":
+      return <TransportIcon className={className} />;
+    case "realty":
+      return <RealtyIcon className={className} />;
+    case "jobs":
+      return <JobsIcon className={className} />;
+    case "personal":
+      return <PersonalIcon className={className} />;
+    case "hobby":
+      return <HobbyIcon className={className} />;
+    case "animals":
+      return <AnimalsIcon className={className} />;
+    case "business":
+      return <BusinessIcon className={className} />;
+    case "services":
+      return <ServicesIcon className={className} />;
+    case "electronics":
+      return <ElectronicsIcon className={className} />;
+    case "home":
+      return <HomeIcon className={className} />;
+    case "parts":
+      return <PartsIcon className={className} />;
+    case "beauty":
+      return <BeautyIcon className={className} />;
+    case "urgent":
+      return <UrgentIcon className={className} />;
+    default:
+      return null;
+  }
+};

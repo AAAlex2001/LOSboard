@@ -13,6 +13,7 @@ CHAT_UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads" / "chat"
 
 
 class GetChatAttachmentUseCase:
+    """Отдаёт файл только при наличии записи в БД, чтобы не утекали чужие/осиротевшие файлы."""
 
     async def get(
         self,
@@ -35,15 +36,15 @@ class GetChatAttachmentUseCase:
             select(MessageAttachment).where(MessageAttachment.url == expected_url)
         )
         attachment = att_result.scalar_one_or_none()
+        if attachment is None:
+            raise HTTPException(status_code=404, detail="Файл не найден")
 
         path = CHAT_UPLOAD_DIR / str(conversation_id) / filename
         if not path.exists() or not path.is_file():
             raise HTTPException(status_code=404, detail="Файл не найден")
 
-        mime = attachment.mime_type if attachment else None
-        download_name = attachment.filename if attachment else filename
         return FileResponse(
             path=str(path),
-            media_type=mime,
-            filename=download_name,
+            media_type=attachment.mime_type,
+            filename=attachment.filename,
         )

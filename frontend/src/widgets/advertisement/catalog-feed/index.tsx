@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Loader } from "@/src/shared/ui/Loader";
+import { Button } from "@/src/shared/ui/Button";
 import { AdCard, type Advertisement } from "@/src/entities/advertisement";
 import type { AdvertisementListState } from "@/src/features/advertisement";
 import { useFavorite } from "@/src/features/favorite";
@@ -12,9 +13,15 @@ interface CatalogFeedProps {
   state: AdvertisementListState;
   title?: string;
   onItemPatch: (ad: Advertisement) => void;
+  onLoadMore: () => void;
 }
 
-export const CatalogFeed = ({ state, title, onItemPatch }: CatalogFeedProps) => {
+export const CatalogFeed = ({
+  state,
+  title,
+  onItemPatch,
+  onLoadMore,
+}: CatalogFeedProps) => {
   const router = useRouter();
   const { toggle, pendingIds } = useFavorite();
 
@@ -46,18 +53,31 @@ export const CatalogFeed = ({ state, title, onItemPatch }: CatalogFeedProps) => 
       {!state.loading && !state.error && state.items.length === 0 && (
         <p className={style.feedback}>Объявлений пока нет</p>
       )}
-      {!state.loading && !state.error && state.items.length > 0 && (
-        <div className={style.grid}>
-          {state.items.map((ad) => (
-            <AdCard
-              key={ad.id}
-              advertisement={ad}
-              onClick={handleAdClick}
-              onToggleFavorite={handleFavorite}
-              favoritePending={pendingIds.has(ad.id)}
-            />
-          ))}
-        </div>
+      {!state.loading && state.items.length > 0 && (
+        <>
+          <div className={style.grid}>
+            {state.items.map((ad) => (
+              <AdCard
+                key={ad.id}
+                advertisement={ad}
+                onClick={handleAdClick}
+                onToggleFavorite={handleFavorite}
+                favoritePending={pendingIds.has(ad.id)}
+              />
+            ))}
+          </div>
+          {state.error && <p className={style.feedback}>{state.error}</p>}
+          {state.hasMore && (
+            <div className={style.loadMore}>
+              <Button
+                variant="outlined"
+                text={state.loadingMore ? "Загрузка…" : "Показать ещё"}
+                onClick={onLoadMore}
+                disabled={state.loadingMore}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

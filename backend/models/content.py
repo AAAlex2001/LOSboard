@@ -60,23 +60,38 @@ class SiteSettings(Base):
     __tablename__ = "site_settings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    brand_title: Mapped[str] = mapped_column(String, nullable=False, default="")
-    brand_subtitle: Mapped[str] = mapped_column(String, nullable=False, default="")
-    about_title: Mapped[str] = mapped_column(String, nullable=False, default="")
-    about_text: Mapped[str] = mapped_column(String, nullable=False, default="")
-    socials_title: Mapped[str] = mapped_column(String, nullable=False, default="")
+    brand_title: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
+    brand_subtitle: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
+    about_title: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
+    about_text: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
+    socials_title: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
     telegram_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     instagram_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     facebook_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    copyright_line: Mapped[str] = mapped_column(String, nullable=False, default="")
+    copyright_line: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="", default=""
+    )
     ad_age_label: Mapped[str] = mapped_column(
-        String, nullable=False, default="Реклама 0+"
+        String, nullable=False, server_default="Реклама 0+", default="Реклама 0+"
     )
     ad_site_label: Mapped[str] = mapped_column(
-        String, nullable=False, default="Ваш сайт"
+        String, nullable=False, server_default="Ваш сайт", default="Ваш сайт"
     )
     ad_placeholder_text: Mapped[str] = mapped_column(
-        String, nullable=False, default="Рекламный баннер сдается"
+        String,
+        nullable=False,
+        server_default="Рекламный баннер сдается",
+        default="Рекламный баннер сдается",
     )
 
     def __str__(self) -> str:

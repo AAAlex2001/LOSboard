@@ -11,6 +11,7 @@ import { useViewAdvertisement } from "@/src/features/advertisement";
 import { useStartChat } from "@/src/features/chat";
 import { ReportAdButton } from "@/src/features/report-ad";
 import { formatPostedAt } from "@/src/shared/lib/date";
+import { formatPrice } from "@/src/shared/lib/format";
 import { isAuthenticated } from "@/src/shared/auth/auth-storage";
 import { useMeContext } from "@/src/entities/user";
 import style from "./style.module.scss";
@@ -21,8 +22,6 @@ interface AdvertisementDetailProps {
   subcategoryName?: string;
   canMessageSeller?: boolean;
 }
-
-const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const AdvertisementDetail = ({
   advertisement,
@@ -39,7 +38,7 @@ export const AdvertisementDetail = ({
   const sellerButtonsDisabled = isOwnAd || userLoading;
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser?.id) return;
     const controller = new AbortController();
     getAdvertisement(advertisement.id, { signal: controller.signal })
       .then((fresh) => {

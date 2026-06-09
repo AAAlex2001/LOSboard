@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from models.advertisement import Advertisement, MODERATION_PENDING
+from models.advertisement import Advertisement, MODERATION_APPROVED, MODERATION_PENDING
 from models.user import User
 from fastapi import HTTPException
 from schemas.advertisement import AdvertisementUpdate
@@ -59,6 +59,7 @@ class UpdateAdvertisementUseCase:
 
         await db.refresh(advertisement)
 
-        submit_advertisement(advertisement.id, advertisement.title)
+        if advertisement.moderation_status == MODERATION_APPROVED:
+            submit_advertisement(advertisement.id, advertisement.title)
 
         return advertisement

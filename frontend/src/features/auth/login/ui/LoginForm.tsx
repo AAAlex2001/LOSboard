@@ -27,6 +27,7 @@ export function LoginForm() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (loading) return;
     performLogin(email, password, showError);
   };
 
@@ -47,7 +48,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Пароль"
           />
-          <Button type="link" onClick={() => window.location.href = "/register"}>
+          <Button type="link" disabled>
             Забыли пароль?
           </Button>
         </div>
@@ -59,7 +60,7 @@ export function LoginForm() {
             <span className={style.registerText}>
               Нет аккаунта LOS?
             </span>
-            <Button type="link" onClick={() => window.location.href = "/register"}>
+            <Button type="link" onClick={() => router.push("/register")}>
               Зарегистрироваться
             </Button>
           </div>

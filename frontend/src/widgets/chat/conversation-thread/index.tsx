@@ -45,8 +45,9 @@ export const ConversationThread = ({
   }, [conversation?.messages.length]);
 
   useEffect(() => {
-    if (conversation) refreshUnread();
-  }, [conversation?.id, refreshUnread]);
+    if (conversation?.id) refreshUnread();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.id]);
 
   if (loading) {
     return (

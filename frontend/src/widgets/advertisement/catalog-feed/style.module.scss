@@ -54,6 +54,12 @@
   color: #8a8a8a;
 }
 
+.loadMore {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 @media (min-width: 850px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);

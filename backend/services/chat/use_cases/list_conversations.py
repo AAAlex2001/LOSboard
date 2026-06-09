@@ -48,7 +48,7 @@ class ListConversationsUseCase:
         last_msg_subq = (
             select(
                 Message.conversation_id,
-                func.max(Message.created_at).label("max_created"),
+                func.max(Message.id).label("max_id"),
             )
             .where(Message.conversation_id.in_(conv_ids))
             .group_by(Message.conversation_id)
@@ -57,8 +57,7 @@ class ListConversationsUseCase:
         last_msgs_result = await db.execute(
             select(Message).join(
                 last_msg_subq,
-                (Message.conversation_id == last_msg_subq.c.conversation_id)
-                & (Message.created_at == last_msg_subq.c.max_created),
+                Message.id == last_msg_subq.c.max_id,
             )
         )
         last_msgs = {m.conversation_id: m for m in last_msgs_result.scalars().all()}

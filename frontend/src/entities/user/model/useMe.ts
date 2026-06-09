@@ -11,7 +11,6 @@ export function useMe() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     getMe()
       .then((data) => {
         if (!cancelled) {

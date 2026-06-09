@@ -71,7 +71,9 @@ async def me_endpoint(
 
 
 @router.post("/avatar", response_model=UploadAvatarResponse)
+@limiter.limit("20/minute")
 async def upload_avatar_endpoint(
+    request: Request,
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),

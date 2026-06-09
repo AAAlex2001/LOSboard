@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import HomeIcon from "@/src/shared/ui/Icons/HomeIcon";
@@ -15,12 +15,13 @@ import { Button } from "@/src/shared/ui/Button";
 import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
 import { useUnreadTotal } from "@/src/entities/chat";
 import { logout } from "@/src/shared/auth/auth-storage";
+import { useIsAuthenticated } from "@/src/shared/auth/useIsAuthenticated";
+import { useHydrated } from "@/src/shared/lib/useHydrated";
 import style from "./style.module.scss";
 
 interface BurgerMenuProps {
   open: boolean;
   onClose: () => void;
-  isAuthenticated: boolean;
   onMapClick?: () => void;
   onChatClick?: () => void;
   onFavoritesClick?: () => void;
@@ -29,18 +30,14 @@ interface BurgerMenuProps {
 export const BurgerMenu = ({
   open,
   onClose,
-  isAuthenticated,
   onMapClick,
   onChatClick,
   onFavoritesClick,
 }: BurgerMenuProps) => {
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useHydrated();
+  const isAuthenticated = useIsAuthenticated();
   const { total: unreadTotal } = useUnreadTotal();
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!open) {

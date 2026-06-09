@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,7 +10,7 @@ class AttributeResponse(BaseModel):
     name: str
     key: str
     kind: str
-    options: Optional[List[str]] = None
+    options: Optional[List[Any]] = None
     is_required: bool
     sort_order: int
 

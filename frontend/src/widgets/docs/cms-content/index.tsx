@@ -1,3 +1,5 @@
+import DOMPurify from "isomorphic-dompurify";
+
 import style from "./style.module.scss";
 
 interface CmsContentProps {
@@ -178,6 +180,30 @@ function wrapParensInHeadings(html: string): string {
   );
 }
 
+const ADMIN_SANITIZE_CONFIG = {
+  ALLOWED_TAGS: [
+    "p",
+    "br",
+    "hr",
+    "strong",
+    "b",
+    "em",
+    "i",
+    "u",
+    "a",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "blockquote",
+    "span",
+  ],
+  ALLOWED_ATTR: ["href", "target", "rel"],
+};
+
 function preprocess(html: string): string {
   return wrapBlockquoteGroups(
     markHighlightedCards(
@@ -205,7 +231,7 @@ function preprocess(html: string): string {
 }
 
 export const CmsContent = ({ body, variant = "default" }: CmsContentProps) => {
-  let processed = preprocess(body);
+  let processed = preprocess(DOMPurify.sanitize(body, ADMIN_SANITIZE_CONFIG));
   if (variant === "stacked") {
     processed = processed.replace(
       /<blockquote\b([^>]*)>/gi,

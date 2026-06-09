@@ -1,5 +1,6 @@
 import { config } from "@/src/shared/config/config";
 import { setTokens, getRefreshToken, logout } from "@/src/shared/auth/auth-storage";
+import { readErrorDetail } from "@/src/shared/lib/http";
 
 export interface LoginResponse {
   access_token: string;
@@ -21,8 +22,7 @@ export async function login(
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || "Ошибка входа");
+    throw new Error(await readErrorDetail(response, "Ошибка входа"));
   }
 
   const data: LoginResponse = await response.json();
@@ -97,6 +97,6 @@ export async function logoutRequest(): Promise<void> {
       credentials: "include",
     });
   } catch {
-    /* сервер уже мог уронить cookie на клиенте через logout-storage */
+    void 0;
   }
 }

@@ -1,9 +1,8 @@
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { CrumbsBar } from "@/src/shared/ui/PageBar";
-import { HeroBanner } from "@/src/widgets/advertising/hero-banner";
+import { Banner } from "@/src/widgets/advertising/banner";
 import { NoteLine } from "@/src/widgets/advertising/note-line";
-import { PromoBanner } from "@/src/widgets/advertising/promo-banner";
 import { TechSpecsAccordion } from "@/src/widgets/advertising/tech-specs-accordion";
 import { CmsContent } from "@/src/widgets/docs/cms-content";
 import style from "./style.module.scss";
@@ -50,10 +49,10 @@ export const AdvertisingPageView = ({
           </div>
 
           <div className={style.body}>
-            {heroText && <HeroBanner text={heroText} />}
+            {heroText && <Banner variant="hero" text={heroText} />}
             {noteText && <NoteLine text={noteText} />}
             {beforeHr && <CmsContent body={beforeHr} />}
-            {promoText && <PromoBanner text={promoText} />}
+            {promoText && <Banner variant="promo" text={promoText} />}
             {afterHr && <CmsContent body={afterHr} />}
             {accordionItems.length > 0 && (
               <TechSpecsAccordion

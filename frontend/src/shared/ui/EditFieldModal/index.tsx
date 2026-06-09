@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Modal } from "@/src/shared/ui/Modal";
 import { Input } from "@/src/shared/ui/Input";
 import style from "./style.module.scss";
@@ -22,8 +22,18 @@ interface EditFieldModalProps {
   validate?: (value: string) => boolean;
 }
 
-export const EditFieldModal = ({
-  open,
+type EditFieldFormProps = Omit<EditFieldModalProps, "open">;
+
+export const EditFieldModal = ({ open, ...rest }: EditFieldModalProps) => {
+  return (
+    <Modal open={open} onClose={rest.onClose}>
+      <EditFieldForm key={rest.initialValue ?? ""} {...rest} />
+    </Modal>
+  );
+};
+
+/** Выделено в отдельный компонент: модалка размонтируется при закрытии, поэтому ленивая инициализация value заменяет сброс через эффект. */
+const EditFieldForm = ({
   onClose,
   onSubmit,
   title,
@@ -37,16 +47,10 @@ export const EditFieldModal = ({
   formatValue,
   prepareSubmit,
   validate,
-}: EditFieldModalProps) => {
+}: EditFieldFormProps) => {
   const [value, setValue] = useState(() =>
     formatValue ? formatValue(initialValue) : initialValue
   );
-
-  useEffect(() => {
-    if (open) {
-      setValue(formatValue ? formatValue(initialValue) : initialValue);
-    }
-  }, [open, initialValue, formatValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const next = formatValue ? formatValue(e.target.value) : e.target.value;
@@ -67,40 +71,38 @@ export const EditFieldModal = ({
     : false;
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <form className={style.card} onSubmit={handleSubmit}>
-        <div className={style.body}>
-          <h2 className={style.title}>{title}</h2>
-          <p className={style.subtitle}>{subtitle}</p>
+    <form className={style.card} onSubmit={handleSubmit}>
+      <div className={style.body}>
+        <h2 className={style.title}>{title}</h2>
+        <p className={style.subtitle}>{subtitle}</p>
 
-          <Input
-            variant="filled"
-            type={inputType}
-            value={value}
-            onChange={handleChange}
-            placeholder={placeholder}
-            autoFocus
-          />
+        <Input
+          variant="filled"
+          type={inputType}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          autoFocus
+        />
 
-          <div className={style.buttons}>
-            <button
-              type="button"
-              className={style.cancel}
-              onClick={onClose}
-              disabled={loading}
-            >
-              {cancelText}
-            </button>
-            <button
-              type="submit"
-              className={style.submit}
-              disabled={loading || isInvalid}
-            >
-              {submitText}
-            </button>
-          </div>
+        <div className={style.buttons}>
+          <button
+            type="button"
+            className={style.cancel}
+            onClick={onClose}
+            disabled={loading}
+          >
+            {cancelText}
+          </button>
+          <button
+            type="submit"
+            className={style.submit}
+            disabled={loading || isInvalid}
+          >
+            {submitText}
+          </button>
         </div>
-      </form>
-    </Modal>
+      </div>
+    </form>
   );
 };

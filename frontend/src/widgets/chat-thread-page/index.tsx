@@ -1,35 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
 import { Loader } from "@/src/shared/ui/Loader";
 import { type BreadcrumbItem } from "@/src/shared/ui/Breadcrumbs";
 import { CrumbsBar } from "@/src/shared/ui/PageBar";
+import { RequireAuth } from "@/src/shared/ui/RequireAuth";
 import { ChatsShell } from "@/src/widgets/chat/chats-shell";
 import { ConversationThread } from "@/src/widgets/chat/conversation-thread";
 import {
   ChatThreadBreadcrumbProvider,
   useChatThreadBreadcrumbState,
 } from "@/src/widgets/chat/chats-page-shell/breadcrumb-context";
-import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import style from "./style.module.scss";
 
 export const ChatThreadPageView = () => {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const conversationId = Number(params?.id);
-  const [ready, setReady] = useState(false);
   const [threadLabel, setThreadLabel] = useChatThreadBreadcrumbState();
-
-  useEffect(() => {
-    if (!checkAuth()) {
-      router.replace("/login");
-    } else {
-      setReady(true);
-    }
-  }, [router]);
 
   if (!Number.isFinite(conversationId)) {
     return (
@@ -52,13 +42,17 @@ export const ChatThreadPageView = () => {
   return (
     <main className={style.page}>
       <Header />
-      {ready && <CrumbsBar items={items} />}
-      <div className={style.content}>
-        {!ready ? (
-          <div className={style.loadingArea}>
-            <Loader />
+      <RequireAuth
+        fallback={
+          <div className={style.content}>
+            <div className={style.loadingArea}>
+              <Loader />
+            </div>
           </div>
-        ) : (
+        }
+      >
+        <CrumbsBar items={items} />
+        <div className={style.content}>
           <div className={style.layout}>
             <div className={style.feedSlot}>
               <div className={style.feedHeading}>
@@ -76,8 +70,8 @@ export const ChatThreadPageView = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </RequireAuth>
       <Footer />
     </main>
   );

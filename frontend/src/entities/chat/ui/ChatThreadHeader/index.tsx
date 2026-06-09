@@ -2,6 +2,7 @@
 
 import CloseIcon from "@/src/shared/ui/Icons/CloseIcon";
 import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
+import { formatPrice } from "@/src/shared/lib/format";
 import type { ChatAdvertisement } from "../../model/types";
 import style from "./style.module.scss";
 
@@ -11,8 +12,6 @@ interface ChatThreadHeaderProps {
   onAdClick?: () => void;
   onClose?: () => void;
 }
-
-const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const ChatThreadHeader = ({
   advertisement,

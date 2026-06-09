@@ -26,11 +26,7 @@ export function useCategories() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (cache) {
-      setCategories(cache);
-      setLoading(false);
-      return;
-    }
+    if (cache) return;
     let cancelled = false;
     const onUpdate = (data: Category[]) => {
       if (!cancelled) {

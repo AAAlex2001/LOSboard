@@ -15,11 +15,19 @@
   margin: 0;
   font-family: Inter;
   font-weight: 500;
-  font-size: 18px;
-  line-height: 22px;
   text-align: center;
   color: rgba(0, 0, 0, 0.85);
   flex: 1;
+}
+
+.hero {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.promo {
+  font-size: 16px;
+  line-height: 19px;
 }
 
 @media (min-width: 850px) {

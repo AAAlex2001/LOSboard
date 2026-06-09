@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+import sqlalchemy as sa
 from sqlalchemy import (
     Boolean,
     DateTime,
@@ -36,9 +37,11 @@ class Advertisement(Base):
     price: Mapped[int] = mapped_column(Integer, nullable=False)
     location: Mapped[str] = mapped_column(String, nullable=False)
     photo_urls: Mapped[list[str]] = mapped_column(
-        ARRAY(String), nullable=False, server_default="{}"
+        ARRAY(String), nullable=False, server_default="{}", default=list
     )
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=sa.true(), default=True
+    )
     is_urgent: Mapped[bool] = mapped_column(
         Boolean, nullable=False, server_default="false", default=False
     )

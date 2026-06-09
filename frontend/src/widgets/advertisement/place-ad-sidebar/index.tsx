@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
 import InstagramIcon from "@/src/shared/ui/Icons/InstagramIcon";
 import FacebookIcon from "@/src/shared/ui/Icons/FacebookIcon";
@@ -51,15 +52,15 @@ export const PlaceAdSidebar = () => {
         </div>
 
         <div className={style.links}>
-          <a className={style.link} href="/advertising">
+          <Link className={style.link} href="/advertising">
             Размещение рекламы на сайте LOS
-          </a>
-          <a className={style.link} href="/contacts">
+          </Link>
+          <Link className={style.link} href="/contacts">
             Связаться с нами
-          </a>
-          <a className={style.link} href="/docs">
+          </Link>
+          <Link className={style.link} href="/docs">
             Документы сайта
-          </a>
+          </Link>
         </div>
       </div>
 

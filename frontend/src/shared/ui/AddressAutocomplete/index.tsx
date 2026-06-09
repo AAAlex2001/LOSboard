@@ -45,17 +45,7 @@ export const AddressAutocomplete = ({
     }
 
     if (!userTypedRef.current) return;
-
-    if (!value || value.trim().length < 3) {
-      setSuggestions([]);
-      setOpen(false);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setSuggestions([]);
-    setOpen(true);
+    if (!value || value.trim().length < 3) return;
 
     const controller = new AbortController();
 
@@ -108,6 +98,15 @@ export const AddressAutocomplete = ({
 
   const handleInputChange = (next: string) => {
     userTypedRef.current = true;
+    if (!next || next.trim().length < 3) {
+      setSuggestions([]);
+      setOpen(false);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      setSuggestions([]);
+      setOpen(true);
+    }
     onChange(next);
   };
 

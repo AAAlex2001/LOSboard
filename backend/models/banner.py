@@ -18,7 +18,7 @@ class Banner(Base):
     video_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     link_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     placement: Mapped[str] = mapped_column(
-        String, nullable=False, server_default="main_top", index=True
+        String, nullable=False, server_default="main_top", default="main_top", index=True
     )
     sort_order: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, index=True

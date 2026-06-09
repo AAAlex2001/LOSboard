@@ -15,6 +15,37 @@ interface PhotoUploadProps {
   hint?: string;
 }
 
+interface BlobState {
+  files: File[];
+  urls: string[];
+}
+
+/** Синхронизирует blob-URL с files через пересчёт прямо в рендере (паттерн React для производного состояния), без set-state в эффекте. */
+function useBlobUrls(files: File[]): string[] {
+  const [state, setState] = useState<BlobState>(() => ({
+    files,
+    urls: files.map((file) => URL.createObjectURL(file)),
+  }));
+  const latestUrls = useRef<string[]>(state.urls);
+
+  let urls = state.urls;
+  if (state.files !== files) {
+    state.urls.forEach(URL.revokeObjectURL);
+    urls = files.map((file) => URL.createObjectURL(file));
+    setState({ files, urls });
+  }
+
+  useEffect(() => {
+    latestUrls.current = urls;
+  });
+
+  useEffect(() => {
+    return () => latestUrls.current.forEach(URL.revokeObjectURL);
+  }, []);
+
+  return urls;
+}
+
 export const PhotoUpload = ({
   files,
   onChange,
@@ -26,14 +57,8 @@ export const PhotoUpload = ({
 }: PhotoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [blobUrls, setBlobUrls] = useState<string[]>([]);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setBlobUrls(urls);
-    return () => urls.forEach(URL.revokeObjectURL);
-  }, [files]);
+  const blobUrls = useBlobUrls(files);
 
   const addFiles = (incoming: FileList | File[]) => {
     const maxBytes = maxSizeMb * 1024 * 1024;

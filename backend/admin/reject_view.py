@@ -68,7 +68,10 @@ class RejectAdvertisementsView(BaseView):
                 async with AsyncSessionLocal() as session:
                     await session.execute(
                         update(Advertisement)
-                        .where(Advertisement.id.in_(pks))
+                        .where(
+                            Advertisement.id.in_(pks),
+                            Advertisement.deleted_at.is_(None),
+                        )
                         .values(
                             moderation_status=MODERATION_REJECTED,
                             moderation_reason=reason,

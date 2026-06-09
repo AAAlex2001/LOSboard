@@ -16,7 +16,7 @@ import { BurgerMenu } from "@/src/widgets/burger-menu";
 import { ProfilePopup } from "@/src/widgets/profile/profile-popup";
 import { Button } from "@/src/shared/ui/Button";
 import { UnreadBadge } from "@/src/shared/ui/UnreadBadge";
-import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
+import { useIsAuthenticated } from "@/src/shared/auth/useIsAuthenticated";
 import style from "./style.module.scss";
 
 interface HeaderProps {
@@ -40,14 +40,10 @@ export const Header = ({
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [authed, setAuthed] = useState(false);
+  const authed = useIsAuthenticated();
   const categoriesWrapRef = useRef<HTMLDivElement>(null);
   const { total: unreadTotal } = useUnreadTotal();
   const { user: me } = useMeContext();
-
-  useEffect(() => {
-    setAuthed(checkAuth());
-  }, []);
 
   useEffect(() => {
     if (!categoriesOpen) return;
@@ -255,7 +251,6 @@ export const Header = ({
       <BurgerMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        isAuthenticated={authed}
         onMapClick={onMapClick}
         onChatClick={onChatClick}
         onFavoritesClick={onFavoritesClick}

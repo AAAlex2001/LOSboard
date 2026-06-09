@@ -50,8 +50,6 @@ export const PromoCarousel = ({
     track.scrollBy({ left: direction * step, behavior: "smooth" });
   };
 
-  if (slots.length === 0) return null;
-
   return (
     <div className={style.carousel}>
       {!atStart && (

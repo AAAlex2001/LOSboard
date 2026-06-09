@@ -19,7 +19,6 @@ from admin.views.common import (
     redirect_to_list,
     role_badge,
     selected_pks,
-    user_ads_list,
 )
 from database import AsyncSessionLocal
 from models.advertisement import Advertisement
@@ -52,10 +51,6 @@ def fmt_user_avatar_large(model: Any, _attr: Any) -> Markup:
 
 def fmt_user_role(model: Any, _attr: Any) -> Markup:
     return role_badge(model.role)
-
-
-def fmt_user_ads(model: Any, _attr: Any) -> Markup:
-    return user_ads_list(model.advertisements)
 
 
 class UserAdmin(AdminOnly, ModelView, model=User):

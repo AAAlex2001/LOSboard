@@ -28,8 +28,6 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
   useEffect(() => {
     if (!advertisementId) return;
     const controller = new AbortController();
-    setLoadingAd(true);
-    setLoadError(null);
 
     getAdvertisement(advertisementId, { signal: controller.signal })
       .then((ad) => {
@@ -76,25 +74,41 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
       : null;
 
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [attributesLoading, setAttributesLoading] = useState(false);
 
   useEffect(() => {
-    if (!selectedCategory) {
-      setAttributes([]);
-      return;
-    }
     const controller = new AbortController();
-    getAttributes({
-      categoryId: selectedCategory.id,
-      subcategoryId: selectedSubcategory?.id,
-      signal: controller.signal,
-    })
-      .then((list) => {
+    if (!selectedCategory) {
+      Promise.resolve().then(() => {
         if (controller.signal.aborted) return;
+        setAttributes([]);
+        setAttributesLoading(false);
+      });
+      return () => controller.abort();
+    }
+    const category = selectedCategory;
+    const subcategory = selectedSubcategory;
+    Promise.resolve()
+      .then(() => {
+        if (controller.signal.aborted) return;
+        setAttributesLoading(true);
+        return getAttributes({
+          categoryId: category.id,
+          subcategoryId: subcategory?.id,
+          signal: controller.signal,
+        });
+      })
+      .then((list) => {
+        if (controller.signal.aborted || !list) return;
         setAttributes(list);
       })
       .catch(() => {
         if (controller.signal.aborted) return;
         setAttributes([]);
+      })
+      .finally(() => {
+        if (controller.signal.aborted) return;
+        setAttributesLoading(false);
       });
     return () => controller.abort();
   }, [selectedCategory?.id, selectedSubcategory?.id]);
@@ -110,6 +124,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     state.title.trim().length > 0 &&
     Number(state.price) > 0 &&
     state.address.trim().length > 0 &&
+    !attributesLoading &&
     attributesValid;
 
   const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }));

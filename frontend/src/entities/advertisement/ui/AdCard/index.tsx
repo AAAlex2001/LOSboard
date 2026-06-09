@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import EditIcon from "@/src/shared/ui/Icons/EditIcon";
 import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
+import { formatPrice } from "@/src/shared/lib/format";
 import type { Advertisement } from "../../model/types";
 import style from "./style.module.scss";
 
@@ -12,8 +14,6 @@ interface AdCardProps {
   onEdit?: (ad: Advertisement) => void;
   favoritePending?: boolean;
 }
-
-const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const AdCard = ({
   advertisement,
@@ -62,12 +62,12 @@ export const AdCard = ({
       <div className={style.imageWrap}>
         <div className={style.imageClip}>
           {photoSrc ? (
-            <img
+            <Image
               src={photoSrc}
               alt={title}
+              fill
+              sizes="(max-width: 850px) 50vw, 25vw"
               className={style.image}
-              loading="lazy"
-              decoding="async"
             />
           ) : (
             <div className={style.imagePlaceholder}>

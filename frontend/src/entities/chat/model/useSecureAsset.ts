@@ -8,10 +8,7 @@ export function useSecureAsset(url: string | null | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!url) {
-      setSrc(null);
-      return;
-    }
+    if (!url) return;
     let cancelled = false;
     let createdUrl: string | null = null;
 

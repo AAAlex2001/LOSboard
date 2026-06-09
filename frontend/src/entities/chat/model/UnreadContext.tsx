@@ -22,17 +22,16 @@ export const UnreadProvider = ({ children }: { children: React.ReactNode }) => {
   const [total, setTotal] = useState(0);
   const refreshRef = useRef<() => void>(() => {});
 
-  refreshRef.current = () => {
-    if (!isAuthenticated()) {
-      setTotal(0);
-      return;
-    }
-    getUnreadTotal()
-      .then(({ count }) => setTotal(count))
-      .catch(() => {});
-  };
-
   useEffect(() => {
+    refreshRef.current = () => {
+      if (!isAuthenticated()) {
+        setTotal(0);
+        return;
+      }
+      getUnreadTotal()
+        .then(({ count }) => setTotal(count))
+        .catch(() => {});
+    };
     refreshRef.current();
     const onAuth = () => refreshRef.current();
     const onFocus = () => refreshRef.current();

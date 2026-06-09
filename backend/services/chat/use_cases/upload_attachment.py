@@ -17,6 +17,28 @@ from services.chat.attachments import (
 )
 
 
+def _has_mp4_signature(contents: bytes) -> bool:
+    """MP4/MOV-контейнеры держат box-type ftyp по смещению 4."""
+    return len(contents) >= 12 and contents[4:8] == b"ftyp"
+
+
+SIGNATURE_VALIDATORS = {
+    "video/mp4": _has_mp4_signature,
+    "video/quicktime": _has_mp4_signature,
+    "video/webm": lambda c: c[:4] == b"\x1a\x45\xdf\xa3",
+    "application/pdf": lambda c: c[:5] == b"%PDF-",
+    "application/msword": lambda c: c[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",
+    "application/vnd.ms-excel": lambda c: c[:8]
+    == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
+        lambda c: c[:4] == b"PK\x03\x04"
+    ),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
+        lambda c: c[:4] == b"PK\x03\x04"
+    ),
+}
+
+
 class UploadChatAttachmentUseCase:
 
     async def upload(
@@ -51,6 +73,13 @@ class UploadChatAttachmentUseCase:
             except (UnidentifiedImageError, OSError):
                 raise HTTPException(
                     status_code=400, detail="Файл не является корректным изображением"
+                )
+        else:
+            validator = SIGNATURE_VALIDATORS.get(file.content_type)
+            if validator is not None and not validator(contents):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Содержимое файла не соответствует заявленному формату",
                 )
 
         target_dir = CHAT_UPLOAD_DIR / str(conversation_id)

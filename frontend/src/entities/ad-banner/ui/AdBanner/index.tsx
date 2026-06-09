@@ -11,6 +11,8 @@ export type AdBannerVariant =
   | "promo"
   | "carousel";
 
+const DEFAULT_PLACEHOLDER_TEXT = "Рекламный баннер сдается";
+
 interface AdBannerProps {
   banner?: Banner | null;
   ageLabel?: string;
@@ -23,7 +25,7 @@ export const AdBanner = ({
   banner,
   ageLabel,
   siteLabel,
-  placeholderText = "Рекламный баннер сдается",
+  placeholderText = DEFAULT_PLACEHOLDER_TEXT,
   variant = "rectangle",
 }: AdBannerProps) => {
   const variantClass =

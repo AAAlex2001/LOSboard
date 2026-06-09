@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import style from "./style.module.scss";
 
 const VIEW_MODE_COOKIE = "view-mode";
@@ -9,6 +9,13 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 type Origin = "mobile" | "tablet";
 type Mode = "mobile" | "tablet" | "desktop";
+
+interface ViewState {
+  mode: Mode;
+  origin: Origin | null;
+}
+
+const SERVER_STATE: ViewState = { mode: "mobile", origin: null };
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -30,21 +37,43 @@ function detectViewport(): Origin {
   return "tablet";
 }
 
-export const ViewModeToggle = () => {
-  const [mode, setMode] = useState<Mode>("mobile");
-  const [origin, setOrigin] = useState<Origin | null>(null);
-
-  useEffect(() => {
-    const stored = getCookie(VIEW_MODE_COOKIE);
+function readViewState(): ViewState {
+  const stored = getCookie(VIEW_MODE_COOKIE);
+  if (stored === "desktop") {
     const storedOrigin = getCookie(ORIGIN_COOKIE);
-    if (stored === "desktop") {
-      setMode("desktop");
-      setOrigin(storedOrigin === "tablet" ? "tablet" : "mobile");
-    } else {
-      setMode(detectViewport());
-      setOrigin(null);
-    }
-  }, []);
+    return { mode: "desktop", origin: storedOrigin === "tablet" ? "tablet" : "mobile" };
+  }
+  return { mode: detectViewport(), origin: null };
+}
+
+let cachedKey: string | null = null;
+let cachedState: ViewState = SERVER_STATE;
+
+/** Кэширует снапшот по строке cookie, чтобы useSyncExternalStore не зациклился на новой ссылке. */
+function getSnapshot(): ViewState {
+  const key = typeof document === "undefined" ? "" : document.cookie;
+  if (key !== cachedKey) {
+    cachedKey = key;
+    cachedState = readViewState();
+  }
+  return cachedState;
+}
+
+function getServerSnapshot(): ViewState {
+  return SERVER_STATE;
+}
+
+/** Переключение версии происходит через перезагрузку страницы, поэтому живая подписка не нужна. */
+function subscribe(): () => void {
+  return () => {};
+}
+
+export const ViewModeToggle = () => {
+  const { mode, origin } = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
 
   const handleClick = () => {
     if (mode === "desktop") {

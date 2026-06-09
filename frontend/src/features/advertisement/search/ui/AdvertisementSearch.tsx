@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { SearchBar } from "@/src/shared/ui/SearchBar";
 import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
+import { formatPrice } from "@/src/shared/lib/format";
 import { useSearchAdvertisement } from "../model/useSearchAdvertisement";
 import style from "./AdvertisementSearch.module.scss";
 
@@ -10,8 +11,6 @@ interface AdvertisementSearchProps {
   placeholder?: string;
   submitText?: string;
 }
-
-const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const AdvertisementSearch = ({
   placeholder = "Поиск по объявлениям",

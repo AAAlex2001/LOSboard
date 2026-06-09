@@ -26,20 +26,19 @@ export const MeProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const refreshRef = useRef<() => void>(() => {});
 
-  refreshRef.current = () => {
-    if (!isAuthenticated()) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    getMe()
-      .then((data) => setUser(data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  };
-
   useEffect(() => {
+    refreshRef.current = () => {
+      if (!isAuthenticated()) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      getMe()
+        .then((data) => setUser(data))
+        .catch(() => setUser(null))
+        .finally(() => setLoading(false));
+    };
     refreshRef.current();
     const onChange = () => refreshRef.current();
     window.addEventListener("auth:changed", onChange);

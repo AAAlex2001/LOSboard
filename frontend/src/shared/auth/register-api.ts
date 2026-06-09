@@ -1,5 +1,6 @@
 import { config } from "@/src/shared/config/config";
 import { login, type LoginResponse } from "@/src/shared/auth/auth-api";
+import { readErrorDetail } from "@/src/shared/lib/http";
 
 export interface CreateAccountResponse {
   message: string;
@@ -19,12 +20,7 @@ export async function createAccount(
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const detail = errorData.detail;
-    if (Array.isArray(detail)) {
-      throw new Error(detail.map((d) => d.msg).join("; "));
-    }
-    throw new Error(typeof detail === "string" ? detail : "Ошибка регистрации");
+    throw new Error(await readErrorDetail(response, "Ошибка регистрации"));
   }
 
   return response.json();

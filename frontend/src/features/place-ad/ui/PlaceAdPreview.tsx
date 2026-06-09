@@ -40,7 +40,7 @@ export const PlaceAdPreview = ({
     const existing = state.existingPhotoUrls.map(
       (url) => resolveAssetUrl(url) ?? url
     );
-    setPreviewUrls([...existing, ...blobUrls]);
+    Promise.resolve().then(() => setPreviewUrls([...existing, ...blobUrls]));
     return () => blobUrls.forEach(URL.revokeObjectURL);
   }, [state.files, state.existingPhotoUrls]);
 

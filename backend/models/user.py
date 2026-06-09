@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+import sqlalchemy as sa
 from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -30,7 +31,9 @@ class User(Base):
     password: Mapped[str] = mapped_column(String, nullable=False)
     phone_number: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     avatar_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=sa.true(), default=True
+    )
     role: Mapped[str] = mapped_column(
         String, nullable=False, server_default=USER_ROLE, default=USER_ROLE
     )

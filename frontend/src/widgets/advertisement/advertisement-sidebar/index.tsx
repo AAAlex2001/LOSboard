@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/shared/ui/Button";
 import TelegramIcon from "@/src/shared/ui/Icons/TelegramIcon";
@@ -10,6 +11,7 @@ import { useSidebarBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import { useStartChat } from "@/src/features/chat";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
+import { formatPrice } from "@/src/shared/lib/format";
 import { useMeContext } from "@/src/entities/user";
 import style from "./style.module.scss";
 
@@ -20,8 +22,6 @@ interface AdvertisementSidebarProps {
   sellerPhone?: string | null;
   canMessageSeller?: boolean;
 }
-
-const formatPrice = (price: number) => `${price.toLocaleString("ru-RU")} ₽`;
 
 export const AdvertisementSidebar = ({
   advertisementId,
@@ -100,30 +100,56 @@ export const AdvertisementSidebar = ({
 
       <div className={style.info}>
         <div className={style.socialBlock}>
-          <h3 className={style.socialTitle}>LOS в социальных сетях</h3>
+          <h3 className={style.socialTitle}>
+            {settings?.socials_title || "LOS в социальных сетях"}
+          </h3>
           <div className={style.socials}>
-            <a href="#" className={style.social} aria-label="Telegram">
-              <TelegramIcon />
-            </a>
-            <a href="#" className={style.social} aria-label="Instagram">
-              <InstagramIcon />
-            </a>
-            <a href="#" className={style.social} aria-label="Facebook">
-              <FacebookIcon />
-            </a>
+            {settings?.telegram_url && (
+              <a
+                href={settings.telegram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={style.social}
+                aria-label="Telegram"
+              >
+                <TelegramIcon />
+              </a>
+            )}
+            {settings?.instagram_url && (
+              <a
+                href={settings.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={style.social}
+                aria-label="Instagram"
+              >
+                <InstagramIcon />
+              </a>
+            )}
+            {settings?.facebook_url && (
+              <a
+                href={settings.facebook_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={style.social}
+                aria-label="Facebook"
+              >
+                <FacebookIcon />
+              </a>
+            )}
           </div>
         </div>
 
         <div className={style.links}>
-          <a className={style.link} href="/advertising">
+          <Link className={style.link} href="/advertising">
             Размещение рекламы на сайте LOS
-          </a>
-          <a className={style.link} href="/contacts">
+          </Link>
+          <Link className={style.link} href="/contacts">
             Связаться с нами
-          </a>
-          <a className={style.link} href="/docs">
+          </Link>
+          <Link className={style.link} href="/docs">
             Документы сайта
-          </a>
+          </Link>
         </div>
       </div>
 

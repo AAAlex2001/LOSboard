@@ -1,6 +1,5 @@
 """Общие хелперы, дроп-даун-варианты и форматтеры для всех вью админки."""
 
-import os
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -212,28 +211,4 @@ def avatar_thumb(url: str | None, *, size: int = 40) -> Markup:
         f'<img src="{safe_url}" alt="" '
         f'style="width:{size}px; height:{size}px; '
         f'border-radius:50%; object-fit:cover; border:1px solid #ddd;" /></a>'
-    )
-
-
-def user_ads_list(ads: list) -> Markup:
-    if not ads:
-        return Markup('<span style="color:#999">У пользователя нет объявлений</span>')
-    base = os.environ.get("ADMIN_BASE_URL", "/admin").rstrip("/")
-    items = []
-    for ad in ads:
-        href = f"{base}/advertisement/details/{ad.id}"
-        status = MODERATION_LABEL.get(ad.moderation_status, ad.moderation_status or "—")
-        items.append(
-            f'<li style="padding:4px 0;">'
-            f'<a href="{escape(href)}" style="color:#1565C0;">'
-            f"#{ad.id} — {escape(ad.title)}"
-            f"</a> "
-            f'<span style="color:#666; font-size:12px;">'
-            f"({escape(status)}, {ad.price} ₽)</span>"
-            f"</li>"
-        )
-    return Markup(
-        '<ul style="list-style:none; padding-left:0; margin:0; max-height:400px; overflow:auto;">'
-        + "".join(items)
-        + "</ul>"
     )
