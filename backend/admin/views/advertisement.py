@@ -1,7 +1,7 @@
 """Объявления: базовая вью + 4 пресет-вью по статусам (очередь, активные, архив, отклонённые)."""
 
 from datetime import datetime
-from typing import Any
+from typing import Any, List
 
 from markupsafe import Markup
 from sqladmin import ModelView, action
@@ -128,6 +128,22 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
             request,
             Advertisement.created_at,
         )
+
+    async def delete_model(self, request: Request, pks: List[Any]) -> None:
+        """Soft-delete объявления — оставляем строку, чтобы не падать на FK с чатами."""
+        if not pks:
+            return
+        ids = [int(pk) for pk in pks]
+        async with self.session_maker() as session:
+            await session.execute(
+                update(Advertisement)
+                .where(Advertisement.id.in_(ids))
+                .values(
+                    is_active=False,
+                    deleted_at=datetime.utcnow(),
+                )
+            )
+            await session.commit()
 
     async def apply_moderation(
         self,
