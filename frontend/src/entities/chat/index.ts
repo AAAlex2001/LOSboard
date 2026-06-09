@@ -16,7 +16,6 @@ export {
   getUnreadTotal,
   uploadChatAttachment,
   fetchAttachmentBlob,
-  buildAttachmentStreamUrl,
 } from "./api/chat.api";
 
 export {

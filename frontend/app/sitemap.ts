@@ -81,20 +81,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "daily" as const,
     priority: 0.7,
   };
-  const urgentCategoryEntries = categories.flatMap((cat) => [
-    {
-      url: `${origin}/?urgent=1&cat=${encodeURIComponent(cat.slug)}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.6,
-    },
-    ...cat.subcategories.map((sub) => ({
-      url: `${origin}/?urgent=1&cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.slug)}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.5,
-    })),
-  ]);
+  const urgentCategoryEntries = categories.map((cat) => ({
+    url: `${origin}/?urgent=1&cat=${encodeURIComponent(cat.slug)}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.6,
+  }));
 
   const adEntries = ads.slice(0, SITEMAP_MAX_URLS).map((ad) => {
     const slug = slugify(ad.title);

@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Loader } from "@/src/shared/ui/Loader";
 import { Button } from "@/src/shared/ui/Button";
-import { AdCard, type Advertisement } from "@/src/entities/advertisement";
+import { FeedState } from "@/src/shared/ui/FeedState";
+import { AdGrid } from "@/src/shared/ui/AdGrid";
+import { type Advertisement } from "@/src/entities/advertisement";
 import type { AdvertisementListState } from "@/src/features/advertisement";
 import { useFavorite } from "@/src/features/favorite";
 import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
@@ -42,30 +43,23 @@ export const CatalogFeed = ({
     <div className={style.feed}>
       <h2 className={titleClass}>{title ?? "Все объявления"}</h2>
 
-      {state.loading && (
-        <div className={style.feedback}>
-          <Loader />
-        </div>
-      )}
-      {!state.loading && state.error && (
-        <p className={style.feedback}>{state.error}</p>
-      )}
-      {!state.loading && !state.error && state.items.length === 0 && (
-        <p className={style.feedback}>Объявлений пока нет</p>
-      )}
+      <FeedState
+        loading={state.loading}
+        error={state.error}
+        empty={state.items.length === 0}
+        emptyText="Объявлений пока нет"
+      >
+        <></>
+      </FeedState>
+
       {!state.loading && state.items.length > 0 && (
         <>
-          <div className={style.grid}>
-            {state.items.map((ad) => (
-              <AdCard
-                key={ad.id}
-                advertisement={ad}
-                onClick={handleAdClick}
-                onToggleFavorite={handleFavorite}
-                favoritePending={pendingIds.has(ad.id)}
-              />
-            ))}
-          </div>
+          <AdGrid
+            items={state.items}
+            onClick={handleAdClick}
+            onToggleFavorite={handleFavorite}
+            pendingIds={pendingIds}
+          />
           {state.error && <p className={style.feedback}>{state.error}</p>}
           {state.hasMore && (
             <div className={style.loadMore}>

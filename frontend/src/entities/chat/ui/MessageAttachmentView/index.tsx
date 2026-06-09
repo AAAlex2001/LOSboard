@@ -3,7 +3,6 @@
 import { useState } from "react";
 import PaperclipIcon from "@/src/shared/ui/Icons/PaperclipIcon";
 import { Lightbox } from "@/src/shared/ui/Lightbox";
-import { buildAttachmentStreamUrl } from "../../api/chat.api";
 import { useSecureAsset } from "../../model/useSecureAsset";
 import type { ChatAttachment } from "../../model/types";
 import style from "./style.module.scss";
@@ -25,6 +24,7 @@ export const MessageAttachmentView = ({
   const [docDownloading, setDocDownloading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { src, error } = useSecureAsset(kind === "image" ? url : null);
+  const video = useSecureAsset(kind === "video" && lightboxOpen ? url : null);
 
   if (kind === "image") {
     if (error) return <span className={style.error}>{error}</span>;
@@ -57,7 +57,6 @@ export const MessageAttachmentView = ({
   }
 
   if (kind === "video") {
-    const videoUrl = buildAttachmentStreamUrl(url);
     return (
       <>
         <button
@@ -72,9 +71,9 @@ export const MessageAttachmentView = ({
             </svg>
           </span>
         </button>
-        {lightboxOpen && (
+        {lightboxOpen && video.src && (
           <Lightbox
-            src={videoUrl}
+            src={video.src}
             kind="video"
             alt={filename}
             onClose={() => setLightboxOpen(false)}

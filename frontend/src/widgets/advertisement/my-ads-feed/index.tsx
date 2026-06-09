@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Loader } from "@/src/shared/ui/Loader";
-import { AdCard, type Advertisement } from "@/src/entities/advertisement";
+import { FeedState } from "@/src/shared/ui/FeedState";
+import { AdGrid } from "@/src/shared/ui/AdGrid";
+import { type Advertisement } from "@/src/entities/advertisement";
 import { useMyAdvertisements } from "@/src/features/advertisement";
 import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
-import style from "./style.module.scss";
 
 export const MyAdsFeed = () => {
   const router = useRouter();
@@ -19,30 +19,14 @@ export const MyAdsFeed = () => {
     router.push(buildAdvertisementUrl(ad.id, ad.title));
   };
 
-  if (loading) {
-    return (
-      <div className={style.feedback}>
-        <Loader />
-      </div>
-    );
-  }
-  if (error) {
-    return <p className={style.feedback}>{error}</p>;
-  }
-  if (items.length === 0) {
-    return <p className={style.feedback}>У вас пока нет объявлений</p>;
-  }
-
   return (
-    <div className={style.grid}>
-      {items.map((ad) => (
-        <AdCard
-          key={ad.id}
-          advertisement={ad}
-          onClick={handleCardClick}
-          onEdit={handleEdit}
-        />
-      ))}
-    </div>
+    <FeedState
+      loading={loading}
+      error={error}
+      empty={items.length === 0}
+      emptyText="У вас пока нет объявлений"
+    >
+      <AdGrid items={items} onClick={handleCardClick} onEdit={handleEdit} />
+    </FeedState>
   );
 };

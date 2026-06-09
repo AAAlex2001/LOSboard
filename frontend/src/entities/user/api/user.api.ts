@@ -1,5 +1,5 @@
 import { apiFetch } from "@/src/shared/auth/api-fetch";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson } from "@/src/shared/lib/http";
 import type { User } from "../model/types";
 
 export interface UpdateAccountPayload {
@@ -12,13 +12,7 @@ export interface UpdateAccountPayload {
 export async function getMe(): Promise<User> {
   const response = await apiFetch("auth/me", { method: "GET" });
 
-  if (!response.ok) {
-    throw new Error(
-      await readErrorDetail(response, "Не удалось загрузить пользователя")
-    );
-  }
-
-  return response.json();
+  return apiJson<User>(response, "Не удалось загрузить пользователя");
 }
 
 export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> {
@@ -30,11 +24,7 @@ export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> 
     body: form,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить аватар"));
-  }
-
-  return response.json();
+  return apiJson<{ avatar_url: string }>(response, "Не удалось загрузить аватар");
 }
 
 export async function updateAccount(payload: UpdateAccountPayload): Promise<User> {
@@ -43,9 +33,5 @@ export async function updateAccount(payload: UpdateAccountPayload): Promise<User
     body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось обновить"));
-  }
-
-  return response.json();
+  return apiJson<User>(response, "Не удалось обновить");
 }

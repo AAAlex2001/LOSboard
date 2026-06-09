@@ -9,3 +9,13 @@ export async function readErrorDetail(
   }
   return typeof detail === "string" ? detail : fallback;
 }
+
+export async function apiJson<T>(
+  response: Response,
+  fallbackError: string
+): Promise<T> {
+  if (!response.ok) {
+    throw new Error(await readErrorDetail(response, fallbackError));
+  }
+  return (await response.json()) as T;
+}

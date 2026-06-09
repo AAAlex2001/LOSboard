@@ -35,13 +35,6 @@
   color: #B65A0E;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  width: 100%;
-}
-
 .feedback {
   display: flex;
   justify-content: center;
@@ -58,17 +51,4 @@
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-@media (min-width: 850px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-}
-
-@media (min-width: 1440px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }

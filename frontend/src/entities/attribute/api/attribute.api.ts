@@ -1,5 +1,5 @@
 import { config } from "@/src/shared/config/config";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson } from "@/src/shared/lib/http";
 
 export type AttributeKind = "text" | "number" | "select" | "boolean";
 
@@ -25,8 +25,5 @@ export async function getAttributes(
     `${config.API_BASE_URL}/attributes/?${search.toString()}`,
     { method: "GET", signal: params.signal }
   );
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить атрибуты"));
-  }
-  return response.json();
+  return apiJson<Attribute[]>(response, "Не удалось загрузить атрибуты");
 }

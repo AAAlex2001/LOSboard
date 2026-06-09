@@ -5,18 +5,6 @@
   width: 100%;
 }
 
-.feedback {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  width: 100%;
-  font-family: Inter;
-  font-weight: 500;
-  font-size: 14px;
-  color: #8a8a8a;
-}
-
 @media (min-width: 850px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);

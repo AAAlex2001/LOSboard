@@ -4,6 +4,7 @@ import {
   refreshToken,
   RefreshAuthError,
 } from "@/src/shared/auth/auth-api";
+import { apiJson } from "@/src/shared/lib/http";
 
 function buildHeaders(
   accessToken: string | null,
@@ -67,4 +68,12 @@ export async function apiFetch(
     }
     throw err;
   }
+}
+
+export async function apiFetchJson<T>(
+  path: string,
+  init: RequestInit = {},
+  fallbackError: string
+): Promise<T> {
+  return apiJson<T>(await apiFetch(path, init), fallbackError);
 }

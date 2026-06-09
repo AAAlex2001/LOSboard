@@ -1,5 +1,5 @@
 import { config } from "@/src/shared/config/config";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson } from "@/src/shared/lib/http";
 
 export interface ContentPage {
   slug: string;
@@ -45,10 +45,7 @@ export async function listContentPages(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить страницы"));
-  }
-  return response.json();
+  return apiJson<ContentPageListItem[]>(response, "Не удалось загрузить страницы");
 }
 
 export async function getContentPage(
@@ -60,10 +57,7 @@ export async function getContentPage(
     signal: options.signal,
   });
   if (response.status === 404) return null;
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить страницу"));
-  }
-  return response.json();
+  return apiJson<ContentPage>(response, "Не удалось загрузить страницу");
 }
 
 export async function getFooter(
@@ -73,10 +67,7 @@ export async function getFooter(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить футер"));
-  }
-  return response.json();
+  return apiJson<FooterResponse>(response, "Не удалось загрузить футер");
 }
 
 export async function getSiteSettings(
@@ -87,10 +78,5 @@ export async function getSiteSettings(
     signal: options.signal,
   });
   if (response.status === 404) return null;
-  if (!response.ok) {
-    throw new Error(
-      await readErrorDetail(response, "Не удалось загрузить настройки сайта")
-    );
-  }
-  return response.json();
+  return apiJson<SiteSettings>(response, "Не удалось загрузить настройки сайта");
 }

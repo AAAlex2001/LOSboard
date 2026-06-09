@@ -1,5 +1,5 @@
 import { apiFetch } from "@/src/shared/auth/api-fetch";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson } from "@/src/shared/lib/http";
 import type { Advertisement } from "@/src/entities/advertisement";
 
 export interface GetFavoritesParams {
@@ -22,11 +22,7 @@ export async function getFavorites(
     signal,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить избранное"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement[]>(response, "Не удалось загрузить избранное");
 }
 
 export async function toggleFavorite(advertisementId: number): Promise<Advertisement> {
@@ -34,9 +30,5 @@ export async function toggleFavorite(advertisementId: number): Promise<Advertise
     method: "POST",
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось обновить избранное"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement>(response, "Не удалось обновить избранное");
 }

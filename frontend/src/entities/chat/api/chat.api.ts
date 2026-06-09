@@ -1,7 +1,5 @@
-import { config } from "@/src/shared/config/config";
 import { apiFetch } from "@/src/shared/auth/api-fetch";
-import { getAccessToken } from "@/src/shared/auth/auth-storage";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson, readErrorDetail } from "@/src/shared/lib/http";
 import type {
   ChatAttachment,
   ChatMessage,
@@ -16,10 +14,7 @@ export async function getConversations(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить чаты"));
-  }
-  return response.json();
+  return apiJson<ConversationListItem[]>(response, "Не удалось загрузить чаты");
 }
 
 export async function getConversation(
@@ -30,10 +25,7 @@ export async function getConversation(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить чат"));
-  }
-  return response.json();
+  return apiJson<ConversationDetail>(response, "Не удалось загрузить чат");
 }
 
 export async function startConversation(
@@ -44,10 +36,7 @@ export async function startConversation(
     method: "POST",
     body: JSON.stringify({ advertisement_id: advertisementId, text: text ?? null }),
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось начать чат"));
-  }
-  return response.json();
+  return apiJson<ConversationDetail>(response, "Не удалось начать чат");
 }
 
 export async function getUnreadTotal(
@@ -57,10 +46,7 @@ export async function getUnreadTotal(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось получить счётчик"));
-  }
-  return response.json();
+  return apiJson<{ count: number }>(response, "Не удалось получить счётчик");
 }
 
 export async function sendMessage(
@@ -72,10 +58,7 @@ export async function sendMessage(
     method: "POST",
     body: JSON.stringify({ text, attachments }),
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось отправить сообщение"));
-  }
-  return response.json();
+  return apiJson<ChatMessage>(response, "Не удалось отправить сообщение");
 }
 
 export async function uploadChatAttachment(
@@ -88,10 +71,7 @@ export async function uploadChatAttachment(
     `conversations/${conversationId}/attachments`,
     { method: "POST", body: form }
   );
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить файл"));
-  }
-  return response.json();
+  return apiJson<ChatAttachment>(response, "Не удалось загрузить файл");
 }
 
 export async function fetchAttachmentBlob(url: string): Promise<Blob> {
@@ -101,13 +81,4 @@ export async function fetchAttachmentBlob(url: string): Promise<Blob> {
     throw new Error(await readErrorDetail(response, "Не удалось загрузить вложение"));
   }
   return response.blob();
-}
-
-export function buildAttachmentStreamUrl(url: string): string {
-  const path = url.replace(/^\//, "");
-  const base = `${config.API_BASE_URL}${path}`;
-  const token = getAccessToken();
-  if (!token) return base;
-  const separator = base.includes("?") ? "&" : "?";
-  return `${base}${separator}access_token=${encodeURIComponent(token)}`;
 }

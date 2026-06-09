@@ -1,5 +1,5 @@
 import { config } from "@/src/shared/config/config";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson } from "@/src/shared/lib/http";
 
 export type BannerPlacement = "main_top" | "sidebar";
 
@@ -26,8 +26,5 @@ export async function getActiveBanners(
     method: "GET",
     signal: options.signal,
   });
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить баннеры"));
-  }
-  return response.json();
+  return apiJson<Banner[]>(response, "Не удалось загрузить баннеры");
 }

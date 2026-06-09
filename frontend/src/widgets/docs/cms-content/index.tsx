@@ -23,79 +23,81 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function transformBannerMockups(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*BANNER\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
-    (_match, w, h, name, note) => {
+interface MockupTransformerOptions {
+  keyword: "BANNER" | "PHONE" | "CARD";
+  classPrefix: "banner" | "phone" | "card";
+  useAspectRatio: boolean;
+}
+
+/** Порождает трансформер mockup-маркера. useAspectRatio добавляет aspect-ratio и фикс max-width/max-height (banner/card); без него используется фикс-ширина из CSS (phone). */
+function makeMockupTransformer(opts: MockupTransformerOptions): (html: string) => string {
+  const pattern = new RegExp(
+    `<p\\b[^>]*>\\s*(?:<br\\s*/?>)?\\s*\\[\\s*${opts.keyword}\\s+(\\d+)\\s*x\\s*(\\d+)\\s+([^;\\]]+?)(?:\\s*;\\s*([^\\]]+?))?\\s*\\](?:<br\\s*/?>)?\\s*</p>`,
+    "gi"
+  );
+  return (html: string): string =>
+    html.replace(pattern, (_match, w, h, name, note) => {
       const wNum = parseInt(w, 10);
       const hNum = parseInt(h, 10);
       const nameClean = name.trim();
       const noteClean = note ? note.trim() : "";
-      const displayMaxWidth = Math.min(wNum, 400);
-      const figure = `<figure class="bannerMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${displayMaxWidth}px; max-height: 500px; margin-top: 50px; margin-left: auto; margin-right: auto;"><figcaption class="bannerMockupLabel"><span class="bannerMockupSize">${wNum} × ${hNum}</span><span class="bannerMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
+      const baseStyle = "margin-top: 50px; margin-left: auto; margin-right: auto;";
+      let figureStyle = baseStyle;
+      if (opts.useAspectRatio) {
+        const displayMaxWidth = Math.min(wNum, 400);
+        figureStyle = `aspect-ratio: ${wNum} / ${hNum}; max-width: ${displayMaxWidth}px; max-height: 500px; ${baseStyle}`;
+      }
+      const figure = `<figure class="${opts.classPrefix}Mockup" style="${figureStyle}"><figcaption class="${opts.classPrefix}MockupLabel"><span class="${opts.classPrefix}MockupSize">${wNum} × ${hNum}</span><span class="${opts.classPrefix}MockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
       if (noteClean) {
-        return `${figure}<p class="bannerMockupNote">${escapeAttr(noteClean)}</p>`;
+        return `${figure}<p class="${opts.classPrefix}MockupNote">${escapeAttr(noteClean)}</p>`;
       }
       return figure;
-    }
-  );
+    });
 }
 
-function transformPhoneMockups(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*PHONE\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
-    (_match, w, h, name, note) => {
-      const wNum = parseInt(w, 10);
-      const hNum = parseInt(h, 10);
-      const nameClean = name.trim();
-      const noteClean = note ? note.trim() : "";
-      const figure = `<figure class="phoneMockup" style="margin-top: 50px; margin-left: auto; margin-right: auto;"><figcaption class="phoneMockupLabel"><span class="phoneMockupSize">${wNum} × ${hNum}</span><span class="phoneMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
-      if (noteClean) {
-        return `${figure}<p class="phoneMockupNote">${escapeAttr(noteClean)}</p>`;
-      }
-      return figure;
-    }
-  );
-}
+const transformBannerMockups = makeMockupTransformer({
+  keyword: "BANNER",
+  classPrefix: "banner",
+  useAspectRatio: true,
+});
 
-function transformNoteMarkers(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*NOTE\s+([^\]]+?)\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
-    (_match, text) => {
+const transformPhoneMockups = makeMockupTransformer({
+  keyword: "PHONE",
+  classPrefix: "phone",
+  useAspectRatio: false,
+});
+
+const transformCardMockups = makeMockupTransformer({
+  keyword: "CARD",
+  classPrefix: "card",
+  useAspectRatio: true,
+});
+
+/** Порождает трансформер текстового маркера (NOTE/HINT) в параграф с заданным классом и необязательным inline-стилем. */
+function makeMarkerTransformer(
+  keyword: "NOTE" | "HINT",
+  className: string,
+  extraStyle?: string
+): (html: string) => string {
+  const pattern = new RegExp(
+    `<p\\b[^>]*>\\s*(?:<br\\s*/?>)?\\s*\\[\\s*${keyword}\\s+([^\\]]+?)\\s*\\](?:<br\\s*/?>)?\\s*</p>`,
+    "gi"
+  );
+  return (html: string): string =>
+    html.replace(pattern, (_match, text) => {
       const textClean = text.trim();
-      const noteStyle = "color:rgba(17,41,189,0.5);text-align:center;font-size:16px;line-height:19px;font-weight:400;font-family:Inter;";
-      return `<p class="cmsNote" style="${noteStyle}">${escapeAttr(textClean)}</p>`;
-    }
-  );
+      const styleAttr = extraStyle ? ` style="${extraStyle}"` : "";
+      return `<p class="${className}"${styleAttr}>${escapeAttr(textClean)}</p>`;
+    });
 }
 
-function transformCardMockups(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*CARD\s+(\d+)\s*x\s*(\d+)\s+([^;\]]+?)(?:\s*;\s*([^\]]+?))?\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
-    (_match, w, h, name, note) => {
-      const wNum = parseInt(w, 10);
-      const hNum = parseInt(h, 10);
-      const nameClean = name.trim();
-      const noteClean = note ? note.trim() : "";
-      const displayMaxWidth = Math.min(wNum, 400);
-      const figure = `<figure class="cardMockup" style="aspect-ratio: ${wNum} / ${hNum}; max-width: ${displayMaxWidth}px; max-height: 500px; margin-top: 50px; margin-left: auto; margin-right: auto;"><figcaption class="cardMockupLabel"><span class="cardMockupSize">${wNum} × ${hNum}</span><span class="cardMockupName">${escapeAttr(nameClean)}</span></figcaption></figure>`;
-      if (noteClean) {
-        return `${figure}<p class="cardMockupNote">${escapeAttr(noteClean)}</p>`;
-      }
-      return figure;
-    }
-  );
-}
+const transformNoteMarkers = makeMarkerTransformer(
+  "NOTE",
+  "cmsNote",
+  "color:rgba(17,41,189,0.5);text-align:center;font-size:16px;line-height:19px;font-weight:400;font-family:Inter;"
+);
 
-function transformHintMarkers(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>\s*(?:<br\s*\/?>)?\s*\[\s*HINT\s+([^\]]+?)\s*\](?:<br\s*\/?>)?\s*<\/p>/gi,
-    (_match, text) => {
-      const textClean = text.trim();
-      return `<p class="cmsHint">${escapeAttr(textClean)}</p>`;
-    }
-  );
-}
+const transformHintMarkers = makeMarkerTransformer("HINT", "cmsHint");
 
 function transformInlineSublabels(html: string): string {
   return html.replace(

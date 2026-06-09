@@ -1,5 +1,5 @@
 import { apiFetch } from "@/src/shared/auth/api-fetch";
-import { readErrorDetail } from "@/src/shared/lib/http";
+import { apiJson, readErrorDetail } from "@/src/shared/lib/http";
 import type { Advertisement, CreateAdvertisementPayload } from "../model/types";
 
 export interface GetAdvertisementsParams {
@@ -20,11 +20,7 @@ export async function uploadAdvertisementImage(file: File): Promise<string> {
     body: form,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить фото"));
-  }
-
-  const data = (await response.json()) as { url: string };
+  const data = await apiJson<{ url: string }>(response, "Не удалось загрузить фото");
   return data.url;
 }
 
@@ -36,11 +32,7 @@ export async function createAdvertisement(
     body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось создать объявление"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement>(response, "Не удалось создать объявление");
 }
 
 export async function getAdvertisements(
@@ -67,11 +59,7 @@ export async function getAdvertisements(
     signal,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить объявления"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement[]>(response, "Не удалось загрузить объявления");
 }
 
 export interface GetMyAdvertisementsParams {
@@ -94,11 +82,7 @@ export async function getMyAdvertisements(
     signal,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить ваши объявления"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement[]>(response, "Не удалось загрузить ваши объявления");
 }
 
 export async function getAdvertisement(
@@ -110,11 +94,7 @@ export async function getAdvertisement(
     signal: options.signal,
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось загрузить объявление"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement>(response, "Не удалось загрузить объявление");
 }
 
 export type UpdateAdvertisementPayload = Partial<{
@@ -139,11 +119,7 @@ export async function updateAdvertisement(
     body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось обновить объявление"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement>(response, "Не удалось обновить объявление");
 }
 
 export async function deleteAdvertisement(id: number): Promise<void> {
@@ -161,13 +137,7 @@ export async function viewAdvertisement(id: number): Promise<Advertisement> {
     method: "POST",
   });
 
-  if (!response.ok) {
-    throw new Error(
-      await readErrorDetail(response, "Не удалось зарегистрировать просмотр")
-    );
-  }
-
-  return response.json();
+  return apiJson<Advertisement>(response, "Не удалось зарегистрировать просмотр");
 }
 
 export type ComplaintReason =
@@ -219,9 +189,5 @@ export async function searchAdvertisements(
     { method: "GET", signal }
   );
 
-  if (!response.ok) {
-    throw new Error(await readErrorDetail(response, "Не удалось найти объявления"));
-  }
-
-  return response.json();
+  return apiJson<Advertisement[]>(response, "Не удалось найти объявления");
 }
