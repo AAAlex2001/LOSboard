@@ -25,6 +25,7 @@ class GetListAdvertisementsUseCase:
         stmt = select(Advertisement).where(
             Advertisement.is_active == True,
             Advertisement.moderation_status == MODERATION_APPROVED,
+            Advertisement.deleted_at.is_(None),
         )
         if urgent_only:
             stmt = stmt.where(Advertisement.is_urgent == True)
@@ -63,7 +64,10 @@ class GetListAdvertisementsUseCase:
     ) -> list[Advertisement]:
         result = await db.execute(
             select(Advertisement)
-            .where(Advertisement.owner_id == current_user.id)
+            .where(
+                Advertisement.owner_id == current_user.id,
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.id.desc())
             .offset(skip)
             .limit(limit)
@@ -94,7 +98,10 @@ class GetListAdvertisementsUseCase:
         result = await db.execute(
             select(Advertisement)
             .join(LikedAdvertisement, LikedAdvertisement.advertisement_id == Advertisement.id)
-            .where(LikedAdvertisement.user_id == current_user.id)
+            .where(
+                LikedAdvertisement.user_id == current_user.id,
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.id.desc())
             .offset(skip)
             .limit(limit)

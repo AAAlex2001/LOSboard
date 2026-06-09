@@ -45,6 +45,9 @@ class Advertisement(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True, default=None
+    )
 
     likes_count: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0", default=0

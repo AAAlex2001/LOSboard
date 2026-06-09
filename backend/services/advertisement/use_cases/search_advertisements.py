@@ -22,6 +22,7 @@ class SearchAdvertisementsUseCase:
             select(Advertisement)
             .where(Advertisement.is_active == True)  # noqa: E712
             .where(Advertisement.moderation_status == MODERATION_APPROVED)
+            .where(Advertisement.deleted_at.is_(None))
             .where(Advertisement.title.ilike(pattern))
             .order_by(Advertisement.id.desc())
             .limit(limit)

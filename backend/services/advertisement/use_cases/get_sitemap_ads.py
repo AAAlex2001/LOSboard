@@ -17,7 +17,10 @@ class GetSitemapAdsUseCase:
                 Advertisement.title,
                 Advertisement.created_at,
             )
-            .where(Advertisement.is_active == True)  # noqa: E712
+            .where(
+                Advertisement.is_active == True,  # noqa: E712
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.id.desc())
             .limit(limit)
         )

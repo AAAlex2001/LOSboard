@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.advertisement import Advertisement
@@ -29,5 +31,9 @@ class DeleteAdvertisementUseCase:
         if advertisement.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Нельзя удалить чужое объявление")
 
-        await db.delete(advertisement)
+        if advertisement.deleted_at is not None:
+            raise HTTPException(status_code=404, detail="Объявление уже удалено")
+
+        advertisement.is_active = False
+        advertisement.deleted_at = datetime.utcnow()
         await db.flush()
