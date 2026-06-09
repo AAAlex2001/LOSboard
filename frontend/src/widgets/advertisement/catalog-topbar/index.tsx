@@ -78,22 +78,9 @@ export const CatalogTopBar = ({
         />
       </div>
 
-      <div className={style.promoTablet}>
+      <div className={style.promo}>
         <PromoCarousel
           banners={banners}
-          variant="wide"
-          slidesPerView={1}
-          ageLabel={ageLabel}
-          siteLabel={siteLabel}
-          placeholderText={placeholderText}
-        />
-      </div>
-
-      <div className={style.promoDesktop}>
-        <PromoCarousel
-          banners={banners}
-          variant="promo"
-          slidesPerView={3}
           ageLabel={ageLabel}
           siteLabel={siteLabel}
           placeholderText={placeholderText}

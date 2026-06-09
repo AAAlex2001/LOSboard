@@ -47,8 +47,7 @@
 }
 
 .strip,
-.promoTablet,
-.promoDesktop {
+.promo {
   display: none;
   width: 100%;
   min-width: 0;
@@ -76,19 +75,7 @@
     width: 100%;
   }
 
-  .promoTablet {
-    display: flex;
-    justify-content: center;
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 1440px) {
-  .promoTablet {
-    display: none;
-  }
-
-  .promoDesktop {
+  .promo {
     display: block;
   }
 }

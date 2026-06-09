@@ -4,7 +4,12 @@ import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
 import type { Banner } from "@/src/entities/banner";
 import style from "./style.module.scss";
 
-export type AdBannerVariant = "rectangle" | "leaderboard" | "wide" | "promo";
+export type AdBannerVariant =
+  | "rectangle"
+  | "leaderboard"
+  | "wide"
+  | "promo"
+  | "carousel";
 
 interface AdBannerProps {
   banner?: Banner | null;
@@ -28,6 +33,8 @@ export const AdBanner = ({
       ? style.bannerWide
       : variant === "promo"
       ? style.bannerPromo
+      : variant === "carousel"
+      ? style.bannerCarousel
       : style.bannerRectangle;
 
   const videoUrl = banner?.video_url ? resolveAssetUrl(banner.video_url) : null;

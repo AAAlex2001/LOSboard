@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { AdBanner, type AdBannerVariant } from "@/src/entities/ad-banner";
+import { AdBanner } from "@/src/entities/ad-banner";
 import type { Banner } from "@/src/entities/banner";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
 import ArrowRightIcon from "@/src/shared/ui/Icons/ArrowRightIcon";
@@ -11,12 +11,9 @@ import style from "./style.module.scss";
 
 interface PromoCarouselProps {
   banners: Banner[];
-  variant: AdBannerVariant;
-  slidesPerView: number;
   ageLabel?: string;
   siteLabel?: string;
   placeholderText?: string;
-  spacing?: number;
 }
 
 function fillSlots(arr: Banner[], min: number): Array<Banner | null> {
@@ -26,37 +23,34 @@ function fillSlots(arr: Banner[], min: number): Array<Banner | null> {
 
 export const PromoCarousel = ({
   banners,
-  variant,
-  slidesPerView,
   ageLabel,
   siteLabel,
   placeholderText,
-  spacing = 25,
 }: PromoCarouselProps) => {
-  const slots = fillSlots(banners, slidesPerView);
-  const canRotate = banners.length > slidesPerView;
+  const slots = fillSlots(banners, 3);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [rel, setRel] = useState(0);
+  const [maxIdx, setMaxIdx] = useState(0);
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: false,
-    initial: 0,
-    slides: {
-      perView: slidesPerView,
-      spacing,
+    slides: { perView: 1, spacing: 25 },
+    breakpoints: {
+      "(min-width: 1440px)": {
+        slides: { perView: 3, spacing: 25 },
+      },
     },
-    slideChanged: (s) => setCurrentSlide(s.track.details.rel),
+    detailsChanged: (slider) => {
+      setRel(slider.track.details.rel);
+      setMaxIdx(slider.track.details.maxIdx);
+    },
   });
 
-  const isAtStart = currentSlide === 0;
-  const isAtEnd = currentSlide >= slots.length - slidesPerView;
+  const canRotate = maxIdx > 0;
+  const isAtStart = rel <= 0;
+  const isAtEnd = rel >= maxIdx;
 
   if (slots.length === 0) return null;
-
-  const slideStyle: React.CSSProperties = {
-    flex: `0 0 calc((100% - ${(slidesPerView - 1) * spacing}px) / ${slidesPerView})`,
-    minWidth: 0,
-  };
 
   return (
     <div className={style.carousel}>
@@ -70,22 +64,16 @@ export const PromoCarousel = ({
           <ArrowLeftIcon />
         </button>
       )}
-      <div ref={sliderRef} className={`keen-slider ${style.track}`}>
+      <div ref={sliderRef} className="keen-slider">
         {slots.map((banner, i) => (
-          <div
-            key={banner?.id ?? `empty-${i}`}
-            className="keen-slider__slide"
-            style={slideStyle}
-          >
-            <div className={style.slideInner}>
-              <AdBanner
-                variant={variant}
-                banner={banner}
-                ageLabel={ageLabel}
-                siteLabel={siteLabel}
-                placeholderText={placeholderText}
-              />
-            </div>
+          <div key={banner?.id ?? `empty-${i}`} className="keen-slider__slide">
+            <AdBanner
+              variant="carousel"
+              banner={banner}
+              ageLabel={ageLabel}
+              siteLabel={siteLabel}
+              placeholderText={placeholderText}
+            />
           </div>
         ))}
       </div>
