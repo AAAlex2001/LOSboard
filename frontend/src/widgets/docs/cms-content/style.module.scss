@@ -444,7 +444,7 @@
 
   @media (min-width: 850px) {
     :global(.infoCardGroup) {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -456,6 +456,23 @@
   :global(.infoCard.infoCardHighlighted) p,
   :global(.infoCard.infoCardHighlighted) strong {
     color: #FFFFFF;
+  }
+
+  :global(.infoCard.infoCardPlain) {
+    background: transparent;
+    padding: 20px;
+  }
+
+  :global(.infoCard.infoCardPlain) :global(.infoCardLabel) {
+    color: #000000;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  :global(.infoCard.infoCardPlain) p,
+  :global(.infoCard.infoCardPlain) strong {
+    color: #000000;
   }
 
   :global(.mockupRow) {

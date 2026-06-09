@@ -97,10 +97,12 @@ function transformHintMarkers(html: string): string {
 
 function transformInfoCards(html: string): string {
   return html.replace(
-    /<p\b[^>]*>\s*\[\s*INFO(!?)\s+([^\]]+?)\s*\]\s*<\/p>([\s\S]*?)<p\b[^>]*>\s*\[\s*\/\s*INFO\s*\]\s*<\/p>/gi,
-    (_match, highlight, label, inner) => {
+    /<p\b[^>]*>\s*\[\s*INFO([!\-]?)\s+([^\]]+?)\s*\]\s*<\/p>([\s\S]*?)<p\b[^>]*>\s*\[\s*\/\s*INFO\s*\]\s*<\/p>/gi,
+    (_match, flag, label, inner) => {
       const labelClean = escapeAttr(label.trim());
-      const className = highlight ? "infoCard infoCardHighlighted" : "infoCard";
+      let className = "infoCard";
+      if (flag === "!") className = "infoCard infoCardHighlighted";
+      else if (flag === "-") className = "infoCard infoCardPlain";
       return `<div class="${className}"><p class="infoCardLabel">${labelClean}</p><div class="infoCardBody">${inner}</div></div>`;
     }
   );
