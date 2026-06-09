@@ -409,10 +409,10 @@
     margin-top: 20px;
   }
 
-  :global(.infoCardLabel) {
+  :global(.infoCard) :global(.infoCardLabel) {
     margin: 0;
     font-family: Inter;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     line-height: 17px;
     color: #1129BD;
@@ -437,6 +437,35 @@
   :global(.infoCard) strong {
     font-weight: 700;
     color: #000000;
+  }
+
+  :global(.infoCardGroup) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+
+  @media (min-width: 850px) {
+    :global(.infoCardGroup) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1440px) {
+    :global(.infoCardGroup) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  :global(.infoCard.infoCardHighlighted) {
+    background: #1129BD80;
+  }
+
+  :global(.infoCard.infoCardHighlighted) :global(.infoCardLabel),
+  :global(.infoCard.infoCardHighlighted) p,
+  :global(.infoCard.infoCardHighlighted) strong {
+    color: #FFFFFF;
   }
 
   :global(.mockupRow) {
@@ -487,6 +516,10 @@
 
     > div:not(:global(.mockupRow)):has(> blockquote:nth-child(3)) {
       grid-template-columns: 1fr;
+    }
+
+    :global(.infoCardGroup) {
+      grid-template-columns: 1fr !important;
     }
 
     :global(.mockupRow) {
