@@ -393,6 +393,52 @@
     text-align: center;
   }
 
+  :global(.infoCard) {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: #EDF5FF;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  > :global(.infoCard) + :global(.infoCard) {
+    margin-top: 20px;
+  }
+
+  :global(.infoCardLabel) {
+    margin: 0;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #1129BD;
+  }
+
+  :global(.infoCardBody) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  :global(.infoCard) p {
+    margin: 0;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+    white-space: pre-wrap;
+  }
+
+  :global(.infoCard) strong {
+    font-weight: 700;
+    color: #000000;
+  }
+
   :global(.mockupRow) {
     display: flex;
     flex-direction: column;

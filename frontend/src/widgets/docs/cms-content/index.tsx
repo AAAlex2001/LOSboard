@@ -95,6 +95,16 @@ function transformHintMarkers(html: string): string {
   );
 }
 
+function transformInfoCards(html: string): string {
+  return html.replace(
+    /<p\b[^>]*>\s*\[\s*INFO\s+([^\]]+?)\s*\]\s*<\/p>([\s\S]*?)<p\b[^>]*>\s*\[\s*\/\s*INFO\s*\]\s*<\/p>/gi,
+    (_match, label, inner) => {
+      const labelClean = escapeAttr(label.trim());
+      return `<div class="infoCard"><p class="infoCardLabel">${labelClean}</p><div class="infoCardBody">${inner}</div></div>`;
+    }
+  );
+}
+
 function wrapMockupRows(html: string): string {
   return html.replace(
     /(<figure\s+class="(?:bannerMockup|phoneMockup|cardMockup)"[^>]*>[\s\S]*?<\/figure>(?:\s*<figure\s+class="(?:bannerMockup|phoneMockup|cardMockup)"[^>]*>[\s\S]*?<\/figure>)+)/g,
@@ -157,10 +167,12 @@ function preprocess(html: string): string {
         transformCardMockups(
           transformPhoneMockups(
             transformBannerMockups(
-              transformHintMarkers(
-                transformNoteMarkers(
-                  wrapParensInHeadings(
-                    normalizeAdminHtml(html)
+              transformInfoCards(
+                transformHintMarkers(
+                  transformNoteMarkers(
+                    wrapParensInHeadings(
+                      normalizeAdminHtml(html)
+                    )
                   )
                 )
               )
