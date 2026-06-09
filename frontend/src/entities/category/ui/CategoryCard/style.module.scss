@@ -38,6 +38,34 @@
   border-color: #FF8D28;
 }
 
+.cardUrgentTone {
+  border-color: #FFD2A6;
+
+  &:hover {
+    border-color: #FF8D28;
+  }
+
+  .label {
+    color: #FF8D28;
+  }
+
+  .icon path,
+  .icon circle,
+  .icon rect,
+  .icon polygon {
+    fill: #FF8D28;
+  }
+
+  .iconFallback {
+    background: #FFE5CC;
+    color: #FF8D28;
+  }
+}
+
+.cardUrgentTone.cardActive {
+  border-color: #FF8D28;
+}
+
 .cardUrgent .iconWrap {
   width: 32px;
   height: 32px;

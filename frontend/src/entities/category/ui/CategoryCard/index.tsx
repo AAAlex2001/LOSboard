@@ -18,14 +18,14 @@ export const CategoryCard = ({
   onClick,
 }: CategoryCardProps) => {
   const Icon = getCategoryIcon(category.slug);
-  const urgent = category.slug === "urgent" || urgentTone;
+  const isUrgentCard = category.slug === "urgent";
 
   return (
     <button
       type="button"
-      className={`${style.card} ${urgent ? style.cardUrgent : ""} ${
-        active ? style.cardActive : ""
-      }`}
+      className={`${style.card} ${isUrgentCard ? style.cardUrgent : ""} ${
+        urgentTone && !isUrgentCard ? style.cardUrgentTone : ""
+      } ${active ? style.cardActive : ""}`}
       onClick={() => onClick?.(category)}
       title={category.name}
     >
