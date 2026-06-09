@@ -1,5 +1,7 @@
 import { CatalogPage } from "@/src/widgets/advertisement/catalog-page";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
