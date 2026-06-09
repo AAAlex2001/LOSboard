@@ -25,7 +25,7 @@ class Complaint(Base):
         Integer, ForeignKey("advertisements.id", ondelete="CASCADE"), nullable=False
     )
     reporter_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
     )
     reason: Mapped[str] = mapped_column(String, nullable=False)
     comment: Mapped[Optional[str]] = mapped_column(String, nullable=True)
@@ -41,7 +41,7 @@ class Complaint(Base):
     )
     resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     resolved_by_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=True
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
     advertisement: Mapped["Advertisement"] = relationship("Advertisement")

@@ -66,17 +66,17 @@ class Advertisement(Base):
     moderation_reason: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     moderated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     moderated_by_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=True
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
     owner_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
     )
     category_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("categories.id"), nullable=False
+        Integer, ForeignKey("categories.id", ondelete="RESTRICT"), nullable=False
     )
     subcategory_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("subcategories.id"), nullable=False
+        Integer, ForeignKey("subcategories.id", ondelete="RESTRICT"), nullable=False
     )
 
     owner: Mapped["User"] = relationship(
@@ -118,10 +118,10 @@ class LikedAdvertisement(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     advertisement_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("advertisements.id"), nullable=False
+        Integer, ForeignKey("advertisements.id", ondelete="CASCADE"), nullable=False
     )
 
     __table_args__ = (
@@ -142,10 +142,10 @@ class ViewedAdvertisement(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     advertisement_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("advertisements.id"), nullable=False
+        Integer, ForeignKey("advertisements.id", ondelete="CASCADE"), nullable=False
     )
     viewed_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False

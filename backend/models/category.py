@@ -39,7 +39,7 @@ class Subcategory(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     category_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("categories.id"), nullable=False
+        Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
     )
 
     category: Mapped["Category"] = relationship(

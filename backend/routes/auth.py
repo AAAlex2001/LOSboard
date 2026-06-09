@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -21,17 +21,20 @@ from services.auth.use_cases.create_account import CreateAccountUseCase
 from services.auth.use_cases.update_account import UpdateAccountUseCase
 from services.auth.use_cases.refresh_token import RefreshTokenUseCase
 from services.auth.use_cases.upload_avatar import UploadAvatarUseCase
+from services.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/create-account", response_model=CreateAccountResponse)
+@limiter.limit("5/minute")
 async def create_account_endpoint(
-    request: CreateAccountRequest,
+    request: Request,
+    payload: CreateAccountRequest,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = CreateAccountUseCase()
-    return await use_case.create_account(request, db)
+    return await use_case.create_account(payload, db)
 
 
 @router.patch("/update-account", response_model=UpdateAccountResponse)
@@ -69,18 +72,22 @@ async def upload_avatar_endpoint(
 
 
 @router.post("/login", response_model=LoginResponse)
+@limiter.limit("10/minute")
 async def login_account_endpoint(
-    request: LoginRequest,
+    request: Request,
+    payload: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = LoginAccountUseCase()
-    return await use_case.login_account(request, db)
+    return await use_case.login_account(payload, db)
 
 
 @router.post("/refresh", response_model=RefreshTokenResponse)
+@limiter.limit("20/minute")
 async def refresh_token_endpoint(
-    request: RefreshTokenRequest,
+    request: Request,
+    payload: RefreshTokenRequest,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = RefreshTokenUseCase()
-    return await use_case.refresh_token(request, db)
+    return await use_case.refresh_token(payload, db)

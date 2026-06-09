@@ -27,7 +27,7 @@ class ContentPage(Base):
         onupdate=datetime.utcnow,
     )
     updated_by_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("users.id"), nullable=True
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
     updated_by: Mapped[Optional["User"]] = relationship(

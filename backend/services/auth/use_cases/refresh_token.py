@@ -23,6 +23,9 @@ class RefreshTokenUseCase:
         if not user or user.token_version != payload.token_version:
             raise HTTPException(status_code=401, detail="Токен отозван")
 
+        user.token_version = (user.token_version or 0) + 1
+        await db.flush()
+
         access_token = self.jwt_service.create_access_token(
             user.id, user.email, user.token_version
         )
