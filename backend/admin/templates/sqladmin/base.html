@@ -18,6 +18,26 @@
     .rich-editor-host { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; }
     .rich-editor-host .ql-editor { min-height: 320px; font-size: 15px; }
     textarea.rich-editor { display: none; }
+
+    /* Описание поля (form_args.description) — блок под инпутом, с переносами,
+       чтобы не «уплывало» вправо и не наезжало на строку с кнопками */
+    .form-fieldset .form-text,
+    .form-fieldset .form-hint,
+    .form-fieldset small.text-muted,
+    .form-fieldset .help-block {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      margin-top: 6px;
+      color: #6c757d;
+      font-size: 13px;
+      line-height: 1.5;
+      clear: both;
+    }
+    .form-fieldset .row { clear: both; }
   </style>
   {% endblock %}
   {% if admin.favicon_url %}
