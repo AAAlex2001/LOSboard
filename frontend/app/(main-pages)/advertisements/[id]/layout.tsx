@@ -134,7 +134,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
       "@type": "ListItem",
       position: position++,
       name: category.name,
-      item: `${origin}/category/${category.slug}`,
+      item: `${origin}/?cat=${encodeURIComponent(category.slug)}`,
     });
   }
   if (category && subcategory) {
@@ -142,7 +142,7 @@ export default async function AdvertisementLayout({ params, children }: Props) {
       "@type": "ListItem",
       position: position++,
       name: subcategory.name,
-      item: `${origin}/category/${category.slug}/${subcategory.slug}`,
+      item: `${origin}/?cat=${encodeURIComponent(category.slug)}&sub=${encodeURIComponent(subcategory.slug)}`,
     });
   }
   breadcrumbItems.push({

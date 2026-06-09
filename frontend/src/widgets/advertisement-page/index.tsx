@@ -28,13 +28,18 @@ export const AdvertisementPageView = ({
         items={[
           { label: "Главная", href: "/" },
           ...(category
-            ? [{ label: category.name, href: `/category/${category.slug}` }]
+            ? [
+                {
+                  label: category.name,
+                  href: `/?cat=${encodeURIComponent(category.slug)}`,
+                },
+              ]
             : []),
           ...(category && subcategory
             ? [
                 {
                   label: subcategory.name,
-                  href: `/category/${category.slug}/${subcategory.slug}`,
+                  href: `/?cat=${encodeURIComponent(category.slug)}&sub=${encodeURIComponent(subcategory.slug)}`,
                 },
               ]
             : []),

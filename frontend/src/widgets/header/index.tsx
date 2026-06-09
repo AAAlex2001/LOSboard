@@ -84,7 +84,7 @@ export const Header = ({
       router.push("/?urgent=1", { scroll: false });
       return;
     }
-    router.push(`/category/${cat.slug}`, { scroll: false });
+    router.push(`/?cat=${encodeURIComponent(cat.slug)}`, { scroll: false });
   };
 
   const handleSelectSubcategory = (sub: Subcategory, cat: Category) => {
@@ -97,7 +97,10 @@ export const Header = ({
       router.push("/?urgent=1", { scroll: false });
       return;
     }
-    router.push(`/category/${cat.slug}/${sub.slug}`, { scroll: false });
+    router.push(
+      `/?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sub.slug)}`,
+      { scroll: false }
+    );
   };
 
   const handlePlaceAd = () => {
