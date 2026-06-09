@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
+import { useRef, useState } from "react";
 import { AdBanner } from "@/src/entities/ad-banner";
 import type { Banner } from "@/src/entities/banner";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
@@ -16,6 +14,8 @@ interface PromoCarouselProps {
   placeholderText?: string;
 }
 
+const SLIDE_GAP = 25;
+
 function fillSlots(arr: Banner[], min: number): Array<Banner | null> {
   if (arr.length >= min) return arr;
   return [...arr, ...Array(min - arr.length).fill(null)];
@@ -28,45 +28,50 @@ export const PromoCarousel = ({
   placeholderText,
 }: PromoCarouselProps) => {
   const slots = fillSlots(banners, 3);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(true);
 
-  const [rel, setRel] = useState(0);
-  const [maxIdx, setMaxIdx] = useState(0);
+  const syncArrows = (track: HTMLDivElement) => {
+    setAtStart(track.scrollLeft <= 1);
+    setAtEnd(track.scrollLeft + track.clientWidth >= track.scrollWidth - 1);
+  };
 
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    loop: false,
-    slides: { perView: 1, spacing: 25 },
-    breakpoints: {
-      "(min-width: 1440px)": {
-        slides: { perView: 3, spacing: 25 },
-      },
-    },
-    detailsChanged: (slider) => {
-      setRel(slider.track.details.rel);
-      setMaxIdx(slider.track.details.maxIdx);
-    },
-  });
+  const attachTrack = (track: HTMLDivElement | null) => {
+    trackRef.current = track;
+    if (track) syncArrows(track);
+  };
 
-  const canRotate = maxIdx > 0;
-  const isAtStart = rel <= 0;
-  const isAtEnd = rel >= maxIdx;
+  const scrollBySlide = (direction: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const firstSlide = track.firstElementChild as HTMLElement | null;
+    const step = (firstSlide?.clientWidth ?? track.clientWidth) + SLIDE_GAP;
+    track.scrollBy({ left: direction * step, behavior: "smooth" });
+  };
 
   if (slots.length === 0) return null;
 
   return (
     <div className={style.carousel}>
-      {canRotate && !isAtStart && (
+      {!atStart && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowPrev}`}
-          onClick={() => instanceRef.current?.prev()}
+          onClick={() => scrollBySlide(-1)}
           aria-label="Предыдущий баннер"
         >
           <ArrowLeftIcon />
         </button>
       )}
-      <div ref={sliderRef} className="keen-slider">
+
+      <div
+        ref={attachTrack}
+        className={style.track}
+        onScroll={(e) => syncArrows(e.currentTarget)}
+      >
         {slots.map((banner, i) => (
-          <div key={banner?.id ?? `empty-${i}`} className="keen-slider__slide">
+          <div key={banner?.id ?? `empty-${i}`} className={style.slide}>
             <AdBanner
               variant="carousel"
               banner={banner}
@@ -77,11 +82,12 @@ export const PromoCarousel = ({
           </div>
         ))}
       </div>
-      {canRotate && !isAtEnd && (
+
+      {!atEnd && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowNext}`}
-          onClick={() => instanceRef.current?.next()}
+          onClick={() => scrollBySlide(1)}
           aria-label="Следующий баннер"
         >
           <ArrowRightIcon />
