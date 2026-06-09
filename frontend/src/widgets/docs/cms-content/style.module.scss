@@ -431,7 +431,10 @@
   }
 
   :global(.infoCard) strong {
-    font-weight: 500;
+    font-family: Inter;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
     color: #1129BD;
   }
 
