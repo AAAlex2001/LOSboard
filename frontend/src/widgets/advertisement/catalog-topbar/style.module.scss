@@ -58,6 +58,12 @@
   min-width: 0;
 }
 
+.resetRow {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
 @media (min-width: 850px) {
   .topbar {
     gap: 40px;

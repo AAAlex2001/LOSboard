@@ -192,6 +192,7 @@ export const CatalogPage = ({
               urgentOnly={state.urgentOnly}
               onSelectCategory={handleSelectCategory}
               onSelectSubcategory={handleSelectSubcategory}
+              onResetFilters={handleReset}
             />
           </div>
           <div className={style.feedSlot}>

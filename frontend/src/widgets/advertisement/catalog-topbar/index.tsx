@@ -27,6 +27,7 @@ interface CatalogTopBarProps {
   urgentOnly: boolean;
   onSelectCategory: (cat: Category | null) => void;
   onSelectSubcategory: (sub: Subcategory | null, cat: Category | null) => void;
+  onResetFilters: () => void;
 }
 
 export const CatalogTopBar = ({
@@ -35,6 +36,7 @@ export const CatalogTopBar = ({
   urgentOnly,
   onSelectCategory,
   onSelectSubcategory,
+  onResetFilters,
 }: CatalogTopBarProps) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const banners = useMainTopBanners();
@@ -143,6 +145,19 @@ export const CatalogTopBar = ({
             allLabel={chipsAllLabel}
             variant={chipsVariant}
           />
+        </div>
+      )}
+
+      {hasFilter && (
+        <div className={style.resetRow}>
+          <Button
+            type="button"
+            variant="filled"
+            color="blue"
+            onClick={onResetFilters}
+          >
+            Сбросить фильтры
+          </Button>
         </div>
       )}
 
