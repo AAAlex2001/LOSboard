@@ -68,6 +68,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   if (subcategory) canonicalParams.set("sub", subcategory.slug);
   const qs = canonicalParams.toString();
   const canonical = qs ? `${origin}/?${qs}` : `${origin}/`;
+  const ogImage = `${origin}/los.jpg`;
 
   return {
     title,
@@ -79,11 +80,13 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       url: canonical,
       siteName: "LOS Daily",
       type: "website",
+      images: [{ url: ogImage, alt: "LOS Daily — Доска объявлений" }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage],
     },
   };
 }
