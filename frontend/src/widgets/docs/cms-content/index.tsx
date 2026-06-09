@@ -95,6 +95,13 @@ function transformHintMarkers(html: string): string {
   );
 }
 
+function transformInlineSublabels(html: string): string {
+  return html.replace(
+    /<p\b[^>]*>\s*\[\s*LABEL\s+([^\]]+?)\s*\]\s*<\/p>/gi,
+    (_match, label) => `<p class="infoCardLabel">${escapeAttr(label.trim())}</p>`
+  );
+}
+
 function transformInfoCards(html: string): string {
   return html.replace(
     /<p\b[^>]*>\s*\[\s*INFO([!\-]?)\s+([^\]]+?)\s*\]\s*<\/p>([\s\S]*?)<p\b[^>]*>\s*\[\s*\/\s*INFO\s*\]\s*<\/p>/gi,
@@ -103,7 +110,8 @@ function transformInfoCards(html: string): string {
       let className = "infoCard";
       if (flag === "!") className = "infoCard infoCardHighlighted";
       else if (flag === "-") className = "infoCard infoCardPlain";
-      return `<div class="${className}"><p class="infoCardLabel">${labelClean}</p><div class="infoCardBody">${inner}</div></div>`;
+      const innerProcessed = transformInlineSublabels(inner);
+      return `<div class="${className}"><p class="infoCardLabel">${labelClean}</p><div class="infoCardBody">${innerProcessed}</div></div>`;
     }
   );
 }
