@@ -178,11 +178,11 @@
 
   @media (min-width: 850px) {
     > div:not(:global(.mockupRow)) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
-    > div:not(:global(.mockupRow)):has(> blockquote:nth-child(3)) {
-      grid-template-columns: repeat(3, 1fr);
+    > div:not(:global(.mockupRow)):not(:has(> blockquote:nth-child(3))) {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -447,12 +447,6 @@
   }
 
   @media (min-width: 850px) {
-    :global(.infoCardGroup) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1440px) {
     :global(.infoCardGroup) {
       grid-template-columns: repeat(3, 1fr);
     }

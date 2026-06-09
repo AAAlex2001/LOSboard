@@ -24,6 +24,14 @@ interface CatalogPageProps {
   initialSubcategorySlug?: string;
 }
 
+function buildUrgentUrl(categorySlug?: string, subcategorySlug?: string): string {
+  const params = new URLSearchParams();
+  params.set("urgent", "1");
+  if (categorySlug) params.set("category", categorySlug);
+  if (subcategorySlug) params.set("subcategory", subcategorySlug);
+  return `/?${params.toString()}`;
+}
+
 export const CatalogPage = ({
   initialCategorySlug,
   initialSubcategorySlug,
@@ -31,52 +39,60 @@ export const CatalogPage = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const urgentParam = searchParams.get("urgent") === "1";
+  const urgentCategorySlug = urgentParam ? searchParams.get("category") : null;
+  const urgentSubcategorySlug = urgentParam ? searchParams.get("subcategory") : null;
+
   const { categories } = useCategories();
-  const activeCategory = initialCategorySlug
-    ? categories.find((c) => c.slug === initialCategorySlug) ?? null
+
+  const effectiveCategorySlug = initialCategorySlug ?? urgentCategorySlug ?? null;
+  const effectiveSubcategorySlug =
+    initialSubcategorySlug ?? urgentSubcategorySlug ?? null;
+
+  const activeCategory = effectiveCategorySlug
+    ? categories.find((c) => c.slug === effectiveCategorySlug) ?? null
     : null;
   const activeSubcategory =
-    activeCategory && initialSubcategorySlug
+    activeCategory && effectiveSubcategorySlug
       ? activeCategory.subcategories.find(
-          (s) => s.slug === initialSubcategorySlug
+          (s) => s.slug === effectiveSubcategorySlug
         ) ?? null
       : null;
 
-  const filtersReady = !initialCategorySlug || activeCategory !== null;
+  const filtersReady = !effectiveCategorySlug || activeCategory !== null;
 
-  const { state, setCategory, setSubcategory, reset, patchItem } =
-    useAdvertisementList({ enabled: filtersReady });
+  const { state, setFilters, patchItem } = useAdvertisementList({
+    enabled: filtersReady,
+  });
 
   useEffect(() => {
     if (!filtersReady) return;
-    if (urgentParam && !initialCategorySlug) {
-      setCategory(URGENT_CATEGORY);
-      return;
-    }
-    if (!initialCategorySlug) {
-      reset();
-      return;
-    }
-    if (activeSubcategory) {
-      setSubcategory(activeSubcategory, activeCategory);
-    } else if (activeCategory) {
-      setCategory(activeCategory);
-    }
+    setFilters({
+      categoryId: activeCategory?.id ?? null,
+      subcategoryId: activeSubcategory?.id ?? null,
+      urgentOnly: urgentParam,
+    });
   }, [
     filtersReady,
     urgentParam,
     activeCategory?.id,
     activeSubcategory?.id,
-    initialCategorySlug,
   ]);
 
   const handleSelectCategory = (cat: Category | null) => {
     if (!cat) {
+      if (state.urgentOnly) {
+        router.push(buildUrgentUrl());
+        return;
+      }
       router.push("/");
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      router.push("/?urgent=1");
+      router.push(buildUrgentUrl());
+      return;
+    }
+    if (state.urgentOnly) {
+      router.push(buildUrgentUrl(cat.slug));
       return;
     }
     router.push(`/category/${cat.slug}`);
@@ -87,11 +103,19 @@ export const CatalogPage = ({
     cat: Category | null
   ) => {
     if (!cat) {
+      if (state.urgentOnly) {
+        router.push(buildUrgentUrl());
+        return;
+      }
       router.push("/");
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      router.push("/?urgent=1");
+      router.push(buildUrgentUrl());
+      return;
+    }
+    if (state.urgentOnly) {
+      router.push(buildUrgentUrl(cat.slug, sub?.slug));
       return;
     }
     if (sub) {
@@ -105,24 +129,35 @@ export const CatalogPage = ({
     router.push("/");
   };
 
-  const displayCategory = state.urgentOnly ? URGENT_CATEGORY : activeCategory;
-  const displaySubcategory = state.urgentOnly ? null : activeSubcategory;
-  const hasFilter = Boolean(displayCategory || displaySubcategory);
+  const topbarCategory = state.urgentOnly && !activeCategory ? null : activeCategory;
+  const topbarSubcategory = activeSubcategory;
+  const hasFilter = Boolean(activeCategory || activeSubcategory || state.urgentOnly);
 
   const crumbItems: BreadcrumbItem[] = hasFilter
     ? [
         { label: "Главная", onClick: handleReset },
-        ...(displayCategory
+        ...(state.urgentOnly
           ? [
               {
-                label: displayCategory.name,
-                onClick: displaySubcategory
-                  ? () => handleSelectSubcategory(null, displayCategory)
+                label: URGENT_CATEGORY.name,
+                onClick:
+                  activeCategory || activeSubcategory
+                    ? () => router.push(buildUrgentUrl())
+                    : undefined,
+              },
+            ]
+          : []),
+        ...(activeCategory
+          ? [
+              {
+                label: activeCategory.name,
+                onClick: activeSubcategory
+                  ? () => handleSelectSubcategory(null, activeCategory)
                   : undefined,
               },
             ]
           : []),
-        ...(displaySubcategory ? [{ label: displaySubcategory.name }] : []),
+        ...(activeSubcategory ? [{ label: activeSubcategory.name }] : []),
       ]
     : [];
 
@@ -137,8 +172,9 @@ export const CatalogPage = ({
         <div className={style.layout}>
           <div className={style.topbarSlot}>
             <CatalogTopBar
-              category={displayCategory}
-              subcategory={displaySubcategory}
+              category={topbarCategory}
+              subcategory={topbarSubcategory}
+              urgentOnly={state.urgentOnly}
               onSelectCategory={handleSelectCategory}
               onSelectSubcategory={handleSelectSubcategory}
             />

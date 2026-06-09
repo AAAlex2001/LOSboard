@@ -7,6 +7,7 @@ export {
 export type {
   AdvertisementListState,
   AdvertisementListAction,
+  AdvertisementFilters,
 } from "./model/types";
 
 export { AdvertisementSearch } from "./search/ui/AdvertisementSearch";

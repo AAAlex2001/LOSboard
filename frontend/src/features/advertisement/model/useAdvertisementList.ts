@@ -6,14 +6,10 @@ import {
   type Advertisement,
 } from "@/src/entities/advertisement";
 import {
-  URGENT_CATEGORY_ID,
-  type Category,
-  type Subcategory,
-} from "@/src/entities/category";
-import {
   advertisementListReducer,
   initialAdvertisementListState,
 } from "./advertisementListReducer";
+import type { AdvertisementFilters } from "./types";
 
 interface UseAdvertisementListOptions {
   enabled?: boolean;
@@ -53,22 +49,8 @@ export function useAdvertisementList({
     return () => controller.abort();
   }, [enabled, state.categoryId, state.subcategoryId, state.urgentOnly]);
 
-  const setCategory = (cat: Category | null) => {
-    if (cat?.id === URGENT_CATEGORY_ID) {
-      dispatch({ type: "SET_URGENT_ONLY", payload: true });
-      return;
-    }
-    dispatch({ type: "SET_CATEGORY", payload: cat?.id ?? null });
-  };
-
-  const setSubcategory = (sub: Subcategory | null, cat: Category | null) => {
-    if (cat?.id === URGENT_CATEGORY_ID) {
-      dispatch({ type: "SET_URGENT_ONLY", payload: true });
-      return;
-    }
-    if (cat) dispatch({ type: "SET_CATEGORY", payload: cat.id });
-    dispatch({ type: "SET_SUBCATEGORY", payload: sub?.id ?? null });
-  };
+  const setFilters = (filters: AdvertisementFilters) =>
+    dispatch({ type: "SET_FILTERS", payload: filters });
 
   const reset = () => dispatch({ type: "RESET_FILTER" });
 
@@ -77,8 +59,7 @@ export function useAdvertisementList({
 
   return {
     state,
-    setCategory,
-    setSubcategory,
+    setFilters,
     reset,
     patchItem,
   };

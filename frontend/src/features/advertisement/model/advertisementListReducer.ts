@@ -17,52 +17,25 @@ export function advertisementListReducer(
   action: AdvertisementListAction
 ): AdvertisementListState {
   switch (action.type) {
-    case "SET_CATEGORY":
+    case "SET_FILTERS": {
+      const { categoryId, subcategoryId, urgentOnly } = action.payload;
       if (
-        state.categoryId === action.payload &&
-        state.subcategoryId === null &&
-        !state.urgentOnly
+        state.categoryId === categoryId &&
+        state.subcategoryId === subcategoryId &&
+        state.urgentOnly === urgentOnly
       ) {
         return state;
       }
       return {
         ...state,
-        categoryId: action.payload,
-        subcategoryId: null,
-        urgentOnly: false,
+        categoryId,
+        subcategoryId,
+        urgentOnly,
         items: [],
         loading: true,
         error: null,
       };
-    case "SET_SUBCATEGORY":
-      if (state.subcategoryId === action.payload && !state.urgentOnly) {
-        return state;
-      }
-      return {
-        ...state,
-        subcategoryId: action.payload,
-        urgentOnly: false,
-        items: [],
-        loading: true,
-        error: null,
-      };
-    case "SET_URGENT_ONLY":
-      if (
-        state.urgentOnly === action.payload &&
-        state.categoryId === null &&
-        state.subcategoryId === null
-      ) {
-        return state;
-      }
-      return {
-        ...state,
-        categoryId: null,
-        subcategoryId: null,
-        urgentOnly: action.payload,
-        items: [],
-        loading: true,
-        error: null,
-      };
+    }
     case "RESET_FILTER":
       if (
         state.categoryId === null &&

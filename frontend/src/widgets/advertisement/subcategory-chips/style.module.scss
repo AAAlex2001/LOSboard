@@ -1,0 +1,61 @@
+.chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  border: 1px solid #EEF4FF;
+  border-radius: 999px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #1129BD;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    border-color: #1129BD;
+  }
+}
+
+.chipActive {
+  background: #1129BD;
+  border-color: #1129BD;
+  color: #FFFFFF;
+
+  &:hover {
+    border-color: #1129BD;
+  }
+}
+
+.chips_orange {
+  .chip {
+    color: #FF8D28;
+    border-color: #FFE5CC;
+
+    &:hover {
+      border-color: #FF8D28;
+    }
+  }
+
+  .chipActive {
+    background: #FF8D28;
+    border-color: #FF8D28;
+    color: #FFFFFF;
+
+    &:hover {
+      border-color: #FF8D28;
+    }
+  }
+}
