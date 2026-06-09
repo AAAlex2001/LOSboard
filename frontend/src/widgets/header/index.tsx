@@ -77,20 +77,20 @@ export const Header = ({
   const handleSelectCategory = (cat: Category) => {
     setCategoriesOpen(false);
     if (cat.slug === "urgent") {
-      router.push("/?urgent=1");
+      router.push("/?urgent=1", { scroll: false });
       return;
     }
-    router.push(`/category/${cat.slug}`);
+    router.push(`/category/${cat.slug}`, { scroll: false });
     onSelectCategory?.(cat);
   };
 
   const handleSelectSubcategory = (sub: Subcategory, cat: Category) => {
     setCategoriesOpen(false);
     if (cat.slug === "urgent") {
-      router.push("/?urgent=1");
+      router.push("/?urgent=1", { scroll: false });
       return;
     }
-    router.push(`/category/${cat.slug}/${sub.slug}`);
+    router.push(`/category/${cat.slug}/${sub.slug}`, { scroll: false });
     onSelectSubcategory?.(sub, cat);
   };
 

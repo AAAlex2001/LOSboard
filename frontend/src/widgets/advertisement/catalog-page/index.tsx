@@ -78,24 +78,26 @@ export const CatalogPage = ({
     activeSubcategory?.id,
   ]);
 
+  const navigate = (href: string) => router.push(href, { scroll: false });
+
   const handleSelectCategory = (cat: Category | null) => {
     if (!cat) {
       if (state.urgentOnly) {
-        router.push(buildUrgentUrl());
+        navigate(buildUrgentUrl());
         return;
       }
-      router.push("/");
+      navigate("/");
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      router.push(buildUrgentUrl());
+      navigate(buildUrgentUrl());
       return;
     }
     if (state.urgentOnly) {
-      router.push(buildUrgentUrl(cat.slug));
+      navigate(buildUrgentUrl(cat.slug));
       return;
     }
-    router.push(`/category/${cat.slug}`);
+    navigate(`/category/${cat.slug}`);
   };
 
   const handleSelectSubcategory = (
@@ -104,29 +106,29 @@ export const CatalogPage = ({
   ) => {
     if (!cat) {
       if (state.urgentOnly) {
-        router.push(buildUrgentUrl());
+        navigate(buildUrgentUrl());
         return;
       }
-      router.push("/");
+      navigate("/");
       return;
     }
     if (cat.id === URGENT_CATEGORY_ID) {
-      router.push(buildUrgentUrl());
+      navigate(buildUrgentUrl());
       return;
     }
     if (state.urgentOnly) {
-      router.push(buildUrgentUrl(cat.slug, sub?.slug));
+      navigate(buildUrgentUrl(cat.slug, sub?.slug));
       return;
     }
     if (sub) {
-      router.push(`/category/${cat.slug}/${sub.slug}`);
+      navigate(`/category/${cat.slug}/${sub.slug}`);
     } else {
-      router.push(`/category/${cat.slug}`);
+      navigate(`/category/${cat.slug}`);
     }
   };
 
   const handleReset = () => {
-    router.push("/");
+    navigate("/");
   };
 
   const topbarCategory = state.urgentOnly && !activeCategory ? null : activeCategory;
@@ -142,7 +144,7 @@ export const CatalogPage = ({
                 label: URGENT_CATEGORY.name,
                 onClick:
                   activeCategory || activeSubcategory
-                    ? () => router.push(buildUrgentUrl())
+                    ? () => navigate(buildUrgentUrl())
                     : undefined,
               },
             ]
