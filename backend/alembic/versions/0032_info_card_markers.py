@@ -186,7 +186,7 @@ _BLOCKQUOTE_RE = re.compile(
 )
 
 
-def _to_info_markers(body: str) -> str:
+def to_info_markers(body: str) -> str:
     """Quill вырезает blockquote — заменяем каждую info-карточку на текстовые маркеры [INFO]."""
     def repl(match: "re.Match[str]") -> str:
         label = re.sub(r"<[^>]+>", "", match.group(1)).strip().rstrip(":").strip()
@@ -195,10 +195,10 @@ def _to_info_markers(body: str) -> str:
     return _BLOCKQUOTE_RE.sub(repl, body)
 
 
-def _build_merged_body() -> str:
+def build_merged_body() -> str:
     parts = []
     for title, body in SECTIONS:
-        parts.append(f"<h1>{title}</h1>\n{_to_info_markers(body)}\n")
+        parts.append(f"<h1>{title}</h1>\n{to_info_markers(body)}\n")
     return "".join(parts)
 
 
@@ -209,7 +209,7 @@ def upgrade() -> None:
             "UPDATE content_pages SET body = :b, updated_at = now() "
             "WHERE slug = 'pricing-tech'"
         ),
-        {"b": _build_merged_body()},
+        {"b": build_merged_body()},
     )
 
 

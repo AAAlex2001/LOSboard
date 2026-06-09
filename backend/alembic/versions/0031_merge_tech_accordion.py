@@ -187,7 +187,7 @@ OLD_SLUGS = [
 ]
 
 
-def _build_merged_body() -> str:
+def build_merged_body() -> str:
     """Каждая секция оборачивается H1-заголовком — он служит разделителем аккордеона."""
     parts = []
     for title, body in SECTIONS:
@@ -197,7 +197,7 @@ def _build_merged_body() -> str:
 
 def upgrade() -> None:
     conn = op.get_bind()
-    merged = _build_merged_body()
+    merged = build_merged_body()
     existing = conn.execute(
         sa.text("SELECT id FROM content_pages WHERE slug = :s"),
         {"s": MERGED_SLUG},

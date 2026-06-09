@@ -143,7 +143,7 @@ PRICING_BODY_OLD = """\
 """
 
 
-def _update_body(slug: str, body: str) -> None:
+def update_body(slug: str, body: str) -> None:
     conn = op.get_bind()
     conn.execute(
         sa.text("UPDATE content_pages SET body = :body WHERE slug = :slug"),
@@ -152,10 +152,10 @@ def _update_body(slug: str, body: str) -> None:
 
 
 def upgrade() -> None:
-    _update_body("contacts", CONTACTS_BODY_NEW)
-    _update_body("pricing", PRICING_BODY_NEW)
+    update_body("contacts", CONTACTS_BODY_NEW)
+    update_body("pricing", PRICING_BODY_NEW)
 
 
 def downgrade() -> None:
-    _update_body("contacts", CONTACTS_BODY_OLD)
-    _update_body("pricing", PRICING_BODY_OLD)
+    update_body("contacts", CONTACTS_BODY_OLD)
+    update_body("pricing", PRICING_BODY_OLD)

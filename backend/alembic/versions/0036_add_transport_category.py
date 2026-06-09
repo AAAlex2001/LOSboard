@@ -34,7 +34,7 @@ SUBCATEGORIES = [
 ]
 
 
-def _slugify(name: str, category_slug: str, index: int) -> str:
+def slugify_name(name: str, category_slug: str, index: int) -> str:
     base = name.lower().replace(" ", "-").replace(",", "").replace("/", "-")
     return f"{category_slug}-{index}-{base}"[:90]
 
@@ -67,7 +67,7 @@ def upgrade() -> None:
     rows = [
         {
             "name": name,
-            "slug": _slugify(name, CATEGORY_SLUG, idx),
+            "slug": slugify_name(name, CATEGORY_SLUG, idx),
             "sort_order": idx,
             "is_active": True,
             "category_id": category_id,

@@ -83,7 +83,7 @@ _BLOCKQUOTE_RE = re.compile(
 )
 
 
-def _to_info_markers(body: str) -> str:
+def to_info_markers(body: str) -> str:
     """Quill вырезает blockquote — заменяем каждую info-карточку на текстовые маркеры [INFO]."""
     def repl(match: "re.Match[str]") -> str:
         label = re.sub(r"<[^>]+>", "", match.group(1)).strip().rstrip(":").strip()
@@ -96,7 +96,7 @@ def upgrade() -> None:
     conn = op.get_bind()
     conn.execute(
         sa.text("UPDATE content_pages SET body = :b, updated_at = now() WHERE slug = 'pricing'"),
-        {"b": _to_info_markers(PRICING_BODY)},
+        {"b": to_info_markers(PRICING_BODY)},
     )
 
 
