@@ -124,9 +124,16 @@ class AdvertisementAdmin(ModelView, model=Advertisement):
 
     def list_query(self, request: Request):
         return apply_date_range(
-            select(Advertisement).order_by(Advertisement.created_at.desc()),
+            select(Advertisement)
+            .where(Advertisement.deleted_at.is_(None))
+            .order_by(Advertisement.created_at.desc()),
             request,
             Advertisement.created_at,
+        )
+
+    def count_query(self, request: Request):
+        return select(func.count(Advertisement.id)).where(
+            Advertisement.deleted_at.is_(None)
         )
 
     async def delete_model(self, request: Request, pks: List[Any]) -> None:
@@ -196,7 +203,10 @@ class ModerationQueueAdmin(AdvertisementAdmin, model=Advertisement):
     def list_query(self, request: Request):
         return apply_date_range(
             select(Advertisement)
-            .where(Advertisement.moderation_status == MODERATION_PENDING)
+            .where(
+                Advertisement.moderation_status == MODERATION_PENDING,
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.created_at.asc()),
             request,
             Advertisement.created_at,
@@ -204,7 +214,8 @@ class ModerationQueueAdmin(AdvertisementAdmin, model=Advertisement):
 
     def count_query(self, request: Request):
         return select(func.count(Advertisement.id)).where(
-            Advertisement.moderation_status == MODERATION_PENDING
+            Advertisement.moderation_status == MODERATION_PENDING,
+            Advertisement.deleted_at.is_(None),
         )
 
 
@@ -222,6 +233,7 @@ class ActiveAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
             .where(
                 Advertisement.moderation_status == MODERATION_APPROVED,
                 Advertisement.is_active.is_(True),
+                Advertisement.deleted_at.is_(None),
             )
             .order_by(Advertisement.created_at.desc()),
             request,
@@ -232,6 +244,7 @@ class ActiveAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
         return select(func.count(Advertisement.id)).where(
             Advertisement.moderation_status == MODERATION_APPROVED,
             Advertisement.is_active.is_(True),
+            Advertisement.deleted_at.is_(None),
         )
 
 
@@ -246,7 +259,10 @@ class ArchivedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
     def list_query(self, request: Request):
         return apply_date_range(
             select(Advertisement)
-            .where(Advertisement.is_active.is_(False))
+            .where(
+                Advertisement.is_active.is_(False),
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.created_at.desc()),
             request,
             Advertisement.created_at,
@@ -254,7 +270,8 @@ class ArchivedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
 
     def count_query(self, request: Request):
         return select(func.count(Advertisement.id)).where(
-            Advertisement.is_active.is_(False)
+            Advertisement.is_active.is_(False),
+            Advertisement.deleted_at.is_(None),
         )
 
 
@@ -269,7 +286,10 @@ class RejectedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
     def list_query(self, request: Request):
         return apply_date_range(
             select(Advertisement)
-            .where(Advertisement.moderation_status == MODERATION_REJECTED)
+            .where(
+                Advertisement.moderation_status == MODERATION_REJECTED,
+                Advertisement.deleted_at.is_(None),
+            )
             .order_by(Advertisement.moderated_at.desc().nullslast()),
             request,
             Advertisement.moderated_at,
@@ -277,7 +297,8 @@ class RejectedAdvertisementsAdmin(AdvertisementAdmin, model=Advertisement):
 
     def count_query(self, request: Request):
         return select(func.count(Advertisement.id)).where(
-            Advertisement.moderation_status == MODERATION_REJECTED
+            Advertisement.moderation_status == MODERATION_REJECTED,
+            Advertisement.deleted_at.is_(None),
         )
 
 
