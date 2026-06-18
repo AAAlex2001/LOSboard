@@ -32,6 +32,11 @@ from admin.views import (
 )
 from database import engine
 
+from sqladmin.widgets import BooleanInputWidget
+
+if not hasattr(BooleanInputWidget, "validation_attrs"):
+    BooleanInputWidget.validation_attrs = []
+
 
 class PatchedAdmin(Admin):
     """Чинит sqladmin: при сохранении формы пустые UploadFile и строки не оборачиваются в UploadFile."""
