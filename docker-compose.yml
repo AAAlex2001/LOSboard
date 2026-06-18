@@ -3,6 +3,7 @@ name: losboard
 x-backend-common: &backend-common
   build:
     context: ./backend
+  image: losboard-backend:latest
   restart: unless-stopped
   depends_on:
     postgres:
