@@ -6,6 +6,7 @@ import style from "./style.module.scss";
 
 export type AdBannerVariant =
   | "rectangle"
+  | "halfpage"
   | "leaderboard"
   | "wide"
   | "promo"
@@ -29,7 +30,9 @@ export const AdBanner = ({
   variant = "rectangle",
 }: AdBannerProps) => {
   const variantClass =
-    variant === "leaderboard"
+    variant === "halfpage"
+      ? style.bannerHalfPage
+      : variant === "leaderboard"
       ? style.bannerLeaderboard
       : variant === "wide"
       ? style.bannerWide

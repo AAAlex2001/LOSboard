@@ -10,10 +10,13 @@
 
 .label {
   font-family: Inter;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 17px;
-  color: #FFFFFF;
+  background: linear-gradient(180deg, #BE9202 0%, #E9D9B1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .switch {
@@ -22,12 +25,7 @@
   width: 40px;
   height: 22px;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.3);
-  transition: background-color 0.15s ease;
-}
-
-.switchOn {
-  background: #FFFFFF;
+  background: linear-gradient(180deg, #BE9202 0%, #E9D9B1 100%);
 }
 
 .knob {
@@ -39,10 +37,9 @@
   border-radius: 50%;
   background: #FFFFFF;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.15s ease;
 }
 
 .switchOn .knob {
   transform: translateX(18px);
-  background: #1129BD;
 }

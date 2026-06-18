@@ -63,6 +63,11 @@ BANNER_PLACEMENT_CHOICES = [
     ("sidebar", "Боковая панель сайта (2 баннера)"),
 ]
 
+BANNER_SIZE_CHOICES = [
+    ("rectangle", "Medium Rectangle 300×250"),
+    ("halfpage", "Half Page 300×600"),
+]
+
 MODERATION_LABEL = dict(MODERATION_CHOICES)
 COMPLAINT_LABEL = dict(COMPLAINT_CHOICES)
 COMPLAINT_REASON_LABEL = dict(COMPLAINT_REASON_CHOICES)

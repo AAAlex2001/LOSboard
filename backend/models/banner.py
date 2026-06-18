@@ -20,6 +20,9 @@ class Banner(Base):
     placement: Mapped[str] = mapped_column(
         String, nullable=False, server_default="main_top", default="main_top", index=True
     )
+    size: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="rectangle", default="rectangle"
+    )
     sort_order: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, index=True
     )

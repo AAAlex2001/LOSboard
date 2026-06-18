@@ -15,6 +15,7 @@ from wtforms.fields import SelectField
 
 from admin.views.common import (
     BANNER_PLACEMENT_CHOICES,
+    BANNER_SIZE_CHOICES,
     AdminOnly,
     banner_placement_badge,
     img_thumb,
@@ -79,6 +80,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.image_url,
         Banner.title,
         Banner.placement,
+        Banner.size,
         Banner.link_url,
         Banner.age_label,
         Banner.sort_order,
@@ -105,6 +107,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         Banner.link_url: "Куда ведёт клик по баннеру (опционально)",
         Banner.age_label: "Возрастное ограничение (Реклама 0+, 6+, 12+, 16+, 18+)",
         Banner.placement: "Размещение",
+        Banner.size: "Размер (для боковой панели)",
         Banner.sort_order: "Порядок (меньше — выше)",
         Banner.is_active: "Показывать на сайте",
         Banner.starts_at: "Старт показа (для заметки)",
@@ -124,6 +127,7 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         "image_url": FileField,
         "video_url": FileField,
         "placement": SelectField,
+        "size": SelectField,
         "age_label": SelectField,
     }
     form_args = {
@@ -135,8 +139,13 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         },
         "placement": {
             "choices": BANNER_PLACEMENT_CHOICES,
-            "description": "Где показывать баннер. «Шапка главной» — 3 верхних баннера "
-            "на главной странице. «Боковая панель» — 2 баннера в правом сайдбаре сайта.",
+            "description": "Где показывать баннер. «Шапка главной» — баннеры сверху главной "
+            "страницы. «Боковая панель» — баннеры в правом сайдбаре сайта. Количество задаётся "
+            "числом записей; пустые баннеры показываются как заглушки «Рекламный баннер сдаётся».",
+        },
+        "size": {
+            "choices": BANNER_SIZE_CHOICES,
+            "description": "Размер баннера в боковой панели. Для каруселя на главной не важен.",
         },
         "age_label": {
             "choices": [
@@ -173,12 +182,6 @@ class BannerAdmin(AdminOnly, ModelView, model=Banner):
         video_upload = data.pop("video_url", None)
         has_image = upload_is_real(image_upload)
         has_video = upload_is_real(video_upload)
-
-        if is_created and not has_image and not has_video:
-            raise HTTPException(
-                status_code=400,
-                detail="Загрузите картинку или видео для баннера",
-            )
 
         if has_image:
             ensure_extension(image_upload.filename or "")

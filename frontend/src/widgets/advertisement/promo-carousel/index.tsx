@@ -16,18 +16,12 @@ interface PromoCarouselProps {
 
 const SLIDE_GAP = 25;
 
-function fillSlots(arr: Banner[], min: number): Array<Banner | null> {
-  if (arr.length >= min) return arr;
-  return [...arr, ...Array(min - arr.length).fill(null)];
-}
-
 export const PromoCarousel = ({
   banners,
   ageLabel,
   siteLabel,
   placeholderText,
 }: PromoCarouselProps) => {
-  const slots = fillSlots(banners, 3);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(true);
@@ -50,6 +44,8 @@ export const PromoCarousel = ({
     track.scrollBy({ left: direction * step, behavior: "smooth" });
   };
 
+  if (banners.length === 0) return null;
+
   return (
     <div className={style.carousel}>
       {!atStart && (
@@ -68,8 +64,8 @@ export const PromoCarousel = ({
         className={style.track}
         onScroll={(e) => syncArrows(e.currentTarget)}
       >
-        {slots.map((banner, i) => (
-          <div key={banner?.id ?? `empty-${i}`} className={style.slide}>
+        {banners.map((banner) => (
+          <div key={banner.id} className={style.slide}>
             <AdBanner
               variant="carousel"
               banner={banner}

@@ -3,6 +3,8 @@ import { apiJson } from "@/src/shared/lib/http";
 
 export type BannerPlacement = "main_top" | "sidebar";
 
+export type BannerSize = "rectangle" | "halfpage";
+
 export interface Banner {
   id: number;
   title: string;
@@ -13,6 +15,7 @@ export interface Banner {
   link_url: string | null;
   sort_order: number;
   placement: BannerPlacement;
+  size: BannerSize;
 }
 
 export async function getActiveBanners(

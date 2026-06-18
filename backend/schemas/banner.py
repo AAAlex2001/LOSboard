@@ -15,3 +15,4 @@ class BannerResponse(BaseModel):
     link_url: Optional[str] = None
     sort_order: int
     placement: str
+    size: str = "rectangle"

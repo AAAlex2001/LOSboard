@@ -88,11 +88,12 @@ export const ViewModeToggle = () => {
   };
 
   const isDesktop = mode === "desktop";
-  const backLabel =
-    origin === "tablet" ? "планшетную версию" : "мобильную версию";
-  const title = isDesktop
-    ? `Переключиться на ${backLabel}`
-    : "Переключиться на десктопную версию";
+  let label: string;
+  if (isDesktop) {
+    label = origin === "tablet" ? "Планшетная версия" : "Мобильная версия";
+  } else {
+    label = "Десктопная версия";
+  }
 
   return (
     <button
@@ -101,9 +102,9 @@ export const ViewModeToggle = () => {
       onClick={handleClick}
       role="switch"
       aria-checked={isDesktop}
-      title={title}
+      title={`Переключиться на: ${label}`}
     >
-      <span className={style.label}>Десктопная версия</span>
+      <span className={style.label}>{label}</span>
       <span
         className={`${style.switch} ${isDesktop ? style.switchOn : ""}`}
         aria-hidden="true"

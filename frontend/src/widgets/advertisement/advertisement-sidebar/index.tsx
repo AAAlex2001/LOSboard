@@ -154,18 +154,16 @@ export const AdvertisementSidebar = ({
       </div>
 
       <div className={style.adsBlock}>
-        <AdBanner
-          banner={banners[0]}
-          ageLabel={settings?.ad_age_label}
-          siteLabel={settings?.ad_site_label}
-          placeholderText={settings?.ad_placeholder_text}
-        />
-        <AdBanner
-          banner={banners[1]}
-          ageLabel={settings?.ad_age_label}
-          siteLabel={settings?.ad_site_label}
-          placeholderText={settings?.ad_placeholder_text}
-        />
+        {banners.map((b) => (
+          <AdBanner
+            key={b.id}
+            variant={b.size === "halfpage" ? "halfpage" : "rectangle"}
+            banner={b}
+            ageLabel={settings?.ad_age_label}
+            siteLabel={settings?.ad_site_label}
+            placeholderText={settings?.ad_placeholder_text}
+          />
+        ))}
       </div>
     </aside>
   );
