@@ -29,3 +29,7 @@ export function useMainTopBanners(): Banner[] {
 export function useSidebarBanners(): Banner[] {
   return useBanners({ placement: "sidebar" });
 }
+
+export function useFeedBanners(): Banner[] {
+  return useBanners({ placement: "feed" });
+}

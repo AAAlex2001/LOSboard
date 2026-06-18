@@ -7,6 +7,9 @@ import { AdGrid } from "@/src/shared/ui/AdGrid";
 import { type Advertisement } from "@/src/entities/advertisement";
 import type { AdvertisementListState } from "@/src/features/advertisement";
 import { useFavorite } from "@/src/features/favorite";
+import { useFeedBanners } from "@/src/entities/banner";
+import { useSiteSettings } from "@/src/entities/content";
+import { AdBanner } from "@/src/entities/ad-banner";
 import { buildAdvertisementUrl } from "@/src/shared/lib/slug";
 import style from "./style.module.scss";
 
@@ -25,6 +28,19 @@ export const CatalogFeed = ({
 }: CatalogFeedProps) => {
   const router = useRouter();
   const { toggle, pendingIds } = useFavorite();
+  const feedBanners = useFeedBanners();
+  const settings = useSiteSettings();
+
+  const bannerNodes = feedBanners.map((banner) => (
+    <AdBanner
+      key={banner.id}
+      variant={banner.size === "wide" ? "wide" : "leaderboard"}
+      banner={banner}
+      ageLabel={settings?.ad_age_label}
+      siteLabel={settings?.ad_site_label}
+      placeholderText={settings?.ad_placeholder_text}
+    />
+  ));
 
   const handleAdClick = (ad: Advertisement) => {
     router.push(buildAdvertisementUrl(ad.id, ad.title));
@@ -59,6 +75,8 @@ export const CatalogFeed = ({
             onClick={handleAdClick}
             onToggleFavorite={handleFavorite}
             pendingIds={pendingIds}
+            feedBanners={bannerNodes}
+            feedInterval={6}
           />
           {state.error && <p className={style.feedback}>{state.error}</p>}
           {state.hasMore && (

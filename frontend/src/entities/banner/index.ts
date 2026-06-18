@@ -8,4 +8,5 @@ export {
   useBanners,
   useMainTopBanners,
   useSidebarBanners,
+  useFeedBanners,
 } from "./model/useBanners";

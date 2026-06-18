@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { AdCard, type Advertisement } from "@/src/entities/advertisement";
 import style from "./style.module.scss";
 
@@ -7,11 +8,15 @@ interface AdGridProps {
   onToggleFavorite?: (ad: Advertisement) => void;
   onEdit?: (ad: Advertisement) => void;
   pendingIds?: Set<number>;
+  feedBanners?: React.ReactNode[];
+  feedInterval?: number;
 }
 
 /**
  * Сетка карточек. Передаёт обработчики в AdCard как есть: режим избранного и
  * режим редактирования различаются только набором переданных пропсов.
+ * Баннеры вставляются полноширинной строкой после каждых feedInterval карточек,
+ * пока не закончится список feedBanners.
  */
 export const AdGrid = ({
   items,
@@ -19,17 +24,30 @@ export const AdGrid = ({
   onToggleFavorite,
   onEdit,
   pendingIds,
+  feedBanners,
+  feedInterval,
 }: AdGridProps) => (
   <div className={style.grid}>
-    {items.map((ad) => (
-      <AdCard
-        key={ad.id}
-        advertisement={ad}
-        onClick={onClick}
-        onToggleFavorite={onToggleFavorite}
-        onEdit={onEdit}
-        favoritePending={pendingIds?.has(ad.id)}
-      />
-    ))}
+    {items.map((ad, index) => {
+      const bannerIndex =
+        feedBanners && feedInterval && (index + 1) % feedInterval === 0
+          ? Math.floor((index + 1) / feedInterval) - 1
+          : -1;
+      const banner =
+        bannerIndex >= 0 ? feedBanners?.[bannerIndex] : undefined;
+
+      return (
+        <Fragment key={ad.id}>
+          <AdCard
+            advertisement={ad}
+            onClick={onClick}
+            onToggleFavorite={onToggleFavorite}
+            onEdit={onEdit}
+            favoritePending={pendingIds?.has(ad.id)}
+          />
+          {banner && <div className={style.feedBanner}>{banner}</div>}
+        </Fragment>
+      );
+    })}
   </div>
 );

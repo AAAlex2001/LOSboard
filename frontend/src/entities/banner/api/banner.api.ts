@@ -1,9 +1,9 @@
 import { config } from "@/src/shared/config/config";
 import { apiJson } from "@/src/shared/lib/http";
 
-export type BannerPlacement = "main_top" | "sidebar";
+export type BannerPlacement = "main_top" | "sidebar" | "feed";
 
-export type BannerSize = "rectangle" | "halfpage";
+export type BannerSize = "rectangle" | "halfpage" | "leaderboard" | "wide";
 
 export interface Banner {
   id: number;

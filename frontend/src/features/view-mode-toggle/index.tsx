@@ -90,27 +90,17 @@ export const ViewModeToggle = () => {
   const isDesktop = mode === "desktop";
   let label: string;
   if (isDesktop) {
-    label = origin === "tablet" ? "Планшетная версия" : "Мобильная версия";
+    label =
+      origin === "tablet"
+        ? "Переключиться на планшетную версию"
+        : "Переключиться на мобильную версию";
   } else {
-    label = "Десктопная версия";
+    label = "Переключиться на десктопную версию";
   }
 
   return (
-    <button
-      type="button"
-      className={style.toggle}
-      onClick={handleClick}
-      role="switch"
-      aria-checked={isDesktop}
-      title={`Переключиться на: ${label}`}
-    >
-      <span className={style.label}>{label}</span>
-      <span
-        className={`${style.switch} ${isDesktop ? style.switchOn : ""}`}
-        aria-hidden="true"
-      >
-        <span className={style.knob} />
-      </span>
+    <button type="button" className={style.toggle} onClick={handleClick}>
+      {label}
     </button>
   );
 };

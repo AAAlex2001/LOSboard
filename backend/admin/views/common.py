@@ -61,11 +61,14 @@ ATTRIBUTE_KIND_CHOICES = [
 BANNER_PLACEMENT_CHOICES = [
     ("main_top", "Шапка главной страницы (3 баннера сверху)"),
     ("sidebar", "Боковая панель сайта (2 баннера)"),
+    ("feed", "Лента «Все объявления» (между карточками, десктоп)"),
 ]
 
 BANNER_SIZE_CHOICES = [
     ("rectangle", "Medium Rectangle 300×250"),
     ("halfpage", "Half Page 300×600"),
+    ("leaderboard", "Large Leaderboard 970×90"),
+    ("wide", "Баннер в ленте 800×200"),
 ]
 
 MODERATION_LABEL = dict(MODERATION_CHOICES)

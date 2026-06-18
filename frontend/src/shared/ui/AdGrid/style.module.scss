@@ -17,3 +17,16 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.feedBanner {
+  grid-column: 1 / -1;
+  display: none;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 1440px) {
+  .feedBanner {
+    display: flex;
+  }
+}

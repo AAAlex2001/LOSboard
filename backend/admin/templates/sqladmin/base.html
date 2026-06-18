@@ -51,6 +51,24 @@
       clear: both;
       margin-top: 16px;
     }
+
+    .form-fieldset .form-check.form-switch {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.75rem;
+      margin: 0 0 8px 0 !important;
+      position: static !important;
+    }
+    .form-fieldset .form-check.form-switch ~ .form-text,
+    .form-fieldset .form-check.form-switch ~ small,
+    .form-fieldset .form-check.form-switch ~ .description,
+    .form-fieldset .form-check.form-switch ~ i.form-hint {
+      display: block !important;
+      position: static !important;
+      clear: both !important;
+      width: 100% !important;
+      margin-top: 4px !important;
+    }
   </style>
   {% endblock %}
   {% if admin.favicon_url %}
