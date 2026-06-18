@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/src/widgets/header";
 import { Footer } from "@/src/widgets/footer";
+import { Button } from "@/src/shared/ui/Button";
 
 export const metadata: Metadata = {
   title: "Страница не найдена",
@@ -56,22 +57,8 @@ export default function NotFound() {
           Возможно, объявление было снято или адрес введён неправильно. Вернитесь
           на главную и найдите то, что искали.
         </p>
-        <Link
-          href="/"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "12px 28px",
-            background: "#1129BD",
-            color: "#FFFFFF",
-            borderRadius: 10,
-            fontFamily: "Inter",
-            fontWeight: 500,
-            fontSize: 14,
-            textDecoration: "none",
-          }}
-        >
-          На главную
+        <Link href="/">
+          <Button text="На главную" color="blue" variant="filled" />
         </Link>
       </div>
       <Footer />
