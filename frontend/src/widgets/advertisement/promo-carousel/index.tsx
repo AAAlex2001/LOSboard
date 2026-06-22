@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useKeenSlider, type KeenSliderInstance } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 import { AdBanner } from "@/src/entities/ad-banner";
 import type { Banner } from "@/src/entities/banner";
 import ArrowLeftIcon from "@/src/shared/ui/Icons/ArrowLeftIcon";
@@ -14,7 +16,9 @@ interface PromoCarouselProps {
   placeholderText?: string;
 }
 
-const SLIDE_GAP = 25;
+const AUTOPLAY_INTERVAL_MS = 5000;
+const DESKTOP_PER_VIEW = 3;
+const DESKTOP_BREAKPOINT_PX = 850;
 
 export const PromoCarousel = ({
   banners,
@@ -22,50 +26,81 @@ export const PromoCarousel = ({
   siteLabel,
   placeholderText,
 }: PromoCarouselProps) => {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [maxIdx, setMaxIdx] = useState(0);
 
-  const syncArrows = (track: HTMLDivElement) => {
-    setAtStart(track.scrollLeft <= 1);
-    setAtEnd(track.scrollLeft + track.clientWidth >= track.scrollWidth - 1);
-  };
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    loop: true,
+    slides: { perView: 1, spacing: 25 },
+    breakpoints: {
+      [`(min-width: ${DESKTOP_BREAKPOINT_PX}px)`]: {
+        slides: { perView: DESKTOP_PER_VIEW, spacing: 25 },
+      },
+    },
+    slideChanged(slider) {
+      setCurrentSlide(slider.track.details.rel);
+    },
+    created(slider) {
+      setMaxIdx(slider.track.details.maxIdx);
+    },
+    updated(slider) {
+      setMaxIdx(slider.track.details.maxIdx);
+    },
+  });
 
-  const attachTrack = (track: HTMLDivElement | null) => {
-    trackRef.current = track;
-    if (track) syncArrows(track);
-  };
+  useEffect(() => {
+    const slider = instanceRef.current;
+    if (!slider || banners.length <= DESKTOP_PER_VIEW) return;
 
-  const scrollBySlide = (direction: 1 | -1) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const firstSlide = track.firstElementChild as HTMLElement | null;
-    const step = (firstSlide?.clientWidth ?? track.clientWidth) + SLIDE_GAP;
-    track.scrollBy({ left: direction * step, behavior: "smooth" });
-  };
+    const startAutoplay = (current: KeenSliderInstance) => {
+      stopAutoplay();
+      timerRef.current = setInterval(() => {
+        current.next();
+      }, AUTOPLAY_INTERVAL_MS);
+    };
+    const stopAutoplay = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    const container = slider.container;
+    container.addEventListener("mouseover", stopAutoplay);
+    container.addEventListener("mouseout", () => startAutoplay(slider));
+    startAutoplay(slider);
+
+    return () => {
+      stopAutoplay();
+      container.removeEventListener("mouseover", stopAutoplay);
+      container.removeEventListener("mouseout", () => startAutoplay(slider));
+    };
+  }, [banners.length, instanceRef]);
 
   if (banners.length === 0) return null;
 
+  const showArrows = maxIdx > 0;
+
   return (
     <div className={style.carousel}>
-      {!atStart && (
+      {showArrows && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowPrev}`}
-          onClick={() => scrollBySlide(-1)}
+          onClick={() => instanceRef.current?.prev()}
           aria-label="Предыдущий баннер"
         >
           <ArrowLeftIcon />
         </button>
       )}
 
-      <div
-        ref={attachTrack}
-        className={style.track}
-        onScroll={(e) => syncArrows(e.currentTarget)}
-      >
+      <div ref={sliderRef} className={`keen-slider ${style.track}`}>
         {banners.map((banner) => (
-          <div key={banner.id} className={style.slide}>
+          <div
+            key={banner.id}
+            className={`keen-slider__slide ${style.slide}`}
+          >
             <AdBanner
               variant="carousel"
               banner={banner}
@@ -77,11 +112,11 @@ export const PromoCarousel = ({
         ))}
       </div>
 
-      {!atEnd && (
+      {showArrows && (
         <button
           type="button"
           className={`${style.arrow} ${style.arrowNext}`}
-          onClick={() => scrollBySlide(1)}
+          onClick={() => instanceRef.current?.next()}
           aria-label="Следующий баннер"
         >
           <ArrowRightIcon />

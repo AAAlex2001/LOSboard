@@ -6,36 +6,18 @@
   margin: 0 auto;
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 850px) {
   .carousel {
     max-width: 100%;
   }
 }
 
 .track {
-  display: flex;
-  gap: 25px;
   width: 100%;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .slide {
-  flex: 0 0 100%;
   min-width: 0;
-  scroll-snap-align: start;
-}
-
-@media (min-width: 1440px) {
-  .slide {
-    flex: 0 0 calc((100% - 50px) / 3);
-  }
 }
 
 .arrow {
