@@ -15,8 +15,7 @@ interface PromoCarouselProps {
 }
 
 const AUTOPLAY_INTERVAL_MS = 5000;
-const DESKTOP_PER_VIEW = 3;
-const DESKTOP_BREAKPOINT_PX = 850;
+const PER_VIEW = 3;
 
 export const PromoCarousel = ({
   banners,
@@ -29,17 +28,12 @@ export const PromoCarousel = ({
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     drag: false,
-    slides: { perView: 1, spacing: 25 },
-    breakpoints: {
-      [`(min-width: ${DESKTOP_BREAKPOINT_PX}px)`]: {
-        slides: { perView: DESKTOP_PER_VIEW, spacing: 25 },
-      },
-    },
+    slides: { perView: PER_VIEW, spacing: 25 },
   });
 
   useEffect(() => {
     const slider = instanceRef.current;
-    if (!slider || banners.length <= DESKTOP_PER_VIEW) return;
+    if (!slider || banners.length <= PER_VIEW) return;
 
     const stopAutoplay = () => {
       if (timerRef.current) {
