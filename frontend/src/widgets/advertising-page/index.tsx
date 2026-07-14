@@ -4,8 +4,11 @@ import { CrumbsBar } from "@/src/shared/ui/PageBar";
 import { Banner } from "@/src/widgets/advertising/banner";
 import { NoteLine } from "@/src/widgets/advertising/note-line";
 import { TechSpecsAccordion } from "@/src/widgets/advertising/tech-specs-accordion";
+import { TourAdFormats } from "@/src/widgets/advertising/tour-ad-formats";
 import { CmsContent } from "@/src/widgets/docs/cms-content";
 import style from "./style.module.scss";
+
+const TOUR_FORMATS_TITLE = "Реклама на сайте Тур-гид LOS";
 
 interface AccordionItemData {
   title: string;
@@ -59,7 +62,12 @@ export const AdvertisingPageView = ({
                 heading={accordionHeading}
                 items={accordionItems.map((item) => ({
                   title: item.title,
-                  content: <CmsContent body={item.body} variant="stacked" />,
+                  content:
+                    item.title.trim() === TOUR_FORMATS_TITLE ? (
+                      <TourAdFormats body={item.body} />
+                    ) : (
+                      <CmsContent body={item.body} variant="stacked" />
+                    ),
                 }))}
               />
             )}

@@ -1,0 +1,436 @@
+$blue: #1129bd;
+$demo-bg: rgba(17, 41, 189, 0.1);
+$demo-border: #d5daef;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+
+.note {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: rgba(17, 41, 189, 0.5);
+}
+
+.format {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  color: #000000;
+}
+
+.titleMuted {
+  color: rgba(0, 0, 0, 0.35);
+  font-weight: 400;
+}
+
+.demo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.info {
+  width: 100%;
+}
+
+.info :global(.infoCardGroup) {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checker {
+  border-radius: 15px;
+  background-color: #f5f6f8;
+  background-image:
+    linear-gradient(45deg, #dfe2e8 25%, transparent 25%),
+    linear-gradient(-45deg, #dfe2e8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #dfe2e8 75%),
+    linear-gradient(-45deg, transparent 75%, #dfe2e8 75%);
+  background-size: 22px 22px;
+  background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+}
+
+.demoCard {
+  box-sizing: border-box;
+  background: $demo-bg;
+  border: 1px solid $demo-border;
+  border-radius: 15px;
+}
+
+.centerBlue {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: $blue;
+}
+
+.centerBlueSm {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: $blue;
+}
+
+/* Формат 1 — баннер + информационная карточка организации */
+.f1 {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1232px;
+}
+
+.f1img {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 606 / 350;
+}
+
+.f1card {
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+  background: $demo-bg;
+  border: 1px solid $demo-border;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orgName {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 1.2;
+  color: $blue;
+}
+
+.orgRows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.orgLabel {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 31px;
+  color: $blue;
+}
+
+.orgValue {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 31px;
+  color: $blue;
+}
+
+/* Формат 2 — два баннера горных маршрутов */
+.f2 {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 984px;
+}
+
+.f2card {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 487 / 247;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.f2cardCenter {
+  justify-content: center;
+}
+
+.f2img {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 400 / 139;
+}
+
+.serviceName {
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: $blue;
+}
+
+.serviceLine {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: $blue;
+}
+
+/* Формат 3 — баннер экскурсионных маршрутов */
+.f3card {
+  width: 100%;
+  max-width: 438px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.f3img {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 360 / 125;
+}
+
+.f3text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Формат 4 — баннер для мероприятий */
+.f4 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 1312px;
+}
+
+.f4row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  color: #1e1e1e;
+}
+
+.f4venue {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.f4line {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: #000000;
+}
+
+.f4event {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.f4heading {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.2;
+  color: #000000;
+}
+
+.f4link {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+  color: #000000;
+}
+
+.f4banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1312 / 165;
+  padding: 10px;
+  box-sizing: border-box;
+  background: $demo-bg;
+  border-radius: 15px;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 17px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Формат 5 — баннер для такси */
+.f5card {
+  width: 100%;
+  max-width: 396px;
+  padding: 40px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 44px;
+}
+
+.f5img {
+  width: 100%;
+  max-width: 216px;
+  aspect-ratio: 1 / 1;
+}
+
+.f5text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.taxiName {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 24px;
+  color: $blue;
+}
+
+.taxiLabel {
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: $blue;
+}
+
+/* Формат 6 — баннер интернета и мобильной связи */
+.f6card {
+  width: 100%;
+  max-width: 767px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.f6img {
+  width: 100%;
+  max-width: 364px;
+  aspect-ratio: 364 / 117;
+  border-radius: 5px;
+}
+
+.f6desc {
+  margin: 0;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: $blue;
+}
+
+@media (max-width: 720px) {
+  .f1 {
+    flex-direction: column;
+  }
+
+  .f1img {
+    width: 100%;
+    aspect-ratio: 606 / 350;
+  }
+
+  .orgName {
+    font-size: 24px;
+  }
+
+  .orgLabel,
+  .orgValue {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .f2 {
+    flex-direction: column;
+  }
+
+  .f2card {
+    width: 100%;
+    aspect-ratio: auto;
+    min-height: 200px;
+  }
+
+  .f4venue,
+  .f4heading {
+    font-size: 24px;
+  }
+
+  .f4link {
+    font-size: 20px;
+    line-height: 24px;
+  }
+}
