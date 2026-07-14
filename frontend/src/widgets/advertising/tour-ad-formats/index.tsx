@@ -124,8 +124,13 @@ const Format3 = () => (
   <div className={`${style.demoCard} ${style.f3card}`}>
     <div className={`${style.checker} ${style.f3img}`} />
     <div className={style.f3text}>
-      <p className={style.centerBlue}>Контакты: -----, Whatsapp -------</p>
-      <p className={style.centerBlue}>САЙТ: ------ ----------</p>
+      <p className={style.centerBlue}>
+        Контакты: -----
+        <br />
+        Whatsapp -------
+        <br />
+        САЙТ: ------ ----------
+      </p>
     </div>
   </div>
 );
