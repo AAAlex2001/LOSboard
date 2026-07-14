@@ -22,7 +22,7 @@ $demo-border: #d5daef;
 .format {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 20px;
   width: 100%;
 }
@@ -51,12 +51,6 @@ $demo-border: #d5daef;
 
 .info {
   width: 100%;
-}
-
-.info :global(.infoCardGroup) {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .checker {

@@ -65,8 +65,6 @@ function renderTitle(title: string) {
   );
 }
 
-const DASH = "——————";
-
 const ArrowIcon = () => (
   <svg viewBox="0 0 24 24" className={style.icon} aria-hidden="true">
     <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -94,11 +92,11 @@ const Format1 = () => (
       <p className={style.orgName}>Название организации</p>
       <div className={style.orgRows}>
         <p className={style.orgLabel}>Режим работы:</p>
-        <p className={style.orgValue}>{DASH}</p>
+        <p className={style.orgValue}>-----</p>
         <p className={style.orgLabel}>Адрес:</p>
-        <p className={style.orgValue}>{DASH}</p>
+        <p className={style.orgValue}>-----</p>
         <p className={style.orgLabel}>Контакты:</p>
-        <p className={style.orgValue}>{DASH}</p>
+        <p className={style.orgValue}>-----</p>
       </div>
     </div>
   </div>
@@ -108,12 +106,16 @@ const Format2 = () => (
   <div className={style.f2}>
     <div className={`${style.demoCard} ${style.f2card}`}>
       <div className={`${style.checker} ${style.f2img}`} />
-      <p className={style.centerBlue}>САЙТ: {DASH}</p>
+      <p className={style.centerBlue}>
+        САЙТ: ------
+        <br />
+        -------------------
+      </p>
     </div>
     <div className={`${style.demoCard} ${style.f2card} ${style.f2cardCenter}`}>
       <p className={style.serviceName}>Название услуги</p>
       <p className={style.serviceLine}>Контактное лицо</p>
-      <p className={style.serviceLine}>Тел.: ——————</p>
+      <p className={style.serviceLine}>Тел.: ------</p>
     </div>
   </div>
 );
@@ -122,8 +124,8 @@ const Format3 = () => (
   <div className={`${style.demoCard} ${style.f3card}`}>
     <div className={`${style.checker} ${style.f3img}`} />
     <div className={style.f3text}>
-      <p className={style.centerBlue}>Контакты: —————, Whatsapp ————</p>
-      <p className={style.centerBlue}>САЙТ: {DASH}</p>
+      <p className={style.centerBlue}>Контакты: -----, Whatsapp -------</p>
+      <p className={style.centerBlue}>САЙТ: ------ ----------</p>
     </div>
   </div>
 );
@@ -146,9 +148,9 @@ const Format4 = () => (
       <p className={style.f4heading}>О событии</p>
       <p className={style.f4line}>Абзац текста</p>
     </div>
-    <p className={style.f4link}>Ссылка на мероприятие: ——————</p>
+    <p className={style.f4link}>Ссылка на мероприятие: ------</p>
     <div className={style.f4banner}>
-      <span>Сменяющийся видеоряд / картинка с видом Абхазии / реклама</span>
+      <span>Ваша реклама</span>
     </div>
   </div>
 );
@@ -157,10 +159,16 @@ const Format5 = () => (
   <div className={`${style.demoCard} ${style.f5card}`}>
     <div className={`${style.checker} ${style.f5img}`} />
     <div className={style.f5text}>
-      <p className={style.taxiName}>Название такси</p>
-      <p className={style.centerBlueSm}>Время работы: —</p>
+      <p className={style.taxiName}>Название организации</p>
+      <p className={style.centerBlueSm}>Время работы: -----</p>
       <p className={style.taxiLabel}>Заказать такси:</p>
-      <p className={style.centerBlueSm}>+7 —————— (звонки и WhatsApp)</p>
+      <p className={style.centerBlueSm}>
+        Контакты -----
+        <br />
+        -----
+        <br />
+        -----
+      </p>
     </div>
   </div>
 );
@@ -168,8 +176,18 @@ const Format5 = () => (
 const Format6 = () => (
   <div className={`${style.demoCard} ${style.f6card}`}>
     <div className={`${style.checker} ${style.f6img}`} />
-    <p className={style.f6desc}>Описание услуги/компании — — — — — —</p>
-    <p className={style.centerBlue}>САЙТ: {DASH}</p>
+    <p className={style.f6desc}>
+      Описание услуги/компании
+      <br />
+      -
+      <br />
+      -
+      <br />
+      -
+      <br />
+      -
+    </p>
+    <p className={style.centerBlue}>САЙТ: ------</p>
   </div>
 );
 
