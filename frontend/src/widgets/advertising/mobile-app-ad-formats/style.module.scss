@@ -1,0 +1,218 @@
+$blue: #1129bd;
+$card-bg: rgba(17, 41, 189, 0.1);
+$card-border: #d5daef;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+
+.format {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+
+  > h3 {
+    margin: 0;
+    font: 600 16px/19px Inter, sans-serif;
+    color: #000;
+  }
+}
+
+.demo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.checker {
+  box-sizing: border-box;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ececec 25%, transparent 25%),
+    linear-gradient(-45deg, #ececec 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ececec 75%),
+    linear-gradient(-45deg, transparent 75%, #ececec 75%);
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  background-size: 20px 20px;
+  border-radius: 15px;
+}
+
+.blueCard {
+  box-sizing: border-box;
+  background: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: 15px;
+  color: $blue;
+  font-family: Inter, sans-serif;
+}
+
+.phone {
+  position: relative;
+  width: min(260px, 76vw);
+  aspect-ratio: 402 / 874;
+  overflow: hidden;
+  border: 1px solid #a6a6a6;
+  border-radius: 44px;
+  background: #fff;
+}
+
+.cross {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top right, transparent calc(50% - .5px), #aaa 50%, transparent calc(50% + .5px)),
+    linear-gradient(to bottom right, transparent calc(50% - .5px), #aaa 50%, transparent calc(50% + .5px));
+}
+
+.phoneLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  white-space: nowrap;
+  font: 12px/15px Inter, sans-serif;
+
+  span { color: rgba(0, 0, 0, .38); }
+}
+
+.standard {
+  width: min(320px, 100%);
+  font: 12px/15px Inter, sans-serif;
+  color: $blue;
+}
+
+.standardImage {
+  width: 100%;
+  aspect-ratio: 606 / 350;
+  border: 1px solid rgba(185, 185, 185, .85);
+}
+
+.standardInfo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid $card-border;
+  border-radius: 15px;
+  background: $card-bg;
+
+  > strong { font-weight: 800; }
+  > b { font-weight: 700; }
+}
+
+.mountainRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: min(660px, 100%);
+}
+
+.mountainText,
+.mountainPhoto {
+  width: calc(50% - 10px);
+  min-height: 125px;
+  padding: 20px;
+  text-align: center;
+  font: 12px/15px Inter, sans-serif;
+}
+
+.mountainText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mountainPhoto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .checker { width: 100%; aspect-ratio: 280 / 177; }
+}
+
+.excursion {
+  width: min(320px, 100%);
+  padding: 20px;
+  text-align: center;
+  font: 12px/15px Inter, sans-serif;
+
+  .checker { width: 100%; aspect-ratio: 310 / 107; }
+  > span { display: block; margin-top: 10px; }
+}
+
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: min(320px, 100%);
+  font: 12px/15px Inter, sans-serif;
+
+  > div:not(.eventBanner) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+}
+
+.eventBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 320 / 131;
+  border-radius: 15px;
+  background: $card-bg;
+  text-align: center;
+  color: rgba(0, 0, 0, .5);
+}
+
+.mobile,
+.taxi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(320px, 100%);
+  padding: 10px;
+  text-align: center;
+  font: 12px/15px Inter, sans-serif;
+}
+
+.mobile {
+  gap: 10px;
+  min-height: 266px;
+
+  .checker { width: 200px; max-width: 100%; aspect-ratio: 4 / 1; border-radius: 5px; }
+}
+
+.taxi {
+  gap: 5px;
+  min-height: 217px;
+
+  .checker { width: 290px; max-width: 100%; aspect-ratio: 29 / 6; border-radius: 5px; }
+  strong, b { font-weight: 700; }
+}
+
+@media (max-width: 560px) {
+  .mountainRow { flex-direction: column; }
+  .mountainText, .mountainPhoto { width: min(320px, 100%); }
+}
