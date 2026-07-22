@@ -87,45 +87,60 @@ $card-border: #d5daef;
 }
 
 .standard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   width: min(320px, 100%);
-  font: 12px/15px Inter, sans-serif;
+  font: 14px/17px Inter, sans-serif;
   color: $blue;
 }
 
 .standardImage {
   width: 100%;
-  aspect-ratio: 606 / 350;
+  aspect-ratio: 320 / 226;
   border: 1px solid rgba(185, 185, 185, .85);
 }
 
 .standardInfo {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3px;
-  margin-top: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  height: 182px;
   padding: 10px;
   border: 1px solid $card-border;
   border-radius: 15px;
   background: $card-bg;
 
   > strong { font-weight: 800; }
+}
+
+.standardField {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 100%;
+
   > b { font-weight: 700; }
 }
 
 .mountainRow {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: min(660px, 100%);
+  width: min(320px, 100%);
 }
 
 .mountainText,
 .mountainPhoto {
-  width: calc(50% - 10px);
-  min-height: 125px;
+  width: 100%;
   padding: 20px;
   text-align: center;
-  font: 12px/15px Inter, sans-serif;
+  font: 14px/17px Inter, sans-serif;
 }
 
 .mountainText {
@@ -133,57 +148,133 @@ $card-border: #d5daef;
   flex-direction: column;
   justify-content: center;
   gap: 10px;
+  height: 125px;
 }
 
 .mountainPhoto {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
+  height: 260px;
 
-  .checker { width: 100%; aspect-ratio: 280 / 177; }
+  .checker {
+    width: 280px;
+    max-width: 100%;
+    aspect-ratio: 280 / 177;
+  }
 }
 
 .excursion {
-  width: min(320px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(350px, 100%);
+  height: 201.89px;
   padding: 20px;
   text-align: center;
-  font: 12px/15px Inter, sans-serif;
+  font: 14px/17px Inter, sans-serif;
 
-  .checker { width: 100%; aspect-ratio: 310 / 107; }
-  > span { display: block; margin-top: 10px; }
+  .checker {
+    width: 310px;
+    max-width: 100%;
+    aspect-ratio: 310 / 107;
+  }
+}
+
+.excursionText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
 .event {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  align-items: flex-start;
+  gap: 8px;
   width: min(320px, 100%);
-  font: 12px/15px Inter, sans-serif;
-
-  > div:not(.eventBanner) {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  height: 362px;
+  font: 14px/17px Inter, sans-serif;
 
   svg {
-    width: 24px;
-    height: 24px;
+    flex: none;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
   }
 }
 
+.eventPlace,
+.eventDate,
+.eventAddress {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.eventPlace {
+  gap: 8px;
+  height: 64px;
+
+  svg {
+    width: 32px;
+    height: 64px;
+  }
+}
+
+.eventDate {
+  gap: 10px;
+  height: 30px;
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.eventAddress {
+  gap: 10px;
+  height: 32px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.eventAbout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  height: 48px;
+}
+
+.eventLink {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 17px;
+}
+
 .eventBanner {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 320 / 131;
+  width: 100%;
+  height: 131px;
+  padding: 40px 56px;
   border-radius: 15px;
-  background: $card-bg;
+  background: $card-border;
   text-align: center;
-  color: rgba(0, 0, 0, .5);
+  font-weight: 200;
+  color: rgba(0, 0, 0, .85);
 }
 
 .mobile,
@@ -192,27 +283,72 @@ $card-border: #d5daef;
   flex-direction: column;
   align-items: center;
   width: min(320px, 100%);
-  padding: 10px;
   text-align: center;
-  font: 12px/15px Inter, sans-serif;
+  font: 14px/17px Inter, sans-serif;
 }
 
 .mobile {
-  gap: 10px;
-  min-height: 266px;
+  gap: 20px;
+  height: 266px;
+  padding: 16px 20px 20px;
 
-  .checker { width: 200px; max-width: 100%; aspect-ratio: 4 / 1; border-radius: 5px; }
+  .checker {
+    flex: none;
+    width: 200px;
+    height: 50px;
+    max-width: 100%;
+    border-radius: 0;
+  }
+}
+
+.mobileDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  height: 160px;
+
+  > span:first-child {
+    width: 100%;
+    height: 119px;
+  }
 }
 
 .taxi {
-  gap: 5px;
-  min-height: 217px;
+  gap: 16px;
+  height: 217px;
+  padding: 16px 0;
 
-  .checker { width: 290px; max-width: 100%; aspect-ratio: 29 / 6; border-radius: 5px; }
-  strong, b { font-weight: 700; }
+  .checker {
+    flex: none;
+    width: 290px;
+    height: 60px;
+    max-width: calc(100% - 30px);
+    border-radius: 0;
+  }
 }
 
-@media (max-width: 560px) {
-  .mountainRow { flex-direction: column; }
-  .mountainText, .mountainPhoto { width: min(320px, 100%); }
+.taxiDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 109px;
+
+  strong { font-weight: 800; }
+  b { font-weight: 700; }
+}
+
+@media (min-width: 850px) {
+  .mountainRow {
+    flex-direction: row;
+    width: 660px;
+  }
+
+  .mountainText,
+  .mountainPhoto {
+    width: 320px;
+  }
 }

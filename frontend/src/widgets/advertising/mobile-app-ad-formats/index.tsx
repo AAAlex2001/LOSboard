@@ -43,24 +43,23 @@ const Checker = ({ className = "" }: { className?: string }) => (
   <div className={`${style.checker} ${className}`} aria-hidden="true" />
 );
 
-const SplashDemo = () => (
-  <div className={style.phone}>
-    <div className={style.cross} aria-hidden="true" />
-    <div className={style.phoneLabel}>
-      <strong>402 × 874</strong>
-      <span>App banner</span>
-    </div>
-  </div>
-);
-
 const StandardDemo = () => (
   <div className={style.standard}>
     <Checker className={style.standardImage} />
     <div className={style.standardInfo}>
       <strong>Название объекта</strong>
-      <b>Режим работы:</b><span>–</span>
-      <b>Адрес:</b><span>–</span>
-      <b>Контакты:</b><span>–</span>
+      <div className={style.standardField}>
+        <b>Режим работы:</b>
+        <span>–</span>
+      </div>
+      <div className={style.standardField}>
+        <b>Адрес:</b>
+        <span>–</span>
+      </div>
+      <div className={style.standardField}>
+        <b>Контакты:</b>
+        <span>–</span>
+      </div>
     </div>
   </div>
 );
@@ -82,7 +81,10 @@ const MountainDemo = () => (
 const ExcursionDemo = () => (
   <div className={`${style.blueCard} ${style.excursion}`}>
     <Checker />
-    <span>Контакты: -----<br />САЙТ:------</span>
+    <div className={style.excursionText}>
+      <span>Контакты: -----</span>
+      <span>САЙТ:------</span>
+    </div>
   </div>
 );
 
@@ -100,12 +102,23 @@ const PinIcon = () => (
 
 const EventDemo = () => (
   <div className={style.event}>
-    <div><ArrowIcon /><strong>Название мероприятия</strong></div>
-    <div><CalendarIcon /><span>Дата и время проведения</span></div>
-    <div><PinIcon /><span>Адрес</span></div>
-    <b>О событии</b>
-    <span>Абзац текста</span>
-    <strong>Ссылка на мероприятие: ---</strong>
+    <div className={style.eventPlace}>
+      <ArrowIcon />
+      <strong>Название мероприятия</strong>
+    </div>
+    <div className={style.eventDate}>
+      <CalendarIcon />
+      <span>Дата и время проведения</span>
+    </div>
+    <div className={style.eventAddress}>
+      <PinIcon />
+      <span>Адрес</span>
+    </div>
+    <div className={style.eventAbout}>
+      <b>О событии</b>
+      <span>Абзац текста</span>
+    </div>
+    <strong className={style.eventLink}>Ссылка на мероприятие: ---</strong>
     <div className={style.eventBanner}>Сменяющийся видеоряд/<br />картинка с видом Абхазии/<br />реклама</div>
   </div>
 );
@@ -113,23 +126,27 @@ const EventDemo = () => (
 const MobileDemo = () => (
   <div className={`${style.blueCard} ${style.mobile}`}>
     <Checker />
-    <span>Описание услуги/компании<br />-<br />-<br />-<br />-</span>
-    <span>САЙТ: ------</span>
+    <div className={style.mobileDetails}>
+      <span>Описание услуги/компании<br />-<br />-<br />-<br />-<br />-<br />-</span>
+      <span>САЙТ: ------</span>
+    </div>
   </div>
 );
 
 const TaxiDemo = () => (
   <div className={`${style.blueCard} ${style.taxi}`}>
     <Checker />
-    <strong>Название компании</strong>
-    <span>Время работы: -</span>
-    <b>Заказать такси:</b>
-    <span>Контакты -----<br />------</span>
+    <div className={style.taxiDetails}>
+      <strong>Название компании</strong>
+      <span>Время работы: –</span>
+      <b>Заказать такси:</b>
+      <span>Контакты -----<br />------</span>
+    </div>
   </div>
 );
 
 const DEMOS = [
-  SplashDemo,
+  undefined,
   StandardDemo,
   MountainDemo,
   ExcursionDemo,
