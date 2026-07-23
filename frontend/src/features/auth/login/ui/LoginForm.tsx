@@ -48,7 +48,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Пароль"
           />
-          <Button type="link" disabled>
+          <Button type="link" onClick={() => router.push("/forgot-password")}>
             Забыли пароль?
           </Button>
         </div>
