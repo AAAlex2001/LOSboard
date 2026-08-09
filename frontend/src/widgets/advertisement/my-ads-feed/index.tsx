@@ -16,6 +16,11 @@ export const MyAdsFeed = () => {
   };
 
   const handleCardClick = (ad: Advertisement) => {
+    if (ad.moderation_status !== "approved") {
+      router.push(`/my-ads/${ad.id}/edit`);
+      return;
+    }
+
     router.push(buildAdvertisementUrl(ad.id, ad.title));
   };
 

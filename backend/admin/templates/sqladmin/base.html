@@ -69,6 +69,14 @@
       width: 100% !important;
       margin-top: 4px !important;
     }
+
+    .admin-notification-badge {
+      min-width: 1.5rem;
+      margin-left: auto;
+      border-radius: 999px;
+      font-weight: 700;
+      text-align: center;
+    }
   </style>
   {% endblock %}
   {% if admin.favicon_url %}
@@ -94,6 +102,79 @@
   <script type="text/javascript" src="{{ url_for('admin:statics', path='js/flatpickr.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('admin:statics', path='js/main.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+  <script>
+    (function () {
+      var endpoint = {{ request.url_for('admin:notification-counts') | tojson }};
+      var refreshTimer = null;
+
+      function normalizedPath(url) {
+        try {
+          return new URL(url, window.location.origin).pathname.replace(/\/$/, '');
+        } catch (_) {
+          return '';
+        }
+      }
+
+      function findMenuLink(url) {
+        var targetPath = normalizedPath(url);
+        if (!targetPath) return null;
+        var links = document.querySelectorAll('#navbar-menu a[href]');
+        for (var i = 0; i < links.length; i += 1) {
+          if (normalizedPath(links[i].href) === targetPath) return links[i];
+        }
+        return null;
+      }
+
+      function renderBadge(item, kind) {
+        if (!item) return;
+        var link = findMenuLink(item.url);
+        if (!link) return;
+
+        var badge = link.querySelector('[data-admin-notification="' + kind + '"]');
+        var count = Number(item.count) || 0;
+        if (count <= 0) {
+          if (badge) badge.remove();
+          return;
+        }
+
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.dataset.adminNotification = kind;
+          badge.className = 'badge bg-red text-white admin-notification-badge';
+          link.appendChild(badge);
+        }
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.title = 'Требуют обработки: ' + count;
+        badge.setAttribute('aria-label', 'Требуют обработки: ' + count);
+      }
+
+      async function refreshAdminNotifications() {
+        try {
+          var response = await fetch(endpoint, {
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' },
+          });
+          if (!response.ok) return;
+          var data = await response.json();
+          renderBadge(data.moderation, 'moderation');
+          renderBadge(data.complaints, 'complaints');
+        } catch (_) {
+          // The counters are supplementary and must not disrupt admin actions.
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        refreshAdminNotifications();
+        refreshTimer = window.setInterval(refreshAdminNotifications, 30000);
+      });
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) refreshAdminNotifications();
+      });
+      window.addEventListener('beforeunload', function () {
+        if (refreshTimer) window.clearInterval(refreshTimer);
+      });
+    })();
+  </script>
   <script>
     (function () {
       var textareas = document.querySelectorAll('textarea.rich-editor');

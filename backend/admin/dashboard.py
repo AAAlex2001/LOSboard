@@ -4,6 +4,7 @@ from sqladmin import BaseView, expose
 from sqlalchemy import cast, func, select
 from sqlalchemy.types import Date
 from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from database import AsyncSessionLocal
 from models.advertisement import (
@@ -18,6 +19,46 @@ from models.user import User
 class DashboardView(BaseView):
     name = "Дашборд"
     icon = "fa-solid fa-chart-line"
+
+    @expose(
+        "/notification-counts",
+        methods=["GET"],
+        identity="notification-counts",
+        include_in_schema=False,
+    )
+    async def notification_counts(self, request: Request) -> JSONResponse:
+        """Active work counters displayed next to the related admin menu items."""
+        async with AsyncSessionLocal() as session:
+            pending_ads = await session.scalar(
+                select(func.count(Advertisement.id)).where(
+                    Advertisement.moderation_status == MODERATION_PENDING,
+                    Advertisement.deleted_at.is_(None),
+                )
+            )
+            open_complaints = await session.scalar(
+                select(func.count(Complaint.id)).where(
+                    Complaint.status == COMPLAINT_OPEN
+                )
+            )
+
+        return JSONResponse(
+            {
+                "moderation": {
+                    "count": pending_ads or 0,
+                    "url": str(
+                        request.url_for(
+                            "admin:list", identity="moderation-queue"
+                        )
+                    ),
+                },
+                "complaints": {
+                    "count": open_complaints or 0,
+                    "url": str(
+                        request.url_for("admin:list", identity="complaint")
+                    ),
+                },
+            }
+        )
 
     @expose("/dashboard", methods=["GET"], identity="dashboard")
     async def dashboard(self, request: Request):
@@ -44,7 +85,8 @@ class DashboardView(BaseView):
             )
             pending_count = await session.scalar(
                 select(func.count(Advertisement.id)).where(
-                    Advertisement.moderation_status == MODERATION_PENDING
+                    Advertisement.moderation_status == MODERATION_PENDING,
+                    Advertisement.deleted_at.is_(None),
                 )
             )
             open_complaints = await session.scalar(
