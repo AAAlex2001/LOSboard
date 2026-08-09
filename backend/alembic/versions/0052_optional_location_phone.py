@@ -1,6 +1,6 @@
 """Make advertisement location optional and add a per-ad contact phone.
 
-Revision ID: 0052_optional_location_contact_phone
+Revision ID: 0052_optional_location_phone
 Revises: 0051_reseed_mobile_app_ads
 """
 from typing import Sequence, Union
@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from alembic import op
 
 
-revision: str = "0052_optional_location_contact_phone"
+revision: str = "0052_optional_location_phone"
 down_revision: Union[str, None] = "0051_reseed_mobile_app_ads"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
