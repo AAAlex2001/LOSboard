@@ -18,6 +18,9 @@ if (apiBaseUrl) {
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  turbopack: {
+    root: process.cwd(),
+  },
   images: {
     remotePatterns,
     formats: ["image/avif", "image/webp"],

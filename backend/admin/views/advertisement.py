@@ -83,6 +83,7 @@ class AdvertisementAdmin(AdminOnly, ModelView, model=Advertisement):
         Advertisement.description: "Описание",
         Advertisement.price: "Цена",
         Advertisement.location: "Локация",
+        Advertisement.contact_phone: "Контактный телефон",
         Advertisement.photo_urls: "Фото",
         Advertisement.is_active: "Активно",
         Advertisement.is_urgent: "Срочное",

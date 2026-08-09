@@ -35,7 +35,8 @@ class Advertisement(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     price: Mapped[int] = mapped_column(Integer, nullable=False)
-    location: Mapped[str] = mapped_column(String, nullable=False)
+    location: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    contact_phone: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
     photo_urls: Mapped[list[str]] = mapped_column(
         ARRAY(String), nullable=False, server_default="{}", default=list
     )

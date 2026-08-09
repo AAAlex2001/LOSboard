@@ -9,6 +9,7 @@ import { PhotoUpload } from "@/src/shared/ui/PhotoUpload";
 import { AddressAutocomplete } from "@/src/shared/ui/AddressAutocomplete";
 import { Map } from "@/src/shared/ui/Map";
 import { resolveAssetUrl } from "@/src/shared/lib/asset-url";
+import { formatPhone, normalizePhone } from "@/src/shared/lib/phone";
 import { usePlaceAd } from "../model/usePlaceAd";
 import { TITLE_MAX } from "../model/placeAdReducer";
 import { PlaceAdPreview } from "./PlaceAdPreview";
@@ -262,6 +263,28 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
         </div>
       </section>
 
+      <section className={style.price}>
+        <div className={style.labelRow}>
+          <span className={style.label}>Контактный телефон</span>
+        </div>
+        <div className={style.field}>
+          <Input
+            variant="form"
+            type="tel"
+            placeholder="+7 (___) ___-__-__"
+            value={formatPhone(state.contactPhone)}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_CONTACT_PHONE",
+                payload: normalizePhone(e.target.value),
+              })
+            }
+            maxLength={18}
+          />
+          <span className={style.hint}>Необязательно. Укажите номер для связи по этому объявлению.</span>
+        </div>
+      </section>
+
       <section className={style.location}>
         <div className={style.labelRow}>
           <span className={style.label}>Местоположение</span>
@@ -269,7 +292,7 @@ export const PlaceAdForm = ({ advertisementId }: PlaceAdFormProps = {}) => {
         <div className={style.locationInner}>
           <div className={style.locationSublabelRow}>
             <span className={style.sublabel}>
-              Укажите реальный адрес сделки{" "}
+              Укажите адрес сделки (необязательно){" "}
               <span className={style.sublabelHint}>
                 (нажмите на карту чтобы выбрать адрес)
               </span>

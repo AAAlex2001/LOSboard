@@ -29,6 +29,7 @@ from admin.views.category import CategoryAdmin, SubcategoryAdmin
 from admin.views.chat import ConversationAdmin
 from admin.views.complaint import ComplaintAdmin
 from admin.views.content import (
+    ContactSocialLinksAdmin,
     ContentPageAdmin,
     FooterLinkAdmin,
     SiteSettingsAdmin,
@@ -48,6 +49,7 @@ __all__ = [
     "BannerAdmin",
     "CategoryAdmin",
     "ComplaintAdmin",
+    "ContactSocialLinksAdmin",
     "ContentPageAdmin",
     "ConversationAdmin",
     "FooterLinkAdmin",

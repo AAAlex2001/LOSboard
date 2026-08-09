@@ -14,7 +14,8 @@ class AdvertisementCreate(BaseModel):
     price: int = Field(..., gt=0)
     category_id: int
     subcategory_id: int
-    location: str = Field(..., min_length=1, max_length=255)
+    location: Optional[str] = Field(None, max_length=255)
+    contact_phone: Optional[str] = Field(None, pattern=r"^\d{11}$")
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool = True
     is_urgent: bool = False
@@ -28,7 +29,7 @@ class AdvertisementResponse(BaseModel):
     price: int
     category_id: int
     subcategory_id: int
-    location: str
+    location: Optional[str] = None
     photo_urls: List[str] = Field(default_factory=list)
     is_active: bool
     is_urgent: bool = False
@@ -61,7 +62,8 @@ class AdvertisementUpdate(BaseModel):
     price: Optional[int] = Field(None, gt=0)
     category_id: Optional[int] = None
     subcategory_id: Optional[int] = None
-    location: Optional[str] = Field(None, min_length=1, max_length=255)
+    location: Optional[str] = Field(None, max_length=255)
+    contact_phone: Optional[str] = Field(None, pattern=r"^\d{11}$")
     photo_urls: Optional[List[str]] = None
     is_active: Optional[bool] = None
     is_urgent: Optional[bool] = None

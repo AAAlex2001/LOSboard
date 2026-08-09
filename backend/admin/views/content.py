@@ -157,3 +157,50 @@ class SiteSettingsAdmin(AdminOnly, ModelView, model=SiteSettings):
             "description": "Показывается на свободных слотах, где ещё нет баннера.",
         },
     }
+
+
+class ContactSocialLinksAdmin(AdminOnly, ModelView, model=SiteSettings):
+    """Отдельная форма для ссылок иконок в блоке «Связаться с нами»."""
+
+    name = "ссылки на соцсети"
+    name_plural = "Связаться с нами"
+    identity = "contact-social-links"
+    icon = "fa-solid fa-share-nodes"
+    can_create = False
+    can_delete = False
+    can_view_details = False
+    column_list = [
+        SiteSettings.id,
+        SiteSettings.telegram_url,
+        SiteSettings.instagram_url,
+        SiteSettings.facebook_url,
+    ]
+    column_labels = {
+        SiteSettings.id: "ID",
+        SiteSettings.socials_title: "Подпись над значками",
+        SiteSettings.telegram_url: "Ссылка на Telegram",
+        SiteSettings.instagram_url: "Ссылка на Instagram",
+        SiteSettings.facebook_url: "Ссылка на Facebook",
+    }
+    form_columns = [
+        SiteSettings.socials_title,
+        SiteSettings.telegram_url,
+        SiteSettings.instagram_url,
+        SiteSettings.facebook_url,
+    ]
+    form_args = {
+        "telegram_url": {
+            "description": "Полная ссылка на аккаунт или канал, например https://t.me/account"
+        },
+        "instagram_url": {
+            "description": "Полная ссылка на аккаунт, например https://instagram.com/account"
+        },
+        "facebook_url": {
+            "description": "Полная ссылка на страницу, например https://facebook.com/account"
+        },
+    }
+
+
+# SQLAdmin derives the identity from the model after the class body. This second
+# view uses the same singleton model, so it needs its own route/menu identity.
+ContactSocialLinksAdmin.identity = "contact-social-links"

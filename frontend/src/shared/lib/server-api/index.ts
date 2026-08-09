@@ -11,7 +11,7 @@ export interface AdSummary {
   title: string;
   description: string | null;
   price: number;
-  location: string;
+  location: string | null;
   photo_urls: string[];
   category_id: number;
   subcategory_id: number;

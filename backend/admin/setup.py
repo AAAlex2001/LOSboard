@@ -19,6 +19,7 @@ from admin.views import (
     BannerAdmin,
     CategoryAdmin,
     ComplaintAdmin,
+    ContactSocialLinksAdmin,
     ContentPageAdmin,
     ConversationAdmin,
     FooterLinkAdmin,
@@ -87,6 +88,7 @@ def setup_admin(app: FastAPI) -> None:
     admin.add_view(ContentPageAdmin)
     admin.add_view(FooterLinkAdmin)
     admin.add_view(SiteSettingsAdmin)
+    admin.add_view(ContactSocialLinksAdmin)
     admin.add_view(LikedAdvertisementAdmin)
     admin.add_view(ViewedAdvertisementAdmin)
     admin.add_view(ConversationAdmin)

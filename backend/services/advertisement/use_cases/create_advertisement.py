@@ -58,6 +58,7 @@ class CreateAdvertisementUseCase:
             category_id=request.category_id,
             subcategory_id=request.subcategory_id,
             location=request.location,
+            contact_phone=request.contact_phone,
             photo_urls=list(request.photo_urls or []),
             is_active=request.is_active,
             is_urgent=request.is_urgent,

@@ -5,7 +5,7 @@ export interface Advertisement {
   price: number;
   category_id: number;
   subcategory_id: number;
-  location: string;
+  location: string | null;
   photo_urls: string[];
   is_active: boolean;
   is_urgent: boolean;
@@ -33,7 +33,8 @@ export interface CreateAdvertisementPayload {
   price: number;
   category_id: number;
   subcategory_id: number;
-  location: string;
+  location?: string | null;
+  contact_phone?: string | null;
   photo_urls?: string[];
   is_active?: boolean;
   is_urgent?: boolean;

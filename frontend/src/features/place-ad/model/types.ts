@@ -7,6 +7,7 @@ export interface PlaceAdState {
   title: string;
   price: string;
   description: string;
+  contactPhone: string;
   files: File[];
   existingPhotoUrls: string[];
   isUrgent: boolean;
@@ -24,6 +25,7 @@ export interface PrefillPayload {
   title: string;
   price: string;
   description: string;
+  contactPhone: string;
   address: string;
   isUrgent?: boolean;
   photoUrls?: string[];
@@ -36,6 +38,7 @@ export type PlaceAdAction =
   | { type: "SET_TITLE"; payload: string }
   | { type: "SET_PRICE"; payload: string }
   | { type: "SET_DESCRIPTION"; payload: string }
+  | { type: "SET_CONTACT_PHONE"; payload: string }
   | { type: "SET_FILES"; payload: File[] }
   | { type: "SET_IS_URGENT"; payload: boolean }
   | { type: "SET_ADDRESS"; payload: string }

@@ -53,7 +53,7 @@ export const PhotoUpload = ({
   onRemoveExisting,
   maxCount = 10,
   maxSizeMb = 25,
-  hint = "Первое фото будет главным, выберите наиболее удачное. До 10 фото (JPG, PNG; до 25 МБ)",
+  hint = "Первое фото будет главным, выберите наиболее удачное. До 10 фото (JPG, PNG, WebP, IMG; до 25 МБ)",
 }: PhotoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -179,7 +179,7 @@ export const PhotoUpload = ({
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png"
+          accept="image/jpeg,image/png,image/webp,.img"
           multiple
           onChange={handleFileSelect}
           className={style.fileInput}

@@ -10,6 +10,7 @@ export const initialPlaceAdState: PlaceAdState = {
   title: "",
   price: "",
   description: "",
+  contactPhone: "",
   files: [],
   existingPhotoUrls: [],
   isUrgent: false,
@@ -51,6 +52,8 @@ export function placeAdReducer(
       return { ...state, price: action.payload.replace(/[^0-9]/g, "") };
     case "SET_DESCRIPTION":
       return { ...state, description: action.payload.slice(0, DESCRIPTION_MAX) };
+    case "SET_CONTACT_PHONE":
+      return { ...state, contactPhone: action.payload };
     case "SET_FILES":
       return { ...state, files: action.payload };
     case "SET_IS_URGENT":
@@ -72,6 +75,7 @@ export function placeAdReducer(
         title: action.payload.title.slice(0, TITLE_MAX),
         price: action.payload.price.replace(/[^0-9]/g, ""),
         description: action.payload.description.slice(0, DESCRIPTION_MAX),
+        contactPhone: action.payload.contactPhone,
         isUrgent: action.payload.isUrgent ?? false,
         address: action.payload.address,
         existingPhotoUrls: action.payload.photoUrls ?? [],

@@ -12,6 +12,7 @@ import {
 } from "@/src/entities/advertisement";
 import { getAttributes, type Attribute } from "@/src/entities/attribute";
 import { initialPlaceAdState, placeAdReducer } from "./placeAdReducer";
+import { cleanPhone, isValidPhone } from "@/src/shared/lib/phone";
 
 interface UsePlaceAdOptions {
   advertisementId?: number;
@@ -45,7 +46,8 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
             price: String(ad.price),
             description: ad.description ?? "",
             isUrgent: ad.is_urgent,
-            address: ad.location,
+            address: ad.location ?? "",
+            contactPhone: ad.seller_phone ?? "",
             photoUrls: ad.photo_urls,
             attributeValues,
           },
@@ -123,7 +125,7 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
     selectedSubcategory !== null &&
     state.title.trim().length > 0 &&
     Number(state.price) > 0 &&
-    state.address.trim().length > 0 &&
+    (state.contactPhone.trim().length === 0 || isValidPhone(state.contactPhone)) &&
     !attributesLoading &&
     attributesValid;
 
@@ -171,7 +173,10 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           price: Number(state.price),
           category_id: selectedCategory.id,
           subcategory_id: selectedSubcategory.id,
-          location: state.address.trim(),
+          location: state.address.trim() || null,
+          contact_phone: state.contactPhone.trim()
+            ? cleanPhone(state.contactPhone)
+            : null,
           photo_urls: photoUrls,
           is_urgent: state.isUrgent,
           attributes: attributesPayload,
@@ -185,7 +190,10 @@ export function usePlaceAd({ advertisementId }: UsePlaceAdOptions = {}) {
           price: Number(state.price),
           category_id: selectedCategory.id,
           subcategory_id: selectedSubcategory.id,
-          location: state.address.trim(),
+          location: state.address.trim() || null,
+          contact_phone: state.contactPhone.trim()
+            ? cleanPhone(state.contactPhone)
+            : undefined,
           photo_urls: photoUrls,
           is_active: true,
           is_urgent: state.isUrgent,

@@ -14,3 +14,4 @@ export { AdvertisementSearch } from "./search/ui/AdvertisementSearch";
 export { useSearchAdvertisement } from "./search/model/useSearchAdvertisement";
 
 export { useViewAdvertisement } from "./view/model/useViewAdvertisement";
+export { useAdvertisementContactPhone } from "./contact/model/useAdvertisementContactPhone";

@@ -66,7 +66,9 @@ class GetAdvertisementUseCase:
             )
             is_staff = current_user is not None and current_user.is_staff
             advertisement.seller_phone = (
-                advertisement.owner.phone_number if is_owner or is_staff else None
+                advertisement.contact_phone or advertisement.owner.phone_number
+                if current_user is not None
+                else None
             )
         else:
             advertisement.seller_name = None

@@ -119,14 +119,25 @@ export const PlaceAdPreview = ({
         </section>
       )}
 
-      <section className={style.location}>
+      {state.contactPhone.trim().length > 0 && (
+        <section className={style.price}>
+          <div className={style.labelRow}>
+            <span className={style.label}>Контактный телефон</span>
+          </div>
+          <div className={style.previewField}>
+            <span className={style.valueText}>{state.contactPhone}</span>
+          </div>
+        </section>
+      )}
+
+      {state.address.trim().length > 0 && <section className={style.location}>
         <div className={style.labelRow}>
           <span className={style.label}>Местоположение</span>
         </div>
         <div className={style.previewField}>
           <span className={style.valueText}>{state.address}</span>
         </div>
-      </section>
+      </section>}
 
       <div className={style.previewButtons}>
         <Button

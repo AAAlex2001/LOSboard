@@ -46,6 +46,7 @@ export const AdvertisementDetail = ({
         setItem((prev) => ({
           ...prev,
           is_liked: fresh.is_liked,
+          seller_phone: fresh.seller_phone,
           likes_count: fresh.likes_count ?? prev.likes_count,
         }));
       })
@@ -137,7 +138,7 @@ export const AdvertisementDetail = ({
       <section className={style.info}>
         <div className={style.group}>
           <Row label="Цена" value={formatPrice(item.price)} bold />
-          <Row label="Местоположение" value={item.location} />
+          {item.location && <Row label="Местоположение" value={item.location} />}
           {item.description && (
             <Row label="Описание" value={item.description} multiline />
           )}

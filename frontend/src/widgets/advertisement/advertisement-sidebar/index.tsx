@@ -10,6 +10,7 @@ import { AdBanner } from "@/src/entities/ad-banner";
 import { useSidebarBanners } from "@/src/entities/banner";
 import { useSiteSettings } from "@/src/entities/content";
 import { useStartChat } from "@/src/features/chat";
+import { useAdvertisementContactPhone } from "@/src/features/advertisement";
 import { isAuthenticated as checkAuth } from "@/src/shared/auth/auth-storage";
 import { formatPrice } from "@/src/shared/lib/format";
 import { useMeContext } from "@/src/entities/user";
@@ -31,11 +32,15 @@ export const AdvertisementSidebar = ({
   canMessageSeller = true,
 }: AdvertisementSidebarProps) => {
   const router = useRouter();
-  const phoneTel = sellerPhone ?? "";
   const { loading: startingChat, start } = useStartChat();
   const banners = useSidebarBanners();
   const settings = useSiteSettings();
   const { user: currentUser, loading: userLoading } = useMeContext();
+  const phoneTel = useAdvertisementContactPhone({
+    advertisementId,
+    userId: currentUser?.id,
+    initialPhone: sellerPhone,
+  });
   const isOwnAd = currentUser?.id === ownerId;
   const sellerButtonsDisabled = isOwnAd || userLoading;
 
