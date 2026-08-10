@@ -104,7 +104,8 @@
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
   <script>
     (function () {
-      var endpoint = {{ request.url_for('admin:notification-counts') | tojson }};
+      var staticsRef = {{ url_for('admin:statics', path='css/main.css') | tojson }};
+      var endpoint = String(staticsRef).replace(/\/statics\/.*$/, '') + '/notification-counts';
       var refreshTimer = null;
 
       function normalizedPath(url) {
