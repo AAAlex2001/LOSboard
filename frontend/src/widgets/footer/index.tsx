@@ -80,33 +80,39 @@ export const Footer = () => {
             <div className={style.contacts}>
               <span className={style.linkBold}>{settings.socials_title}</span>
               <div className={style.socials}>
-                <a
-                  href={settings.telegram_url || "#"}
-                  target={settings.telegram_url ? "_blank" : undefined}
-                  rel={settings.telegram_url ? "noopener noreferrer" : undefined}
-                  className={style.social}
-                  aria-label="Telegram"
-                >
-                  <TelegramIcon />
-                </a>
-                <a
-                  href={settings.instagram_url || "#"}
-                  target={settings.instagram_url ? "_blank" : undefined}
-                  rel={settings.instagram_url ? "noopener noreferrer" : undefined}
-                  className={style.social}
-                  aria-label="Instagram"
-                >
-                  <InstagramIcon />
-                </a>
-                <a
-                  href={settings.facebook_url || "#"}
-                  target={settings.facebook_url ? "_blank" : undefined}
-                  rel={settings.facebook_url ? "noopener noreferrer" : undefined}
-                  className={style.social}
-                  aria-label="Facebook"
-                >
-                  <FacebookIcon />
-                </a>
+                {settings.telegram_url && (
+                  <a
+                    href={settings.telegram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={style.social}
+                    aria-label="Telegram"
+                  >
+                    <TelegramIcon />
+                  </a>
+                )}
+                {settings.instagram_url && (
+                  <a
+                    href={settings.instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={style.social}
+                    aria-label="Instagram"
+                  >
+                    <InstagramIcon />
+                  </a>
+                )}
+                {settings.facebook_url && (
+                  <a
+                    href={settings.facebook_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={style.social}
+                    aria-label="Facebook"
+                  >
+                    <FacebookIcon />
+                  </a>
+                )}
               </div>
               <div className={style.viewMode}>
                 <ViewModeToggle />

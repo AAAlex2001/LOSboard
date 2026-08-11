@@ -20,46 +20,6 @@ class DashboardView(BaseView):
     name = "Дашборд"
     icon = "fa-solid fa-chart-line"
 
-    @expose(
-        "/notification-counts",
-        methods=["GET"],
-        identity="notification-counts",
-        include_in_schema=False,
-    )
-    async def notification_counts(self, request: Request) -> JSONResponse:
-        """Active work counters displayed next to the related admin menu items."""
-        async with AsyncSessionLocal() as session:
-            pending_ads = await session.scalar(
-                select(func.count(Advertisement.id)).where(
-                    Advertisement.moderation_status == MODERATION_PENDING,
-                    Advertisement.deleted_at.is_(None),
-                )
-            )
-            open_complaints = await session.scalar(
-                select(func.count(Complaint.id)).where(
-                    Complaint.status == COMPLAINT_OPEN
-                )
-            )
-
-        return JSONResponse(
-            {
-                "moderation": {
-                    "count": pending_ads or 0,
-                    "url": str(
-                        request.url_for(
-                            "admin:list", identity="moderation-queue"
-                        )
-                    ),
-                },
-                "complaints": {
-                    "count": open_complaints or 0,
-                    "url": str(
-                        request.url_for("admin:list", identity="complaint")
-                    ),
-                },
-            }
-        )
-
     @expose("/dashboard", methods=["GET"], identity="dashboard")
     async def dashboard(self, request: Request):
         now = datetime.utcnow()
@@ -214,4 +174,44 @@ class DashboardView(BaseView):
                 "chart_ads": chart_ads,
                 "chart_users": chart_users,
             },
+        )
+
+    @expose(
+        "/notification-counts",
+        methods=["GET"],
+        identity="notification-counts",
+        include_in_schema=False,
+    )
+    async def notification_counts(self, request: Request) -> JSONResponse:
+        """Счётчики активной работы рядом с пунктами меню админки."""
+        async with AsyncSessionLocal() as session:
+            pending_ads = await session.scalar(
+                select(func.count(Advertisement.id)).where(
+                    Advertisement.moderation_status == MODERATION_PENDING,
+                    Advertisement.deleted_at.is_(None),
+                )
+            )
+            open_complaints = await session.scalar(
+                select(func.count(Complaint.id)).where(
+                    Complaint.status == COMPLAINT_OPEN
+                )
+            )
+
+        return JSONResponse(
+            {
+                "moderation": {
+                    "count": pending_ads or 0,
+                    "url": str(
+                        request.url_for(
+                            "admin:list", identity="moderation-queue"
+                        )
+                    ),
+                },
+                "complaints": {
+                    "count": open_complaints or 0,
+                    "url": str(
+                        request.url_for("admin:list", identity="complaint")
+                    ),
+                },
+            }
         )
