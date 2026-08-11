@@ -32,6 +32,78 @@ class UpdateAccountRequest(BaseModel):
         return v.strip().lower() if isinstance(v, str) else v
 
 
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+
+class ResendCodeRequest(BaseModel):
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+
+class ResendCodeResponse(BaseModel):
+    message: str
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+
+class VerifyResetCodeRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+    password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def normalize_code(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 

@@ -24,6 +24,13 @@ x-backend-common: &backend-common
     ADMIN_BASE_URL: ${ADMIN_BASE_URL}
     SITE_URL: ${SITE_URL}
     INDEXNOW_KEY: ${INDEXNOW_KEY}
+    SMTP_HOST: ${SMTP_HOST}
+    SMTP_PORT: ${SMTP_PORT}
+    SMTP_USER: ${SMTP_USER}
+    SMTP_PASSWORD: ${SMTP_PASSWORD}
+    SMTP_FROM: ${SMTP_FROM}
+    SMTP_FROM_NAME: ${SMTP_FROM_NAME}
+    SMTP_SSL: ${SMTP_SSL}
   volumes:
     - backend_uploads:/app/uploads
   healthcheck:
@@ -72,6 +79,13 @@ services:
       ADMIN_BASE_URL: ${ADMIN_BASE_URL}
       SITE_URL: ${SITE_URL}
       INDEXNOW_KEY: ${INDEXNOW_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME}
+      SMTP_SSL: ${SMTP_SSL}
       RUN_MIGRATIONS: "1"
 
   backend-replica:

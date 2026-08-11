@@ -44,6 +44,27 @@ class User(Base):
     token_version: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0", default=0
     )
+    email_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=sa.false(), default=False
+    )
+    email_verification_code_hash: Mapped[Optional[str]] = mapped_column(
+        String, nullable=True
+    )
+    email_verification_expires_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    email_verification_sent_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    password_reset_code_hash: Mapped[Optional[str]] = mapped_column(
+        String, nullable=True
+    )
+    password_reset_expires_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    password_reset_sent_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
 
     advertisements: Mapped[list["Advertisement"]] = relationship(
         "Advertisement",

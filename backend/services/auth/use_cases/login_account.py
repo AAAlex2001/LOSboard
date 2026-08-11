@@ -28,6 +28,12 @@ class LoginAccountUseCase:
         if not user or not password_ok:
             raise HTTPException(status_code=401, detail="Неверный email или пароль")
 
+        if not user.email_verified:
+            raise HTTPException(
+                status_code=403,
+                detail="Подтвердите электронную почту, чтобы войти",
+            )
+
         access_token = self.jwt_service.create_access_token(
             user.id, user.email, user.token_version
         )

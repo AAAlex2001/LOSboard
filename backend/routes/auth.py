@@ -14,23 +14,35 @@ from database import get_db
 from schemas.auth import (
     CreateAccountRequest,
     CreateAccountResponse,
+    ForgotPasswordRequest,
     UpdateAccountRequest,
     UpdateAccountResponse,
     LoginRequest,
     LoginResponse,
+    MessageResponse,
     RefreshTokenRequest,
     RefreshTokenResponse,
     MeResponse,
+    ResendCodeRequest,
+    ResendCodeResponse,
+    ResetPasswordRequest,
     UploadAvatarResponse,
+    VerifyEmailRequest,
+    VerifyResetCodeRequest,
 )
 from models.user import User
 from services.auth.cookies import clear_auth_cookies, set_auth_cookies
 from services.auth.dependencies import REFRESH_TOKEN_COOKIE, get_current_user
 from services.auth.use_cases.login_account import LoginAccountUseCase
 from services.auth.use_cases.create_account import CreateAccountUseCase
+from services.auth.use_cases.forgot_password import ForgotPasswordUseCase
 from services.auth.use_cases.update_account import UpdateAccountUseCase
 from services.auth.use_cases.refresh_token import RefreshTokenUseCase
+from services.auth.use_cases.resend_verification import ResendVerificationUseCase
+from services.auth.use_cases.reset_password import ResetPasswordUseCase
 from services.auth.use_cases.upload_avatar import UploadAvatarUseCase
+from services.auth.use_cases.verify_email import VerifyEmailUseCase
+from services.auth.use_cases.verify_reset_code import VerifyResetCodeUseCase
 from services.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -45,6 +57,67 @@ async def create_account_endpoint(
 ):
     use_case = CreateAccountUseCase()
     return await use_case.create_account(payload, db)
+
+
+@router.post("/verify-email", response_model=LoginResponse)
+@limiter.limit("10/minute")
+async def verify_email_endpoint(
+    request: Request,
+    response: Response,
+    payload: VerifyEmailRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = VerifyEmailUseCase()
+    result = await use_case.verify_email(payload, db)
+    set_auth_cookies(response, result.access_token, result.refresh_token)
+    return result
+
+
+@router.post("/resend-code", response_model=ResendCodeResponse)
+@limiter.limit("3/minute")
+async def resend_code_endpoint(
+    request: Request,
+    payload: ResendCodeRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = ResendVerificationUseCase()
+    return await use_case.resend(payload, db)
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+@limiter.limit("3/minute")
+async def forgot_password_endpoint(
+    request: Request,
+    payload: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = ForgotPasswordUseCase()
+    return await use_case.request_reset(payload, db)
+
+
+@router.post("/verify-reset-code", response_model=MessageResponse)
+@limiter.limit("10/minute")
+async def verify_reset_code_endpoint(
+    request: Request,
+    payload: VerifyResetCodeRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = VerifyResetCodeUseCase()
+    return await use_case.verify(payload, db)
+
+
+@router.post("/reset-password", response_model=LoginResponse)
+@limiter.limit("5/minute")
+async def reset_password_endpoint(
+    request: Request,
+    response: Response,
+    payload: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    use_case = ResetPasswordUseCase()
+    result = await use_case.reset(payload, db)
+    set_auth_cookies(response, result.access_token, result.refresh_token)
+    return result
 
 
 @router.patch("/update-account", response_model=UpdateAccountResponse)

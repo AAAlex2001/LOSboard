@@ -8,12 +8,22 @@ import { Button } from "@/src/shared/ui/Button";
 import { Loader } from "@/src/shared/ui/Loader";
 import Typography from "@/src/shared/ui/Typography";
 import { useNotifications } from "@/src/shared/ui/Notifications";
+import { CodeVerificationCard } from "@/src/shared/ui/CodeVerificationCard";
 import { useRegister } from "../model/useRegister";
 import style from "./RegisterForm.module.scss";
 
 export function RegisterForm() {
   const router = useRouter();
-  const { loading, user, performRegister } = useRegister();
+  const {
+    loading,
+    user,
+    step,
+    email: sentEmail,
+    performRegister,
+    performVerify,
+    performResend,
+    backToForm,
+  } = useRegister();
   const { showError } = useNotifications();
 
   const [name, setName] = useState("");
@@ -33,6 +43,20 @@ export function RegisterForm() {
     if (!isValid || loading) return;
     performRegister(name.trim(), email.trim(), password, showError);
   };
+
+  if (step === "verify") {
+    return (
+      <CodeVerificationCard
+        title="Подтвердите почту"
+        subtitle="Введите код из письма"
+        email={sentEmail}
+        loading={loading}
+        onSubmit={(code) => performVerify(code, showError)}
+        onResend={() => performResend(showError)}
+        onBack={backToForm}
+      />
+    );
+  }
 
   return (
     <form className={style.registerForm} onSubmit={handleSubmit}>
