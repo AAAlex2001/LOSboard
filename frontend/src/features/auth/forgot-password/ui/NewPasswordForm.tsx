@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/src/shared/ui/Input";
 import { Button } from "@/src/shared/ui/Button";
 import { Loader } from "@/src/shared/ui/Loader";
@@ -14,7 +13,6 @@ interface NewPasswordFormProps {
 }
 
 export function NewPasswordForm({ loading, onSubmit, onError }: NewPasswordFormProps) {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
@@ -60,12 +58,6 @@ export function NewPasswordForm({ loading, onSubmit, onError }: NewPasswordFormP
       <Button type="submit" color="blue" fullWidth disabled={loading}>
         {loading ? <Loader /> : "Сохранить пароль"}
       </Button>
-
-      <div className={style.center}>
-        <Button type="link" onClick={() => router.push("/")}>
-          Вернуться на главную
-        </Button>
-      </div>
     </form>
   );
 }

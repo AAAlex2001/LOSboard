@@ -102,6 +102,20 @@
   }
 }
 
+.ghost {
+  background-color: transparent;
+  color: #1E1E1E;
+
+  &:hover:not(:disabled) {
+    background-color: #F0F0F2;
+  }
+}
+
+.ghost:disabled {
+  background-color: transparent;
+  color: #B8BBC2;
+}
+
 .button:disabled {
   cursor: not-allowed;
 }

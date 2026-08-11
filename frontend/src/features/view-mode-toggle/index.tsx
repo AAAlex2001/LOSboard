@@ -69,7 +69,7 @@ function subscribe(): () => void {
 }
 
 export const ViewModeToggle = () => {
-  const { mode, origin } = useSyncExternalStore(
+  const { mode } = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot
@@ -88,15 +88,9 @@ export const ViewModeToggle = () => {
   };
 
   const isDesktop = mode === "desktop";
-  let label: string;
-  if (isDesktop) {
-    label =
-      origin === "tablet"
-        ? "Переключиться на планшетную версию"
-        : "Переключиться на мобильную версию";
-  } else {
-    label = "Переключиться на десктопную версию";
-  }
+  const label = isDesktop
+    ? "Переключиться на мобильную версию"
+    : "Переключиться на десктопную версию";
 
   return (
     <button type="button" className={style.toggle} onClick={handleClick}>

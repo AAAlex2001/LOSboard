@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Input } from "@/src/shared/ui/Input";
+import { useRef, useState } from "react";
 import { Button } from "@/src/shared/ui/Button";
 import { Loader } from "@/src/shared/ui/Loader";
 import style from "./style.module.scss";
+
+const LENGTH = 6;
 
 interface CodeVerificationCardProps {
   title: string;
@@ -28,8 +28,16 @@ export function CodeVerificationCard({
   onResend,
   onBack,
 }: CodeVerificationCardProps) {
-  const router = useRouter();
-  const [code, setCode] = useState("");
+  const boxes = useRef<Array<HTMLInputElement | null>>([]);
+  const [digits, setDigits] = useState<string[]>(Array(LENGTH).fill(""));
+  const code = digits.join("");
+
+  const setChar = (index: number, char: string) => {
+    const next = [...digits];
+    next[index] = char;
+    setDigits(next);
+    if (char && index < LENGTH - 1) boxes.current[index + 1]?.focus();
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,37 +53,44 @@ export function CodeVerificationCard({
 
       <p className={style.sentTo}>Мы отправили код на {email}</p>
 
-      <Input
-        type="text"
-        placeholder="Код из письма"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        name="code"
-        maxLength={6}
-      />
+      <div className={style.boxes}>
+        {digits.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => {
+              boxes.current[index] = el;
+            }}
+            className={style.box}
+            inputMode="numeric"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => setChar(index, e.target.value.replace(/\D/g, "").slice(-1))}
+          />
+        ))}
+      </div>
 
       <div className={style.center}>
-        <Button type="link" onClick={onResend}>
+        <Button type="button" variant="ghost" onClick={onResend}>
           Отправить ещё раз
         </Button>
       </div>
 
-      <div className={style.actions}>
-        {onBack && (
-          <Button type="button" variant="outlined" color="gray" onClick={onBack}>
+      <Button
+        type="submit"
+        color="blue"
+        fullWidth
+        disabled={code.length !== LENGTH || loading}
+      >
+        {loading ? <Loader /> : submitText}
+      </Button>
+
+      {onBack && (
+        <div className={style.center}>
+          <Button type="link" onClick={onBack}>
             Назад
           </Button>
-        )}
-        <Button type="submit" color="blue" disabled={code.length !== 6 || loading}>
-          {loading ? <Loader /> : submitText}
-        </Button>
-      </div>
-
-      <div className={style.center}>
-        <Button type="link" onClick={() => router.push("/")}>
-          Вернуться на главную
-        </Button>
-      </div>
+        </div>
+      )}
     </form>
   );
 }

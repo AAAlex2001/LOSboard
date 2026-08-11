@@ -46,16 +46,34 @@
   color: rgba(27, 31, 38, 0.72);
 }
 
+.boxes {
+  display: flex;
+  gap: 6px;
+}
+
+.box {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 10px 0;
+  text-align: center;
+  background: #f8faff;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  box-shadow: 0px 2px 12px rgba(1, 42, 249, 0.05);
+  border-radius: 10px;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #1e1e1e;
+  outline: none;
+}
+
+.box:focus {
+  border-color: #1129bd;
+}
+
 .center {
   display: flex;
   justify-content: center;
-}
-
-.actions {
-  display: flex;
-  gap: 5px;
-}
-
-.actions button {
-  flex: 1 1 0;
 }
