@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +21,7 @@ class ResendVerificationUseCase:
         self,
         request: ResendCodeRequest,
         db: AsyncSession,
+        background_tasks: BackgroundTasks,
     ) -> ResendCodeResponse:
         result = await db.execute(
             select(User).where(User.email == request.email)
@@ -47,6 +48,6 @@ class ResendVerificationUseCase:
         user.email_verification_expires_at = now + CODE_TTL
         user.email_verification_sent_at = now
         await db.flush()
-        await send_verification_email(user.email, code)
+        background_tasks.add_task(send_verification_email, user.email, code)
 
         return ResendCodeResponse(message="Код отправлен повторно")

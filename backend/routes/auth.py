@@ -1,5 +1,6 @@
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Cookie,
     Depends,
     File,
@@ -53,10 +54,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def create_account_endpoint(
     request: Request,
     payload: CreateAccountRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = CreateAccountUseCase()
-    return await use_case.create_account(payload, db)
+    return await use_case.create_account(payload, db, background_tasks)
 
 
 @router.post("/verify-email", response_model=LoginResponse)
@@ -78,10 +80,11 @@ async def verify_email_endpoint(
 async def resend_code_endpoint(
     request: Request,
     payload: ResendCodeRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = ResendVerificationUseCase()
-    return await use_case.resend(payload, db)
+    return await use_case.resend(payload, db, background_tasks)
 
 
 @router.post("/forgot-password", response_model=MessageResponse)
@@ -89,10 +92,11 @@ async def resend_code_endpoint(
 async def forgot_password_endpoint(
     request: Request,
     payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ):
     use_case = ForgotPasswordUseCase()
-    return await use_case.request_reset(payload, db)
+    return await use_case.request_reset(payload, db, background_tasks)
 
 
 @router.post("/verify-reset-code", response_model=MessageResponse)

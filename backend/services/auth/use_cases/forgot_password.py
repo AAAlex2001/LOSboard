@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +21,7 @@ class ForgotPasswordUseCase:
         self,
         request: ForgotPasswordRequest,
         db: AsyncSession,
+        background_tasks: BackgroundTasks,
     ) -> MessageResponse:
         result = await db.execute(
             select(User).where(User.email == request.email)
@@ -48,6 +49,6 @@ class ForgotPasswordUseCase:
         user.password_reset_expires_at = now + CODE_TTL
         user.password_reset_sent_at = now
         await db.flush()
-        await send_password_reset_email(user.email, code)
+        background_tasks.add_task(send_password_reset_email, user.email, code)
 
         return generic

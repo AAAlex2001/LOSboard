@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +17,7 @@ class CreateAccountUseCase:
         self,
         request: CreateAccountRequest,
         db: AsyncSession,
+        background_tasks: BackgroundTasks,
     ) -> CreateAccountResponse:
         result = await db.execute(
             select(User).where(User.email == request.email)
@@ -49,7 +50,7 @@ class CreateAccountUseCase:
             db.add(user)
 
         await db.flush()
-        await send_verification_email(user.email, code)
+        background_tasks.add_task(send_verification_email, user.email, code)
 
         return CreateAccountResponse(
             message="Код подтверждения отправлен на почту",
