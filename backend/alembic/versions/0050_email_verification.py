@@ -1,7 +1,7 @@
 """Поля подтверждения email у пользователей
 
 Revision ID: 0050_email_verification
-Revises: 0049_clean_tour_mockups
+Revises: 0052_optional_location_phone
 Create Date: 2026-08-10 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ from alembic import op
 
 
 revision: str = "0050_email_verification"
-down_revision: Union[str, None] = "0049_clean_tour_mockups"
+down_revision: Union[str, None] = "0052_optional_location_phone"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
