@@ -4,6 +4,7 @@ import smtplib
 import socket
 import ssl
 from email.message import EmailMessage
+from email.utils import formatdate, make_msgid
 
 
 async def send_email(
@@ -30,6 +31,9 @@ async def send_email(
     message["Subject"] = subject
     message["From"] = f"{sender_name} <{sender}>" if sender_name else sender
     message["To"] = to_email
+    message["Reply-To"] = sender
+    message["Date"] = formatdate(localtime=True)
+    message["Message-ID"] = make_msgid(domain=sender.rsplit("@", 1)[-1])
     message.set_content(text_body)
     if html_body:
         message.add_alternative(html_body, subtype="html")
