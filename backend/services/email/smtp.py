@@ -1,6 +1,7 @@
 import asyncio
 import os
 import smtplib
+import socket
 import ssl
 from email.message import EmailMessage
 
@@ -34,15 +35,25 @@ async def send_email(
         message.add_alternative(html_body, subtype="html")
 
     def deliver() -> None:
-        context = ssl.create_default_context()
-        if use_ssl:
-            with smtplib.SMTP_SSL(host, port, context=context, timeout=20) as server:
-                server.login(user, password)
-                server.send_message(message)
-        else:
-            with smtplib.SMTP(host, port, timeout=20) as server:
-                server.starttls(context=context)
-                server.login(user, password)
-                server.send_message(message)
+        original_getaddrinfo = socket.getaddrinfo
+
+        def ipv4_only(*args, **kwargs):
+            results = original_getaddrinfo(*args, **kwargs)
+            return [item for item in results if item[0] == socket.AF_INET]
+
+        socket.getaddrinfo = ipv4_only
+        try:
+            context = ssl.create_default_context()
+            if use_ssl:
+                with smtplib.SMTP_SSL(host, port, context=context, timeout=20) as server:
+                    server.login(user, password)
+                    server.send_message(message)
+            else:
+                with smtplib.SMTP(host, port, timeout=20) as server:
+                    server.starttls(context=context)
+                    server.login(user, password)
+                    server.send_message(message)
+        finally:
+            socket.getaddrinfo = original_getaddrinfo
 
     await asyncio.to_thread(deliver)
